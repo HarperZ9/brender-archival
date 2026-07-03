@@ -1,0 +1,11 @@
+{
+  "claim_scope": "BRender 1.3.2 source availability, provenance, and MIT license posture",
+  "confidence": "high",
+  "id": "foone-brender-v132",
+  "notes": "Repository states this is BRender 1.3.2 from approximately 1998-11-17, released under MIT with approval attributed to Jez San.",
+  "publisher": "GitHub / Foone Turing",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "Argonaut Blazing Render (BRender) v1.3.2 source repository",
+  "url": "https://github.com/foone/BRender-v1.3.2"
+}

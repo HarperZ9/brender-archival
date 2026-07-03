@@ -1,0 +1,13 @@
+{
+  "id": "renderman-interface-ri-official-docs",
+  "target_id": "renderman-interface",
+  "artifact_type": "official-documentation-reference",
+  "title": "RenderMan Interface (Ri) official documentation",
+  "origin": "Pixar RenderMan public documentation",
+  "redistribution_status": "public-reference-only",
+  "access_level": "public",
+  "evidence_quality": "official-documentation",
+  "location": "https://rmanwiki-26.pixar.com/space/REN26/19662055/RenderMan%2BInterface%2B%28Ri%29",
+  "source_ids": ["pixar-renderman-interface-ri-docs"],
+  "notes": "Public-reference-only metadata for the official RenderMan Interface documentation page. This repo does not mirror page content."
+}

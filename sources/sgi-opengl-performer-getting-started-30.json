@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGL Performer 3.0 Getting Started Guide public reference metadata and sample-code locations",
+  "confidence": "high",
+  "id": "sgi-opengl-performer-getting-started-30",
+  "notes": "Public PDF copy of the OpenGL Performer Getting Started Guide for IRIX, Linux, and Windows, including Perfly and sample-scene workflow notes.",
+  "publisher": "Silicon Graphics / Infania mirror",
+  "retrieved_at": "2026-07-02",
+  "source_type": "manual-pdf",
+  "title": "OpenGL Performer Getting Started Guide 3.0",
+  "url": "https://www.infania.net/misc1/sgi_techpubs/techpubs/007-3560-004.pdf"
+}

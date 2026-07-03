@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ps1-psnoobsdk-open-source-sdk",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "ps1-psnoobsdk-open-source-sdk-planned",
+  "package_type": "source-snapshot",
+  "public_notes": "Planned accession for public PSn00bSDK source metadata; this is not a Sony SDK mirror.",
+  "rights_review": "open-license",
+  "source_ids": ["psnoobsdk-github"],
+  "storage_class": "external-url"
+}

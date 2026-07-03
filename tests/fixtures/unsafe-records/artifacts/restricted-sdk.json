@@ -1,0 +1,11 @@
+{
+  "id": "renderware-ps2-sdk",
+  "target_id": "renderware-ps2",
+  "artifact_type": "sdk",
+  "title": "RenderWare PS2 SDK package",
+  "origin": "licensee media",
+  "redistribution_status": "restricted",
+  "access_level": "publishable",
+  "evidence_quality": "private-lead",
+  "notes": "This fixture proves restricted material cannot be marked publishable."
+}

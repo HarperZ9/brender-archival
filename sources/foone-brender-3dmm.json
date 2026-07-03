@@ -1,0 +1,11 @@
+{
+  "claim_scope": "BRender 3D Movie Maker variant source availability, provenance, and MIT license posture",
+  "confidence": "high",
+  "id": "foone-brender-3dmm",
+  "notes": "Repository states this is the BRender library variant used by 3D Movie Maker, dating to approximately May 1995.",
+  "publisher": "GitHub / Foone Turing",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "BRender-3DMM source repository",
+  "url": "https://github.com/foone/BRender-3DMM"
+}

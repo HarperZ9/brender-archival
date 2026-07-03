@@ -1,0 +1,11 @@
+{
+  "kind": "milestone",
+  "required": ["id", "target_id", "milestone_type", "status", "evidence"],
+  "properties": {
+    "id": "string",
+    "target_id": "string",
+    "milestone_type": "string",
+    "status": "string",
+    "evidence": "string"
+  }
+}

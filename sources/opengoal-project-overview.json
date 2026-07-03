@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGOAL compiler, decompiler, source tree, and runtime architecture",
+  "confidence": "high",
+  "id": "opengoal-project-overview",
+  "notes": "Project overview documenting the GOAL compiler, decompiler, OpenGOAL source layout, and C++ runtime components.",
+  "publisher": "OpenGOAL",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-documentation",
+  "title": "OpenGOAL project overview",
+  "url": "https://github.com/open-goal/jak-project/blob/master/docs/project-overview.md"
+}

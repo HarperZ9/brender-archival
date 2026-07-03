@@ -1,0 +1,45 @@
+{
+  "id": "open-inventor-source-build",
+  "target_id": "open-inventor",
+  "reproduction_type": "source-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public Open Inventor source release at the recorded open-inventor-master-head commit",
+    "host platform and compiler assumptions taken from the public README.FIRST release notes",
+    "public/open OpenGL scene-graph dependencies only",
+    "public-safe scene graph or example input",
+    "local build transcript and compatibility notes captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public Open Inventor source release listed in the artifact record",
+    "verify the local checkout commit against the open-inventor-master-head snapshot record",
+    "use README.FIRST to identify source tree layout, platform assumptions, and build constraints",
+    "prepare a clean compatibility environment for the documented source release",
+    "compile the Open Inventor libraries and public examples where available",
+    "run a minimal public-safe scene graph load or example smoke test when the build succeeds",
+    "record build commands, compatibility patches, diagnostics, outputs, and scene-graph test notes as public metadata"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "README.FIRST build-assumption summary",
+    "compiler transcript",
+    "library and example inventory",
+    "compatibility patch notes",
+    "public-safe smoke-test notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "open-inventor-source-release",
+    "open-inventor-readme-first-build-notes",
+    "coin3d-open-inventor-api-compatibility"
+  ],
+  "task_ids": [
+    "open-inventor-triage"
+  ],
+  "public_notes": "Planned reproduction recipe for rebuilding the public Open Inventor source release and documenting compatibility assumptions from README.FIRST.",
+  "source_ids": [
+    "open-inventor-github",
+    "open-inventor-readme-first",
+    "coin3d-api-compatibility"
+  ]
+}

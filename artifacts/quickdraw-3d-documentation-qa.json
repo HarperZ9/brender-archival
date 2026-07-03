@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "documentation-index",
+  "evidence_quality": "technical-qa-archive",
+  "id": "quickdraw-3d-documentation-qa",
+  "location": "https://leopard-adc.pepas.com/qa/qd3d/qd3d28.html",
+  "notes": "Public-reference-only documentation index for QuickDraw 3D manuals and developer CD documentation references.",
+  "origin": "Apple Developer Technical Q&A mirror",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["apple-quickdraw3d-documentation-qa"],
+  "target_id": "quickdraw-3d",
+  "title": "QuickDraw 3D documentation Technical Q&A"
+}

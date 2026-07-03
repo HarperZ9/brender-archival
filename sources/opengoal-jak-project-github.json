@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGOAL public source project, decompiler/compiler methodology, and platform support",
+  "confidence": "high",
+  "id": "opengoal-jak-project-github",
+  "notes": "Public repository for OpenGOAL. The project rebuilds GOAL tooling and ports while requiring users to provide their own legal game data.",
+  "publisher": "GitHub / OpenGOAL Team",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "OpenGOAL jak-project source repository",
+  "url": "https://github.com/open-goal/jak-project"
+}

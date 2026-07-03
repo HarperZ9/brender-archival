@@ -1,0 +1,12 @@
+{
+  "id": "brender-3dmm-main-head",
+  "artifact_id": "brender-3dmm-source",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/foone/BRender-3DMM.git",
+  "ref": "refs/heads/main",
+  "commit": "5273a0bd2977d8ec08e4b81e680641a570a914b4",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/foone/BRender-3DMM.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream main branch head for the BRender 3D Movie Maker source repository.",
+  "source_ids": ["foone-brender-3dmm", "blazingrender-index"]
+}

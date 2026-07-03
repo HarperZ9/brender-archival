@@ -1,0 +1,24 @@
+{
+  "artifacts_policy": "Generated CMake build files and transcript were kept outside this metadata repo. No generated binaries, copied source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-configure",
+  "build_id": "brender-v132-build-environment",
+  "command": "cmake -S C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness -B C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-2026-07-03b \"-DBRENDER_SOURCE_DIR=C:\\dev\\public\\engine-revival-workspaces\\brender-v132\"",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe",
+  "id": "brender-v132-cmake-configure",
+  "next_actions": [
+    "build brender_core_float from the generated Visual Studio project",
+    "triage first compiler blocker before changing readiness beyond configure-complete"
+  ],
+  "public_notes": "This records the first successful configure pass for the portable BRender core harness. It establishes that the generated scaffold can produce out-of-tree Visual Studio build files.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "CMake configured with Visual Studio 18 2026, detected MSVC 19.50.35721.0, and generated build files in the external configure workspace.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-2026-07-03b.txt"
+}

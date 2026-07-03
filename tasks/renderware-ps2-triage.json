@@ -1,0 +1,7 @@
+{
+  "id": "renderware-ps2-triage",
+  "public_notes": "Create public-safe sources and artifact records for RenderWare PS2.",
+  "status": "seeded",
+  "target_id": "renderware-ps2",
+  "task_type": "triage-public-record"
+}

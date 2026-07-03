@@ -1,0 +1,47 @@
+{
+  "id": "openphigs-source-build",
+  "target_id": "phigs",
+  "reproduction_type": "source-reimplementation-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public OpenPHIGS repository at the recorded openphigs-main-head commit",
+    "C compiler and graphics dependencies selected from public repository documentation",
+    "license review retained as an explicit review step before any mirrored archival master",
+    "public PHIGS/OpenGL validation input or minimal procedural test",
+    "local build transcript and validation notes captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public OpenPHIGS source repository listed in the artifact record",
+    "verify the local checkout commit against the openphigs-main-head snapshot record",
+    "review SourceForge metadata, repository notes, and license files before mirroring or packaging any source archive",
+    "identify compiler, OpenGL backend, and PHIGS interface assumptions from public files",
+    "compile the public source reimplementation in a clean environment",
+    "run a minimal public-safe PHIGS/OpenGL smoke test when available",
+    "record build commands, license-review notes, diagnostics, outputs, and dependency gaps as public metadata"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "license-review notes",
+    "build environment manifest",
+    "compiler transcript",
+    "library output inventory",
+    "public-safe PHIGS/OpenGL smoke-test notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "openphigs-source-reimplementation",
+    "phigs-standard-public-metadata",
+    "phigs-nist-validation-tests"
+  ],
+  "task_ids": [
+    "phigs-triage"
+  ],
+  "public_notes": "Planned reproduction recipe for building OpenPHIGS as a public PHIGS/OpenGL reimplementation while keeping license review visible.",
+  "source_ids": [
+    "sourceforge-open-phigs",
+    "github-cern-openphigs",
+    "github-fbradasc-openphigs-license",
+    "iso-phigs-9592-3",
+    "nist-phigs-validation-guide"
+  ]
+}

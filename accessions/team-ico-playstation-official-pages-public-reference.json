@@ -1,0 +1,15 @@
+{
+  "artifact_id": "team-ico-playstation-official-pages",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "team-ico-playstation-official-pages-public-reference",
+  "package_type": "official-title-metadata",
+  "public_notes": "Public-reference accession for Team Ico official PlayStation title metadata; no game assets are held here.",
+  "rights_review": "public-reference-only",
+  "source_ids": [
+    "playstation-store-the-last-guardian",
+    "playstation-store-shadow-of-the-colossus",
+    "playstation-blog-team-ico-collection-2010"
+  ],
+  "storage_class": "external-url"
+}

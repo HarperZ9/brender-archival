@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Legacy DirectX SDK sample archive, educational/historical reference posture, and MIT license metadata",
+  "confidence": "high",
+  "id": "microsoft-directx-sdk-samples-github",
+  "notes": "Public Microsoft repository containing legacy DirectX SDK sample archives, explicitly framed as educational and historical reference and licensed under MIT.",
+  "publisher": "GitHub / Microsoft",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "DirectX SDK Legacy Samples",
+  "url": "https://github.com/microsoft/DirectX-SDK-Samples"
+}

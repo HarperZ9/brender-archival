@@ -1,0 +1,11 @@
+{
+  "artifact_id": "pixie-renderer-source-mirror",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "pixie-renderer-source-mirror-planned",
+  "package_type": "source-snapshot",
+  "public_notes": "Planned accession for public/open source metadata; archival master not stored in git.",
+  "rights_review": "open-license",
+  "source_ids": ["pixie-github-mirror"],
+  "storage_class": "external-url"
+}

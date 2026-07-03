@@ -1,0 +1,8 @@
+{
+  "id": "mesa-baseline",
+  "target_id": "mesa",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated Mesa source, accession, and task records.",
+  "source_ids": ["mesa-home", "mesa-license-docs", "mesa-source-repository-docs"]
+}

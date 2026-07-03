@@ -1,0 +1,31 @@
+{
+  "kind": "accession",
+  "required": [
+    "id",
+    "artifact_id",
+    "package_type",
+    "capture_status",
+    "storage_class",
+    "fixity_status",
+    "rights_review",
+    "public_notes"
+  ],
+  "properties": {
+    "id": "string",
+    "artifact_id": "string",
+    "package_type": "string",
+    "capture_status": "string",
+    "storage_class": "string",
+    "fixity_status": "string",
+    "rights_review": "string",
+    "public_notes": "string",
+    "source_ids": "array",
+    "capture_uri": "string",
+    "captured_at": "string",
+    "captured_by": "string",
+    "hashes": "object",
+    "size_bytes": "integer",
+    "tooling": "array",
+    "review_notes": "string"
+  }
+}

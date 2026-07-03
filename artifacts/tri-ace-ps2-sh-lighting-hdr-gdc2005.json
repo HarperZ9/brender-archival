@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "presentation-metadata",
+  "evidence_quality": "official-publication-index",
+  "id": "tri-ace-ps2-sh-lighting-hdr-gdc2005",
+  "location": "https://research.tri-ace.com/",
+  "notes": "Official public-reference record for tri-Ace's GDC 2005 PlayStation 2 SH Lighting and HDR Rendering presentation. This repo does not mirror presentation files.",
+  "origin": "tri-Ace R&D publications index",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["tri-ace-rd-publications-index"],
+  "target_id": "tri-ace-ps2-renderer",
+  "title": "Practical Implementation of SH Lighting and HDR Rendering on PlayStation 2"
+}

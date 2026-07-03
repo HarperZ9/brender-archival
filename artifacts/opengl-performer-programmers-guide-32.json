@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "manual-reference",
+  "evidence_quality": "public-manual-copy",
+  "id": "opengl-performer-programmers-guide-32",
+  "location": "https://irix7.com/techpubs/007-1680-100.pdf",
+  "notes": "Public-reference-only record for the OpenGL Performer 3.2 Programmer's Guide. SGI restriction language is preserved in the source metadata; this repo does not mirror the PDF.",
+  "origin": "Silicon Graphics manual mirror",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["sgi-opengl-performer-programmers-guide-32"],
+  "target_id": "opengl-performer",
+  "title": "OpenGL Performer Programmer's Guide 3.2",
+  "version": "3.2"
+}

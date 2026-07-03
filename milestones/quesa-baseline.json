@@ -1,0 +1,8 @@
+{
+  "id": "quesa-baseline",
+  "target_id": "quesa",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated Quesa source, accession, and task records.",
+  "source_ids": ["quesa-github", "gamedeveloper-quesa-16d13"]
+}

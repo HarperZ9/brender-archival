@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Internet Archive metadata for the LithTech Jupiter build 51 item, including identifier, publication date, package description, collection placement, and original file fixity.",
+  "confidence": "moderate",
+  "id": "internet-archive-lithtech-jupiter",
+  "notes": "Internet Archive metadata identifies the item as LithTech Jupiter by Monolith Productions, dated 2002-03-19, with identifier lithengine. The IA usage tag is recorded as metadata only; the development guide legal notice keeps this repo in a rights-review posture.",
+  "publisher": "Internet Archive",
+  "retrieved_at": "2026-07-03",
+  "source_type": "archive-item",
+  "title": "LithTech Jupiter archive item",
+  "url": "https://archive.org/details/lithengine"
+}

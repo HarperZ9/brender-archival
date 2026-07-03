@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Mesa license posture for core library and component-level licenses",
+  "confidence": "high",
+  "id": "mesa-license-docs",
+  "notes": "Official Mesa documentation states that the core library is MIT licensed while individual components may have their own licenses.",
+  "publisher": "Mesa 3D",
+  "retrieved_at": "2026-07-02",
+  "source_type": "license-documentation",
+  "title": "Mesa license and copyright documentation",
+  "url": "https://docs.mesa3d.org/license.html"
+}

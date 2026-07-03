@@ -1,0 +1,11 @@
+{
+  "artifact_id": "quesa-16d13-release-report",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "quesa-16d13-release-report-public-reference",
+  "package_type": "release-report-metadata",
+  "public_notes": "Public-reference accession for Quesa 1.6d13 release-report metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["gamedeveloper-quesa-16d13", "quesa-github"],
+  "storage_class": "external-url"
+}

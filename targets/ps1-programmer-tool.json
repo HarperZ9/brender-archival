@@ -1,0 +1,14 @@
+{
+  "category": "platform-toolchain",
+  "era": "1980s-2000s",
+  "id": "ps1-programmer-tool",
+  "name": "PS1 Programmer's Tool / SDevTC / Net Yaroze",
+  "platforms": ["PlayStation", "Net Yaroze", "Windows PC toolchain"],
+  "priority": 84,
+  "public_status": "curated-public-metadata",
+  "related_targets": [],
+  "restricted_status": "metadata-only",
+  "revival_lane": "clean-room-api-compatible",
+  "rights_posture": "clean-room-only",
+  "summary": "Public records now track SDevTC, Net Yaroze documentation, Redump disc metadata, and PSn00bSDK as the open compatibility lane."
+}

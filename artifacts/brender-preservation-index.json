@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "curation-index",
+  "evidence_quality": "curated-public-index",
+  "id": "brender-preservation-index",
+  "location": "https://blazingrender.net/",
+  "notes": "Public index of BRender source releases, historical SDK entries, and modernization efforts.",
+  "origin": "public web index",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["blazingrender-index"],
+  "target_id": "brender",
+  "title": "BRender preservation index"
+}

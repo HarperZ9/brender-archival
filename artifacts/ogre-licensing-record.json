@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "license-record",
+  "evidence_quality": "official-license-documentation",
+  "id": "ogre-licensing-record",
+  "location": "https://www.ogre3d.org/licensing",
+  "notes": "Official OGRE licensing record. Current project metadata states MIT license; historical LGPL wording is retained as context.",
+  "origin": "OGRE licensing documentation",
+  "redistribution_status": "open",
+  "source_ids": ["ogre-licensing", "ogre-github"],
+  "target_id": "ogre",
+  "title": "OGRE MIT licensing record"
+}

@@ -1,0 +1,15 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-release",
+  "date": "1998-11-17",
+  "evidence_quality": "public-source",
+  "id": "brender-v132-source",
+  "location": "https://github.com/foone/BRender-v1.3.2",
+  "notes": "Public source release suitable for critical-edition work. Date is approximate as stated by the repository.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["foone-brender-v132", "blazingrender-index"],
+  "target_id": "brender",
+  "title": "BRender v1.3.2 public source release",
+  "version": "1.3.2"
+}

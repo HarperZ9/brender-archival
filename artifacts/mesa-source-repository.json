@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-repository-record",
+  "evidence_quality": "official-repository-documentation",
+  "id": "mesa-source-repository",
+  "location": "https://docs.mesa3d.org/repository.html",
+  "notes": "Official source-repository record for Mesa's freedesktop.org Git repository and anonymous clone workflow.",
+  "origin": "Mesa project documentation",
+  "redistribution_status": "open",
+  "source_ids": ["mesa-source-repository-docs"],
+  "target_id": "mesa",
+  "title": "Mesa upstream source repository"
+}

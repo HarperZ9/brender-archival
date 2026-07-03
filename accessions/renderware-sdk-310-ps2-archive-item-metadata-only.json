@@ -1,0 +1,11 @@
+{
+  "artifact_id": "renderware-sdk-310-ps2-archive-item",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "renderware-sdk-310-ps2-archive-item-metadata-only",
+  "package_type": "sdk-archive-metadata",
+  "public_notes": "Metadata-only accession for a public archive item; SDK files are not held or redistributed here.",
+  "rights_review": "do-not-redistribute",
+  "source_ids": ["internet-archive-rw310-ps2"],
+  "storage_class": "not-held"
+}

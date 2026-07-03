@@ -1,0 +1,11 @@
+{
+  "artifact_id": "renderman-interface-spec-31-public-pdf",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "renderman-interface-spec-31-public-pdf-public-reference",
+  "package_type": "specification-reference-metadata",
+  "public_notes": "Public-reference accession for RenderMan Interface Specification 3.1 metadata; specification PDF is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["mit-rispec31-pdf"],
+  "storage_class": "external-url"
+}

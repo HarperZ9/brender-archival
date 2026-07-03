@@ -1,0 +1,16 @@
+{
+  "id": "openphigs-main-head",
+  "artifact_id": "openphigs-source-reimplementation",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/CERN/OpenPHIGS.git",
+  "ref": "refs/heads/main",
+  "commit": "9435bbcc6c7370aed220ff5392850f2b7d183b8e",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/CERN/OpenPHIGS.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream main branch head for the OpenPHIGS source reimplementation repository.",
+  "source_ids": [
+    "sourceforge-open-phigs",
+    "github-cern-openphigs",
+    "github-fbradasc-openphigs-license"
+  ]
+}

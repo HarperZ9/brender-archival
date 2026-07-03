@@ -1,0 +1,11 @@
+{
+  "artifact_id": "coin3d-open-inventor-api-compatibility",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "coin3d-open-inventor-api-compatibility-public-reference",
+  "package_type": "compatibility-lineage-metadata",
+  "public_notes": "Public-reference accession for Coin3D and Open Inventor API compatibility metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["coin3d-api-compatibility"],
+  "storage_class": "external-url"
+}

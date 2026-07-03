@@ -1,0 +1,11 @@
+{
+  "artifact_id": "tri-ace-ps2-sh-lighting-hdr-gdc2005",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "tri-ace-ps2-sh-lighting-hdr-gdc2005-public-reference",
+  "package_type": "presentation-metadata",
+  "public_notes": "Public-reference accession for tri-Ace PS2 SH lighting and HDR rendering presentation metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["tri-ace-rd-publications-index"],
+  "storage_class": "external-url"
+}

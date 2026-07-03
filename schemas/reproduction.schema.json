@@ -1,0 +1,27 @@
+{
+  "kind": "reproduction",
+  "required": [
+    "id",
+    "target_id",
+    "reproduction_type",
+    "status",
+    "environment",
+    "steps",
+    "expected_outputs",
+    "public_notes",
+    "source_ids"
+  ],
+  "properties": {
+    "id": "string",
+    "target_id": "string",
+    "reproduction_type": "string",
+    "status": "string",
+    "environment": "array",
+    "steps": "array",
+    "expected_outputs": "array",
+    "artifact_ids": "array",
+    "task_ids": "array",
+    "public_notes": "string",
+    "source_ids": "array"
+  }
+}

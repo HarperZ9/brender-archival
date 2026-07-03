@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Open PHIGS project metadata, C library scope, PHIGS/OpenGL relationship, and ISO 9592/9593 references",
+  "confidence": "moderate",
+  "id": "sourceforge-open-phigs",
+  "notes": "Project page for Open PHIGS; used as a public source-reimplementation pointer, not as a mirrored distribution.",
+  "publisher": "SourceForge",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-registry",
+  "title": "Open PHIGS",
+  "url": "https://sourceforge.net/projects/phigs/"
+}

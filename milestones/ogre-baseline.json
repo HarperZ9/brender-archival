@@ -1,0 +1,8 @@
+{
+  "id": "ogre-baseline",
+  "target_id": "ogre",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated OGRE source, accession, and task records.",
+  "source_ids": ["ogre-github", "ogre-licensing", "ogre-site"]
+}

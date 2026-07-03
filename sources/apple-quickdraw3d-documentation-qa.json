@@ -1,0 +1,11 @@
+{
+  "claim_scope": "QuickDraw 3D documentation set and developer CD references",
+  "confidence": "moderate",
+  "id": "apple-quickdraw3d-documentation-qa",
+  "notes": "Archived Apple Technical Q&A describing QuickDraw 3D documentation, the Addison-Wesley manual, and developer CD reference files.",
+  "publisher": "Apple Developer Documentation mirror",
+  "retrieved_at": "2026-07-02",
+  "source_type": "technical-qa",
+  "title": "QuickDraw 3D Documentation",
+  "url": "https://leopard-adc.pepas.com/qa/qd3d/qd3d28.html"
+}

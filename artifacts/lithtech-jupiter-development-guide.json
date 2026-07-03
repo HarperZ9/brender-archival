@@ -1,0 +1,26 @@
+{
+  "access_level": "public-reference",
+  "artifact_type": "development-guide",
+  "date": "2002-03-19",
+  "evidence_quality": "public-pdf-and-ocr",
+  "hashes": {
+    "JupiterDevGuide.pdf": {
+      "crc32": "e80f919c",
+      "md5": "1b869d9910fc5797eda1f3cccf4bda64",
+      "sha1": "7447f2e0f7733b299b0ccebd3f4872f89f8ce759",
+      "size_bytes": 1548528
+    }
+  },
+  "id": "lithtech-jupiter-development-guide",
+  "location": "https://archive.org/details/lithengine",
+  "notes": "Public reference record for the IA-hosted development guide and OCR. This repo records metadata and fixity only.",
+  "origin": "Internet Archive item metadata and OCR",
+  "redistribution_status": "do-not-redistribute",
+  "source_ids": [
+    "internet-archive-lithtech-jupiter",
+    "internet-archive-lithtech-jupiter-dev-guide"
+  ],
+  "target_id": "lithtech-jupiter",
+  "title": "Jupiter Development Guide",
+  "version": "2002.03.19"
+}

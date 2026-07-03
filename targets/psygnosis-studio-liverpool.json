@@ -1,0 +1,14 @@
+{
+  "category": "studio-lineage",
+  "era": "1980s-2000s",
+  "id": "psygnosis-studio-liverpool",
+  "name": "Psygnosis / Studio Liverpool",
+  "platforms": ["Amiga", "PlayStation", "PlayStation 2", "PlayStation Portable", "PlayStation Vita", "Wipeout"],
+  "priority": 73,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["ps1-programmer-tool", "ps2-prodg-eb-linux"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "asset-pipeline-reconstruction",
+  "rights_posture": "public-reference-only",
+  "summary": "Public-reference-only lineage record for Psygnosis and Studio Liverpool, focused on studio history, PlayStation-era influence, and closure context without mirroring proprietary assets."
+}

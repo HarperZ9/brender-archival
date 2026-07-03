@@ -1,0 +1,19 @@
+{
+  "category": "engine",
+  "era": "1980s-2000s",
+  "id": "brender",
+  "name": "Argonaut BRender",
+  "platforms": [
+    "DOS",
+    "Windows",
+    "PlayStation",
+    "OS/2"
+  ],
+  "priority": 89,
+  "public_status": "curated-public-sources",
+  "related_targets": [],
+  "restricted_status": "none-known",
+  "revival_lane": "critical-edition",
+  "rights_posture": "open",
+  "summary": "Open BRender source releases and historical SDK references are now tracked as the first critical-edition revival lane."
+}

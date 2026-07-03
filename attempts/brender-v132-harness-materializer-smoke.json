@@ -1,0 +1,24 @@
+{
+  "artifacts_policy": "Generated harness files were written outside this metadata repo and outside the BRender source checkout. No BRender source, generated binaries, private assets, or restricted SDK material are committed.",
+  "attempt_type": "harness-materialization",
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness --source-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132 --output-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe",
+  "id": "brender-v132-harness-materializer-smoke",
+  "next_actions": [
+    "run CMake configure against the generated harness",
+    "record compiler transcript as a separate attempt"
+  ],
+  "public_notes": "This records the first public-safe materializer smoke run for the BRender pilot. It proves the metadata tool can emit an out-of-tree harness scaffold without copying source into this repo.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "Materializer wrote CMakeLists.txt, README.md, cmake/brender-core-sources.cmake, and harness-manifest.json into the external harness workspace.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness"
+}

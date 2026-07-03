@@ -1,0 +1,14 @@
+{
+  "category": "renderer",
+  "era": "1980s-2000s",
+  "id": "aqsis",
+  "name": "Aqsis",
+  "platforms": ["Windows", "Linux", "macOS", "RenderMan Interface", "RIB", "RSL"],
+  "priority": 66,
+  "public_status": "curated-public-sources",
+  "related_targets": ["renderman-interface"],
+  "restricted_status": "none-known",
+  "revival_lane": "public-source-preservation",
+  "rights_posture": "open",
+  "summary": "Public records now track the Aqsis RenderMan-compatible renderer source repository and renderer/tooling metadata."
+}

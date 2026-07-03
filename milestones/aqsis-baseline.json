@@ -1,0 +1,8 @@
+{
+  "id": "aqsis-baseline",
+  "target_id": "aqsis",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated Aqsis source, accession, and task records.",
+  "source_ids": ["aqsis-github"]
+}

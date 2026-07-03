@@ -1,0 +1,11 @@
+{
+  "id": "gool-goal-archive-packet",
+  "target_id": "gool-goal",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the GOOL/GOAL packet around public OpenGOAL materials, creator testimony, legal-copy asset boundaries, and clean-room tooling notes.",
+  "inputs": ["OpenGOAL public docs", "OpenGOAL source records", "creator article"],
+  "outputs": ["standalone archival packet", "clean-room tooling map", "asset-boundary notes"],
+  "blocked_by": ["gool-goal-triage"],
+  "source_ids": ["andy-gavin-gool-article", "opengoal-project-overview", "opengoal-jak-project-github", "opengoal-license"]
+}

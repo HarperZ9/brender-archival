@@ -1,0 +1,11 @@
+{
+  "id": "japan-studio-team-ico-archive-packet",
+  "target_id": "japan-studio-team-ico",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the Japan Studio / Team Ico packet around public studio-history sources, official title pages, interviews, and preservation-safe lineage notes.",
+  "inputs": ["official title pages", "public interviews", "studio reorganization records"],
+  "outputs": ["standalone archival packet", "studio lineage map", "public-source bibliography"],
+  "blocked_by": ["japan-studio-team-ico-triage"],
+  "source_ids": ["playstation-blog-team-ico-ueda-interview", "playstation-blog-team-ico-collection-2010", "playstation-blog-team-asobi-2021", "playstation-store-the-last-guardian", "playstation-store-shadow-of-the-colossus", "siliconera-japan-studio-reorganization"]
+}

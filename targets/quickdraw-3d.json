@@ -1,0 +1,14 @@
+{
+  "category": "graphics-api",
+  "era": "1980s-2000s",
+  "id": "quickdraw-3d",
+  "name": "QuickDraw 3D",
+  "platforms": ["Mac OS", "Windows", "QuickDraw 3D", "RAVE", "3DMF"],
+  "priority": 73,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["quesa"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "distribution-media-recovery",
+  "rights_posture": "public-reference-only",
+  "summary": "Public records now track QuickDraw 3D 1.5.4 documentation, 3DMF/RAVE references, and Quesa as the open compatibility lane."
+}

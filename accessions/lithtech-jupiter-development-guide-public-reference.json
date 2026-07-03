@@ -1,0 +1,24 @@
+{
+  "artifact_id": "lithtech-jupiter-development-guide",
+  "capture_status": "public-reference",
+  "capture_uri": "https://archive.org/metadata/lithengine",
+  "captured_at": "2026-07-03",
+  "fixity_status": "external-file-metadata-recorded",
+  "hashes": {
+    "JupiterDevGuide.pdf": {
+      "crc32": "e80f919c",
+      "md5": "1b869d9910fc5797eda1f3cccf4bda64",
+      "sha1": "7447f2e0f7733b299b0ccebd3f4872f89f8ce759"
+    }
+  },
+  "id": "lithtech-jupiter-development-guide-public-reference",
+  "package_type": "development-guide-reference",
+  "public_notes": "Public reference accession for the IA-hosted development guide; this repo records file metadata only.",
+  "rights_review": "do-not-redistribute",
+  "size_bytes": 1548528,
+  "source_ids": [
+    "internet-archive-lithtech-jupiter",
+    "internet-archive-lithtech-jupiter-dev-guide"
+  ],
+  "storage_class": "not-held"
+}

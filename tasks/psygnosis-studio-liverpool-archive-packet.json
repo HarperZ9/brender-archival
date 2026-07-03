@@ -1,0 +1,11 @@
+{
+  "id": "psygnosis-studio-liverpool-archive-packet",
+  "target_id": "psygnosis-studio-liverpool",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the Psygnosis / Studio Liverpool packet around public studio history, closure reporting, title-family leads, and preservation-safe asset-pipeline notes.",
+  "inputs": ["public studio history", "closure reporting", "title-family accession records"],
+  "outputs": ["standalone archival packet", "studio lineage map", "asset-pipeline lead list"],
+  "blocked_by": ["psygnosis-studio-liverpool-triage"],
+  "source_ids": ["national-museums-liverpool-psygnosis-history", "gamedeveloper-studio-liverpool-closure", "wired-studio-liverpool-closure"]
+}

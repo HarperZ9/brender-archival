@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-toolchain",
+  "evidence_quality": "public-source",
+  "id": "opengoal-jak-project-source",
+  "location": "https://github.com/open-goal/jak-project",
+  "notes": "Open compatibility lane for GOAL tooling and native ports. Game assets remain outside this archive and require a legal local copy.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["opengoal-jak-project-github", "opengoal-license"],
+  "target_id": "gool-goal",
+  "title": "OpenGOAL jak-project source repository"
+}

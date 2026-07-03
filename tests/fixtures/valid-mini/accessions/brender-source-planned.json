@@ -1,0 +1,11 @@
+{
+  "id": "brender-source-planned",
+  "artifact_id": "brender-source",
+  "package_type": "source-snapshot",
+  "capture_status": "planned",
+  "storage_class": "external-url",
+  "fixity_status": "not-started",
+  "rights_review": "open-license",
+  "public_notes": "Planned public source accession.",
+  "source_ids": ["brender-github"]
+}

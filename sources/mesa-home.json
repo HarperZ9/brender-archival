@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Mesa project identity and supported graphics API implementations",
+  "confidence": "high",
+  "id": "mesa-home",
+  "notes": "Official Mesa site describes the project as open-source implementations of OpenGL, OpenGL ES, Vulkan, OpenCL, and more.",
+  "publisher": "Mesa 3D",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-site",
+  "title": "The Mesa 3D Graphics Library",
+  "url": "https://www.mesa3d.org/"
+}

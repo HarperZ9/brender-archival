@@ -1,0 +1,32 @@
+{
+  "artifacts_policy": "The materialized harness, configure tree, build tree, smoke executables, libraries, and transcripts were kept outside this metadata repo. No generated binaries, copied BRender source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-runtime-smoke",
+  "blockers": [
+    "runtime coverage is limited to vector math plus BrBegin and BrEnd framework startup",
+    "the startup smoke requires a 32-bit C target because the unreworked period code still stores some pointer-shaped values in 32-bit fields",
+    "portable host and core fallback stubs are enough for startup/link coverage but do not model full DOS, driver, V1DB, or rendering behavior",
+    "drivers, packaging, and deferred FIXED variants are not built yet"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness --source-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132 --output-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-startup-template-split-2026-07-03; cmake -S C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-startup-template-split-2026-07-03 -B C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-startup-template-split-2026-07-03 -A Win32 -DBRENDER_SOURCE_DIR=C:\\dev\\public\\engine-revival-workspaces\\brender-v132; cmake --build C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-startup-template-split-2026-07-03 --config Debug --target brender_core_startup_smoke; cmake --build C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-startup-template-split-2026-07-03 --config Debug --target brender_core_smoke; ctest --test-dir C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-startup-template-split-2026-07-03 -C Debug --output-on-failure",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe with Visual Studio 18 2026 Win32 Debug target",
+  "id": "brender-v132-framework-startup-smoke-win32",
+  "next_actions": [
+    "add semantic tests for the portable host and memory fallback functions before using them for rendering behavior",
+    "audit and classify the MSVC warning transcript",
+    "translate deferred FIXED variants and driver targets",
+    "keep generated binaries out of git unless an intentional release package is reviewed"
+  ],
+  "public_notes": "This attempt verifies the first BRender framework startup smoke for the public pilot. The generated harness requires a 32-bit target, builds brender_core_float.lib, brender_core_smoke.exe, and brender_core_startup_smoke.exe, and passes both CTest cases under Visual Studio Win32 Debug. It does not claim x64 portability, full V1DB startup, scene rendering, drivers, warning cleanup, or release packaging.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "The guarded harness configured with -A Win32, built both smoke executables, direct-ran brender_core_smoke.exe and brender_core_startup_smoke.exe with exit 0, and passed 2/2 CTest cases with -C Debug.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-startup-template-split-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-startup-template-split-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-vector-template-split-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-startup-template-split-2026-07-03.txt"
+}

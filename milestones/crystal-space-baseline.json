@@ -1,0 +1,8 @@
+{
+  "id": "crystal-space-baseline",
+  "target_id": "crystal-space",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated Crystal Space source, accession, and task records.",
+  "source_ids": ["crystal-space-github", "crystal-space-sourceforge"]
+}

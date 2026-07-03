@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "studio-lineage-record",
+  "date": "1984-2012",
+  "evidence_quality": "museum-and-trade-report",
+  "id": "psygnosis-studio-liverpool-public-history",
+  "location": "https://www.liverpoolmuseums.org.uk/stories/psygnosis-how-did-liverpool-company-transform-gaming-world-big-question",
+  "notes": "Public-reference-only lineage pointer for Psygnosis and Studio Liverpool. This repo does not mirror games, box art, music, source, or internal production assets.",
+  "origin": "National Museums Liverpool public heritage article",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["national-museums-liverpool-psygnosis-history", "wired-studio-liverpool-closure"],
+  "target_id": "psygnosis-studio-liverpool",
+  "title": "Psygnosis / Studio Liverpool public history"
+}

@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ps2-linux-release-10-official",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "ps2-linux-release-10-official-public-reference",
+  "package_type": "release-record-metadata",
+  "public_notes": "Public-reference accession for the official Linux for PlayStation 2 release record.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["sie-ps2-linux-release-2002"],
+  "storage_class": "external-url"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "brender-source",
+  "target_id": "brender",
+  "artifact_type": "source",
+  "title": "BRender public source release",
+  "origin": "public repository",
+  "redistribution_status": "open",
+  "access_level": "public",
+  "evidence_quality": "public-source",
+  "source_ids": ["brender-github"]
+}

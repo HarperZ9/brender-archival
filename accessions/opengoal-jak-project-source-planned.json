@@ -1,0 +1,11 @@
+{
+  "artifact_id": "opengoal-jak-project-source",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "opengoal-jak-project-source-planned",
+  "package_type": "source-snapshot",
+  "public_notes": "Planned accession for public OpenGOAL source metadata; game assets remain outside this archive.",
+  "rights_review": "open-license",
+  "source_ids": ["opengoal-jak-project-github", "opengoal-license"],
+  "storage_class": "external-url"
+}

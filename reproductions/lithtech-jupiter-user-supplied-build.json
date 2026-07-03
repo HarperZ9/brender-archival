@@ -1,0 +1,42 @@
+{
+  "id": "lithtech-jupiter-user-supplied-build",
+  "target_id": "lithtech-jupiter",
+  "reproduction_type": "user-supplied-historical-build",
+  "status": "planned",
+  "environment": [
+    "legally held local LithTech Jupiter build 51 package outside this public metadata repo",
+    "isolated Windows 2000 or Windows XP-era VM, or equivalent compatibility environment",
+    "Microsoft Visual C++ 6.0 Service Pack 4",
+    "Microsoft DirectX 8.1 SDK retail",
+    "optional 3ds Max 3 or 4 and Maya 3 or 4 environment for exporter/tool validation",
+    "local build transcript and dependency manifest captured as derived metadata"
+  ],
+  "steps": [
+    "verify local package metadata against IA file-manifest hashes before mounting or extraction",
+    "inspect the local package in an isolated environment without committing extracted files",
+    "document directory layout, tool versions, engine/game boundaries, and sample asset boundaries",
+    "prepare the VC6 and DirectX 8.1 build environment described by the development guide",
+    "run the documented batch or workspace build path for the sample game and tools",
+    "capture build logs, missing dependencies, produced binaries, and non-redistributable paths as metadata only",
+    "promote repeatable commands and constraints into the LithTech Jupiter archive packet"
+  ],
+  "expected_outputs": [
+    "local fixity transcript",
+    "VM and toolchain manifest",
+    "directory and component map",
+    "compiler and linker transcript",
+    "dependency gap list",
+    "non-redistributable output inventory",
+    "public-safe reproduction notes"
+  ],
+  "artifact_ids": [
+    "lithtech-jupiter-build51-archive-item",
+    "lithtech-jupiter-development-guide"
+  ],
+  "task_ids": ["lithtech-jupiter-archive-packet"],
+  "public_notes": "Rights-safe reproduction recipe for users who already have a lawful local copy. The public repo records metadata, environment requirements, and build observations only.",
+  "source_ids": [
+    "internet-archive-lithtech-jupiter",
+    "internet-archive-lithtech-jupiter-dev-guide"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "id": "tri-ace-ps2-renderer-baseline",
+  "target_id": "tri-ace-ps2-renderer",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated tri-Ace PS2 renderer source, accession, and task records.",
+  "source_ids": ["tri-ace-pbr-course-notes-2010", "tri-ace-rd-publications-index"]
+}

@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "license-and-api-summary",
+  "evidence_quality": "official-project-documentation",
+  "id": "mesa-license-and-api-summary",
+  "location": "https://www.mesa3d.org/",
+  "notes": "Public summary for Mesa API coverage and license posture. Core Mesa is MIT licensed, while component files may carry their own licenses.",
+  "origin": "Mesa project site and license documentation",
+  "redistribution_status": "open",
+  "source_ids": ["mesa-home", "mesa-license-docs"],
+  "target_id": "mesa",
+  "title": "Mesa API and license summary"
+}

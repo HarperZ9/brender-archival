@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ps2-linux-pal-installation-discs-archive-item",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "ps2-linux-pal-installation-discs-archive-item-metadata-only",
+  "package_type": "archive-item-metadata",
+  "public_notes": "Metadata-only accession for a public archive item; disc images are not held or redistributed here.",
+  "rights_review": "do-not-redistribute",
+  "source_ids": ["internet-archive-ps2-linux-pal-discs"],
+  "storage_class": "not-held"
+}

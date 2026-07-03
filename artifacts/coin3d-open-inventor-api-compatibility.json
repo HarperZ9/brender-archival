@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "compatibility-lineage",
+  "evidence_quality": "project-site",
+  "id": "coin3d-open-inventor-api-compatibility",
+  "location": "https://www.coin3d.org/",
+  "notes": "Public clean-room/API-compatibility record for Coin3D's relationship to the Open Inventor API.",
+  "origin": "Coin3D project site",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["coin3d-api-compatibility"],
+  "target_id": "open-inventor",
+  "title": "Coin3D Open Inventor API compatibility record"
+}

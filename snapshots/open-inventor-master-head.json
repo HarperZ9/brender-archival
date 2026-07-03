@@ -1,0 +1,12 @@
+{
+  "id": "open-inventor-master-head",
+  "artifact_id": "open-inventor-source-release",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/aumuell/open-inventor.git",
+  "ref": "refs/heads/master",
+  "commit": "0813fbbc2e778d31c66325c8561404d26c659c52",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/aumuell/open-inventor.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the Open Inventor source release mirror.",
+  "source_ids": ["open-inventor-github"]
+}

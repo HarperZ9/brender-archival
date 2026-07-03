@@ -1,0 +1,32 @@
+{
+  "artifacts_policy": "The materialized harness, configure tree, build tree, smoke executables, the brender_core_float library, and the generated PPM render output were kept outside this metadata repo. No generated binaries, copied BRender source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-solid-shaded-smoke",
+  "blockers": [
+    "the fill smoke still requires a 32-bit C target because the unreworked period code stores some pointer-shaped values in 32-bit fields",
+    "shading is a portable flat-shaded scanline fill written on top of the pixelmap; it is not BRender's own softrend rasterizer, so texture mapping, Gouraud shading, and hardware-parity output are not covered",
+    "occlusion relies on painter's ordering of a convex model rather than a depth buffer; concave or intersecting geometry is not handled",
+    "lighting is a single fixed directional term computed in the smoke, not the engine light and material pipeline"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness --source-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132 --output-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-fill-smoke-2026-07-03; cmake -S <harness> -B C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-fill-smoke-2026-07-03 -A Win32 -DBRENDER_SOURCE_DIR=C:\\dev\\public\\engine-revival-workspaces\\brender-v132; cmake --build <build> --config Debug --target brender_core_fill_smoke; ctest --test-dir <build> -C Debug --output-on-failure",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe with Visual Studio 18 2026 and MSVC 19.50.35721.0, Win32 Debug target",
+  "id": "brender-v132-portable-core-fill-smoke",
+  "next_actions": [
+    "translate the softrend renderer device so BrZbModelRender produces BRender's own shaded, textured, depth-buffered output",
+    "add a depth buffer to the portable fill path so concave and multi-model scenes composite correctly",
+    "drive lighting from BRender light actors and materials instead of a fixed directional term",
+    "keep generated binaries and PPM output out of git unless an intentional release package is reviewed"
+  ],
+  "public_notes": "This attempt is the first BRender revival milestone that produces a solid, shaded image rather than a wireframe, still without the assembly softrend renderer. The generated harness materializes a brender_core_fill_smoke target that reuses the v1db scene-graph projection (camera and model actors plus BrActorToScreenMatrix4), transforms each vertex to world space with BrMatrix34ApplyP for lighting, computes a per-face world-space normal, flat-shades each triangle by the absolute normal-light dot, and fills the projected triangles with a portable C scanline rasterizer. Faces are drawn back-to-front by average depth so the convex cube composites correctly without a depth buffer. Every pixel is written through the pure-C memory pixelmap primitives; the assembly softrend driver is not used. The program produced 8509 lit pixels across three distinct grey levels (the three visible cube faces) and passed as CTest case 5 of 5 under a Visual Studio Win32 Debug target. It does not claim BRender's own rasterizer, texture mapping, a depth buffer, the engine light and material pipeline, x64 portability, or release packaging.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "The guarded harness configured with -A Win32, built brender_core_float.lib plus all five smoke executables, direct-ran brender_core_fill_smoke.exe with exit 0 (solid flat-shaded cube, 8509 lit pixels, three grey levels), and passed 5/5 CTest cases with -C Debug.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-fill-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-fill-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-fill-smoke-2026-07-03.txt"
+}

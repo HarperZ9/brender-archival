@@ -1,0 +1,7 @@
+{
+  "id": "ps2-prodg-eb-linux-triage",
+  "public_notes": "Create public-safe sources and artifact records for PS2 ProDG / EB / Linux stack.",
+  "status": "seeded",
+  "target_id": "ps2-prodg-eb-linux",
+  "task_type": "triage-public-record"
+}

@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Pixie project metadata, feature summary, activity, operating systems, and LGPL license metadata",
+  "confidence": "high",
+  "id": "pixie-sourceforge",
+  "notes": "SourceForge project page for Pixie, a RenderMan-like photorealistic renderer with programmable shading, raytracing, global illumination, and LGPL metadata.",
+  "publisher": "SourceForge",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-registry",
+  "title": "Pixie SourceForge project page",
+  "url": "https://sourceforge.net/projects/pixie/"
+}

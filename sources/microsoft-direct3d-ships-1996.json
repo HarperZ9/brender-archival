@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Direct3D final release in the DirectX 2 SDK and Windows 95 availability",
+  "confidence": "high",
+  "id": "microsoft-direct3d-ships-1996",
+  "notes": "Official Microsoft press release announcing Direct3D as part of the DirectX 2 SDK on June 13, 1996.",
+  "publisher": "Microsoft",
+  "retrieved_at": "2026-07-02",
+  "source_type": "press-release",
+  "title": "Microsoft ships Direct3D",
+  "url": "https://news.microsoft.com/source/1996/06/13/microsoft-ships-direct3d/"
+}

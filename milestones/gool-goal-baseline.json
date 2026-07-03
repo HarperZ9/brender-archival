@@ -1,0 +1,8 @@
+{
+  "id": "gool-goal-baseline",
+  "target_id": "gool-goal",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated GOOL and GOAL source, accession, and task records.",
+  "source_ids": ["andy-gavin-gool-article", "opengoal-jak-project-github", "opengoal-license"]
+}

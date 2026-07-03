@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "successor-api-release-record",
+  "evidence_quality": "official-press-release",
+  "id": "direct3d-directx2-release-record",
+  "location": "https://news.microsoft.com/source/1996/06/13/microsoft-ships-direct3d/",
+  "notes": "Official public record for the Direct3D final release in the DirectX 2 SDK, used as Reality Lab successor-lineage evidence rather than a Reality Lab source release.",
+  "origin": "Microsoft press release",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["microsoft-direct3d-ships-1996", "otto-berkes-directx-reality-lab-history"],
+  "target_id": "reality-lab",
+  "title": "Direct3D DirectX 2 release record"
+}

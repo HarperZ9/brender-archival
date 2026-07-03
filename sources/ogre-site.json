@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OGRE project overview, platform support, documentation, and MIT license statement",
+  "confidence": "high",
+  "id": "ogre-site",
+  "notes": "Official OGRE site describes platform/language support, documentation, and MIT license posture.",
+  "publisher": "OGRE",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-site",
+  "title": "OGRE project site",
+  "url": "https://www.ogre3d.org/"
+}

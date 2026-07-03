@@ -1,0 +1,15 @@
+{
+  "artifact_id": "openphigs-source-reimplementation",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "openphigs-source-reimplementation-planned",
+  "package_type": "source-snapshot",
+  "public_notes": "Planned accession for public OpenPHIGS metadata; license review is required before mirroring any archival master.",
+  "rights_review": "public-ok",
+  "source_ids": [
+    "sourceforge-open-phigs",
+    "github-cern-openphigs",
+    "github-fbradasc-openphigs-license"
+  ],
+  "storage_class": "external-url"
+}

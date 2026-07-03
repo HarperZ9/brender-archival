@@ -1,0 +1,14 @@
+{
+  "id": "brender",
+  "name": "Argonaut BRender",
+  "category": "engine",
+  "era": "1990s",
+  "platforms": ["DOS", "Windows", "PlayStation"],
+  "priority": 89,
+  "revival_lane": "critical-edition",
+  "rights_posture": "open",
+  "summary": "MIT-licensed public source release suitable for the first critical edition lane.",
+  "public_status": "seeded",
+  "restricted_status": "none-known",
+  "related_targets": []
+}

@@ -1,0 +1,8 @@
+{
+  "id": "renderman-interface-baseline",
+  "target_id": "renderman-interface",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated RenderMan Interface source, accession, and task records.",
+  "source_ids": ["pixar-renderman-interface-ri-docs", "mit-rispec31-pdf"]
+}

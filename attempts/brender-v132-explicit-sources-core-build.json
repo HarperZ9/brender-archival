@@ -1,0 +1,31 @@
+{
+  "artifacts_policy": "The materialized harness, configure tree, build tree, compiler transcripts, and brender_core_float.lib were kept outside this metadata repo. No generated binaries, copied source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-build",
+  "blockers": [
+    "MSVC x64 build emits pointer-truncation, enum-conversion, const-qualifier, and duplicate-symbol warnings that need portability audit",
+    "no runtime or link smoke test is claimed",
+    "drivers and deferred FIXED variants are not built yet"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "cmake -S C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-explicit-sources-2026-07-03 -B C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-explicit-sources-2026-07-03 -DBRENDER_SOURCE_DIR=C:\\dev\\public\\engine-revival-workspaces\\brender-v132; cmake --build C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-explicit-sources-2026-07-03 --target brender_core_float",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe",
+  "id": "brender-v132-explicit-sources-core-build",
+  "next_actions": [
+    "audit and classify the x64 MSVC warning transcript",
+    "add a minimal link or runtime smoke test around the produced core library",
+    "translate deferred FIXED variants and driver targets",
+    "keep generated binaries out of git unless an intentional release package is reviewed"
+  ],
+  "public_notes": "This attempt verifies that explicit period OBJS_C source selection removes the prior source-glob blocker and produces the FLOAT core static library. It does not claim runtime execution, warning cleanup, packaging, drivers, or FIXED variants.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "The explicit-source harness configured with Visual Studio 18 2026 and built brender_core_float.lib with MSVC 19.50.35721.0 in an external build tree.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-explicit-sources-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-explicit-sources-2026-07-03.txt"
+}

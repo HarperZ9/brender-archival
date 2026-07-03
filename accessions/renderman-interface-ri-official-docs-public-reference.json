@@ -1,0 +1,11 @@
+{
+  "id": "renderman-interface-ri-official-docs-public-reference",
+  "artifact_id": "renderman-interface-ri-official-docs",
+  "package_type": "official-documentation-reference-metadata",
+  "capture_status": "metadata-only",
+  "storage_class": "external-url",
+  "fixity_status": "not-applicable",
+  "rights_review": "public-reference-only",
+  "public_notes": "Metadata-only public reference for Pixar's RenderMan Interface documentation page; no documentation content is mirrored.",
+  "source_ids": ["pixar-renderman-interface-ri-docs"]
+}

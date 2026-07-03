@@ -1,0 +1,12 @@
+{
+  "id": "brender-v132-main-head",
+  "artifact_id": "brender-v132-source",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/foone/BRender-v1.3.2.git",
+  "ref": "refs/heads/main",
+  "commit": "d88d0ed41122664b9781015b517db64353e16f19",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/foone/BRender-v1.3.2.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream main branch head for the BRender v1.3.2 source repository.",
+  "source_ids": ["foone-brender-v132", "blazingrender-index"]
+}

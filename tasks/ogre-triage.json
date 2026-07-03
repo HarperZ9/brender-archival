@@ -1,0 +1,7 @@
+{
+  "id": "ogre-triage",
+  "public_notes": "Create public-safe sources and artifact records for OGRE.",
+  "status": "seeded",
+  "target_id": "ogre",
+  "task_type": "triage-public-record"
+}

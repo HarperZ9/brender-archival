@@ -1,0 +1,7 @@
+{
+  "id": "tri-ace-ps2-renderer-triage",
+  "public_notes": "Create public-safe sources and artifact records for tri-Ace PS2 renderer.",
+  "status": "seeded",
+  "target_id": "tri-ace-ps2-renderer",
+  "task_type": "triage-public-record"
+}

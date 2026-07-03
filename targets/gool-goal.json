@@ -1,0 +1,14 @@
+{
+  "category": "engine-language",
+  "era": "1980s-2000s",
+  "id": "gool-goal",
+  "name": "GOOL and GOAL",
+  "platforms": ["PlayStation", "PlayStation 2", "Crash Bandicoot", "Jak and Daxter", "OpenGOAL"],
+  "priority": 80,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["ps1-programmer-tool", "ps2-prodg-eb-linux"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "tooling-only-legal-copy-assets",
+  "rights_posture": "clean-room-only",
+  "summary": "Public records now track Andy Gavin's GOOL article and OpenGOAL's GOAL compiler/decompiler compatibility lane for legal-copy asset workflows."
+}

@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGOAL repository license metadata",
+  "confidence": "high",
+  "id": "opengoal-license",
+  "notes": "Raw LICENSE file for the OpenGOAL repository, recording the public license posture for project tooling.",
+  "publisher": "GitHub / OpenGOAL Team",
+  "retrieved_at": "2026-07-02",
+  "source_type": "license",
+  "title": "OpenGOAL repository license",
+  "url": "https://raw.githubusercontent.com/open-goal/jak-project/master/LICENSE"
+}

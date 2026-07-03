@@ -1,0 +1,14 @@
+{
+  "access_level": "metadata-only",
+  "artifact_type": "disc-metadata",
+  "evidence_quality": "disc-database-metadata",
+  "id": "ps1-runtime-library-33-redump-entry",
+  "location": "https://redump.org/disc/50387/",
+  "notes": "Metadata-only entry for Runtime Library Version 3.3. This repo does not mirror or redistribute disc images.",
+  "origin": "Redump disc metadata",
+  "redistribution_status": "do-not-redistribute",
+  "source_ids": ["redump-ps1-runtime-library-33"],
+  "target_id": "ps1-programmer-tool",
+  "title": "PlayStation Programmer Tool Runtime Library Version 3.3 Redump entry",
+  "version": "3.3"
+}

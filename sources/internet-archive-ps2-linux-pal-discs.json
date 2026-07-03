@@ -1,0 +1,11 @@
+{
+  "claim_scope": "PS2 Linux PAL installation disc archive item metadata",
+  "confidence": "moderate",
+  "id": "internet-archive-ps2-linux-pal-discs",
+  "notes": "Internet Archive item metadata for PAL PS2 Linux installation discs. Metadata-only record; this repo does not mirror disc images.",
+  "publisher": "Internet Archive",
+  "retrieved_at": "2026-07-02",
+  "source_type": "archive-item",
+  "title": "PS2 Linux PAL installation discs archive item",
+  "url": "https://archive.org/details/disc-1_20220424"
+}

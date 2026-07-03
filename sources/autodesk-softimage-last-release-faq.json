@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Softimage 2015 last-release notice, migration options, and support/hot-fix period through April 30, 2016",
+  "confidence": "high",
+  "id": "autodesk-softimage-last-release-faq",
+  "notes": "Official Autodesk PDF used to anchor the public transition and retirement record. The repo stores only metadata and the URL.",
+  "publisher": "Autodesk",
+  "retrieved_at": "2026-07-02",
+  "source_type": "vendor-faq-pdf",
+  "title": "Autodesk Softimage Last Release Announcement - Update May 20th, 2014",
+  "url": "https://damassets.autodesk.net/content/dam/autodesk/www/products/autodesk-softimage/docs/pdf/Softimage%20Last%20Release%20Announcement_FAQ_UPDATE_MAY_20.pdf"
+}

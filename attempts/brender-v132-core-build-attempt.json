@@ -1,0 +1,30 @@
+{
+  "artifacts_policy": "The build tree and compiler transcript were kept outside this metadata repo. No generated binaries, copied source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-build",
+  "blockers": [
+    "x64 MSVC rejects legacy inline x86 assembly in inc/mscifix.h",
+    "first failing compile path observed through core/fmt/savescr.c",
+    "portable replacement or 32-bit compatibility strategy is required before claiming a core library build"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "cmake --build C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-2026-07-03b --target brender_core_float",
+  "exit_code": 1,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe",
+  "id": "brender-v132-core-build-attempt",
+  "next_actions": [
+    "decide whether the next harness target should use a 32-bit MSVC configuration or a clean portable replacement for mscifix.h helpers",
+    "record a narrow compatibility patch plan before editing public source",
+    "rerun brender_core_float after the inline assembly blocker is isolated"
+  ],
+  "public_notes": "This is the first compiler transcript for the portable BRender core harness. It is intentionally recorded as a failed attempt with a specific blocker rather than as a completed build.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "The brender_core_float target reached the compiler and failed in inc/mscifix.h because x64 MSVC does not support the legacy __asm blocks used by the inspected source path.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "failed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-2026-07-03.txt"
+}

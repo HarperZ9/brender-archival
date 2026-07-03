@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "validation-suite-publication",
+  "date": "1994-04-01",
+  "evidence_quality": "government-publication-metadata",
+  "id": "phigs-nist-validation-tests",
+  "location": "https://www.nist.gov/publications/users-guide-phigs-validation-tests-version-21",
+  "notes": "Public NIST publication pointer for PHIGS validation tests and conformance history. The publication is cited, not mirrored.",
+  "origin": "NIST publication metadata",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["nist-phigs-validation-guide"],
+  "target_id": "phigs",
+  "title": "NIST PHIGS validation tests public record"
+}

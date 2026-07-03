@@ -1,0 +1,7 @@
+{
+  "id": "open-inventor-triage",
+  "public_notes": "Create public-safe sources and artifact records for Open Inventor.",
+  "status": "seeded",
+  "target_id": "open-inventor",
+  "task_type": "triage-public-record"
+}

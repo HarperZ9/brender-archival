@@ -1,0 +1,43 @@
+{
+  "id": "pixie-renderer-source-build",
+  "target_id": "pixie",
+  "reproduction_type": "source-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public Pixie source mirror at the recorded pixie-master-head commit",
+    "host compiler and renderer dependencies selected from public project metadata and repository files",
+    "public/open RenderMan-compatible validation inputs or procedural scenes",
+    "no private production scene assets committed to this repository",
+    "local build and render transcript captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public Pixie source mirror listed in the artifact record",
+    "verify the local checkout commit against the pixie-master-head snapshot record",
+    "use SourceForge and repository metadata to identify platform, license, and dependency assumptions",
+    "configure and compile the renderer with only public/open dependencies",
+    "run a minimal public-safe render or command-line smoke test when available",
+    "record build commands, diagnostics, produced outputs, test notes, and missing dependencies as public metadata",
+    "promote repeatable commands and renderer-output notes into the Pixie archive packet"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "build environment manifest",
+    "compiler transcript",
+    "renderer output inventory",
+    "public-safe render smoke-test notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "pixie-renderer-source-mirror",
+    "pixie-sourceforge-project-record"
+  ],
+  "task_ids": [
+    "pixie-triage"
+  ],
+  "public_notes": "Planned reproduction recipe for rebuilding the public Pixie renderer source mirror and recording renderer-output constraints.",
+  "source_ids": [
+    "pixie-github-mirror",
+    "pixie-sourceforge",
+    "renderpixie-summary"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenPHIGS repository with OpenGL backend and data-preservation extensions",
+  "confidence": "high",
+  "id": "github-cern-openphigs",
+  "notes": "CERN public repository used as a data-preservation-oriented OpenPHIGS lineage pointer.",
+  "publisher": "CERN on GitHub",
+  "retrieved_at": "2026-07-02",
+  "source_type": "source-repository",
+  "title": "CERN/OpenPHIGS",
+  "url": "https://github.com/CERN/OpenPHIGS"
+}

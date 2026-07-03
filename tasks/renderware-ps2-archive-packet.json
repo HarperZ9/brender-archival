@@ -1,0 +1,11 @@
+{
+  "id": "renderware-ps2-archive-packet",
+  "target_id": "renderware-ps2",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the RenderWare PS2 packet around public release-note metadata, SDK package records, version numbers, plugin names, and clean-room compatibility leads.",
+  "inputs": ["PS2 Gold release notes", "SDK 3.10 metadata", "RenderWare lineage sources"],
+  "outputs": ["standalone archival packet", "artifact graph", "clean-room compatibility map"],
+  "blocked_by": ["renderware-ps2-triage"],
+  "source_ids": ["internet-archive-renderware-ps2-gold-notes", "internet-archive-rw310-ps2", "strong-gene-buckle-renderware"]
+}

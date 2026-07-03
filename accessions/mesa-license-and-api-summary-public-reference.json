@@ -1,0 +1,11 @@
+{
+  "artifact_id": "mesa-license-and-api-summary",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "mesa-license-and-api-summary-public-reference",
+  "package_type": "license-and-api-metadata",
+  "public_notes": "Public-reference accession for Mesa API and license metadata.",
+  "rights_review": "open-license",
+  "source_ids": ["mesa-home", "mesa-license-docs"],
+  "storage_class": "external-url"
+}

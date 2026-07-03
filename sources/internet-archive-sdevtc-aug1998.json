@@ -1,0 +1,11 @@
+{
+  "claim_scope": "SDevTC development environment manual metadata and tool list",
+  "confidence": "high",
+  "id": "internet-archive-sdevtc-aug1998",
+  "notes": "Internet Archive record for the August 1998 SDevTC Development Environment manual, describing the Sony development toolchain formerly known as Psy-Q. Public-reference-only; this repo does not mirror the manual.",
+  "publisher": "Internet Archive",
+  "retrieved_at": "2026-07-02",
+  "source_type": "manual-archive",
+  "title": "SDevTC Development Environment manual archive item",
+  "url": "https://archive.org/details/SCE-SDevTC-Aug1998"
+}

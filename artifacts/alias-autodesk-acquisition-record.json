@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "acquisition-lineage-record",
+  "date": "2006-01-10",
+  "evidence_quality": "official-press-release",
+  "id": "alias-autodesk-acquisition-record",
+  "location": "https://investors.autodesk.com/news-releases/news-release-details/autodesk-completes-acquisition-alias",
+  "notes": "Public metadata anchor for Alias, Maya, MotionBuilder, FBX, and StudioTools entering Autodesk's DCC portfolio.",
+  "origin": "Autodesk Investor Relations press release",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["autodesk-alias-acquisition-2006"],
+  "target_id": "softimage-alias-bridge",
+  "title": "Alias Autodesk acquisition record"
+}

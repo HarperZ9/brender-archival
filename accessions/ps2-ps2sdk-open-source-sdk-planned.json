@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ps2-ps2sdk-open-source-sdk",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "ps2-ps2sdk-open-source-sdk-planned",
+  "package_type": "source-snapshot",
+  "public_notes": "Planned accession for public PS2SDK source metadata; this is not a ProDG mirror.",
+  "rights_review": "open-license",
+  "source_ids": ["ps2dev-ps2sdk-github", "ps2dev-site"],
+  "storage_class": "external-url"
+}

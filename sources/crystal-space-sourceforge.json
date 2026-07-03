@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Crystal Space project registry, platform support, OpenGL renderer, and feature summary",
+  "confidence": "high",
+  "id": "crystal-space-sourceforge",
+  "notes": "SourceForge project page describes Crystal Space as an open-source 3D SDK for Unix, Windows, and Mac OS X with OpenGL rendering and engine features.",
+  "publisher": "SourceForge",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-registry",
+  "title": "Crystal Space SourceForge project record",
+  "url": "https://sourceforge.net/projects/crystal/"
+}

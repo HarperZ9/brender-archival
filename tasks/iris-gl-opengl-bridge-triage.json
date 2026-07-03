@@ -1,0 +1,7 @@
+{
+  "id": "iris-gl-opengl-bridge-triage",
+  "public_notes": "Create public-safe sources and artifact records for IRIS GL / OpenGL bridge.",
+  "status": "seeded",
+  "target_id": "iris-gl-opengl-bridge",
+  "task_type": "triage-public-record"
+}

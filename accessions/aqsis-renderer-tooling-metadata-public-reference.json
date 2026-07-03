@@ -1,0 +1,11 @@
+{
+  "artifact_id": "aqsis-renderer-tooling-metadata",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "aqsis-renderer-tooling-metadata-public-reference",
+  "package_type": "tooling-metadata",
+  "public_notes": "Public-reference accession for Aqsis tooling metadata; archival master not stored in git.",
+  "rights_review": "open-license",
+  "source_ids": ["aqsis-github"],
+  "storage_class": "external-url"
+}

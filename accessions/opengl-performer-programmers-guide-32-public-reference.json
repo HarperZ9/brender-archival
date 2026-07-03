@@ -1,0 +1,11 @@
+{
+  "artifact_id": "opengl-performer-programmers-guide-32",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "opengl-performer-programmers-guide-32-public-reference",
+  "package_type": "manual-reference-metadata",
+  "public_notes": "Public-reference accession for OpenGL Performer Programmer's Guide metadata; manual PDF is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["sgi-opengl-performer-programmers-guide-32"],
+  "storage_class": "external-url"
+}

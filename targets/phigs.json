@@ -1,0 +1,14 @@
+{
+  "category": "graphics-standard",
+  "era": "1980s-2000s",
+  "id": "phigs",
+  "name": "PHIGS",
+  "platforms": ["PHIGS", "PHIGS+", "ISO/IEC 9592", "ISO/IEC 9593", "PEX", "OpenPHIGS", "OpenGL"],
+  "priority": 62,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["iris-gl-opengl-bridge", "open-inventor"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "upstream-dependency-atlas",
+  "rights_posture": "public-reference-only",
+  "summary": "Public standards and validation-history record for PHIGS, with OpenPHIGS reimplementation pointers for revival research under license review."
+}

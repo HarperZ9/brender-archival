@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Mesa build prerequisites, Meson/Ninja setup commands, install flow, and local-run instructions",
+  "confidence": "high",
+  "id": "mesa-build-docs",
+  "notes": "Official Mesa documentation lists Meson as the build system, documents common prerequisites, and gives the basic meson setup, compile, install, and devenv commands.",
+  "publisher": "Mesa 3D",
+  "retrieved_at": "2026-07-03",
+  "source_type": "build-documentation",
+  "title": "Mesa compiling and installing documentation",
+  "url": "https://docs.mesa3d.org/install.html"
+}

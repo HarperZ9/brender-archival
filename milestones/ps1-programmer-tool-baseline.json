@@ -1,0 +1,8 @@
+{
+  "id": "ps1-programmer-tool-baseline",
+  "target_id": "ps1-programmer-tool",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated PS1 Programmer's Tool source, accession, and task records.",
+  "source_ids": ["internet-archive-net-yaroze-documentation", "psnoobsdk-github", "redump-ps1-runtime-library-33"]
+}

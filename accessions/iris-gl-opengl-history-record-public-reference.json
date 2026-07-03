@@ -1,0 +1,11 @@
+{
+  "artifact_id": "iris-gl-opengl-history-record",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "iris-gl-opengl-history-record-public-reference",
+  "package_type": "api-lineage-metadata",
+  "public_notes": "Public-reference accession for IRIS GL to OpenGL lineage metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["khronos-opengl-history"],
+  "storage_class": "external-url"
+}

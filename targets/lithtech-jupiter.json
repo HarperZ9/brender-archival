@@ -1,0 +1,20 @@
+{
+  "category": "game-engine",
+  "era": "2000s",
+  "id": "lithtech-jupiter",
+  "name": "LithTech Jupiter",
+  "platforms": [
+    "Windows PC",
+    "DirectX 8.1",
+    "Visual C++ 6.0",
+    "3ds Max",
+    "Maya"
+  ],
+  "priority": 79,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["reality-lab"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "user-supplied-reproduction",
+  "rights_posture": "rights-holder-needed",
+  "summary": "Public records now track the LithTech Jupiter build 51 archive item, development guide metadata, IA file fixity, and a rights-safe user-supplied build lane without mirroring engine files, game assets, or proprietary tools."
+}

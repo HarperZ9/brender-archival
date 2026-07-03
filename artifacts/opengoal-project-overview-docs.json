@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "toolchain-documentation",
+  "evidence_quality": "public-project-documentation",
+  "id": "opengoal-project-overview-docs",
+  "location": "https://github.com/open-goal/jak-project/blob/master/docs/project-overview.md",
+  "notes": "Public project documentation for OpenGOAL compiler, decompiler, source, and runtime structure.",
+  "origin": "OpenGOAL project documentation",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["opengoal-project-overview", "opengoal-decompiling-getting-started"],
+  "target_id": "gool-goal",
+  "title": "OpenGOAL project overview documentation"
+}

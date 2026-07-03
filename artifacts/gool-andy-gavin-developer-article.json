@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "developer-article",
+  "evidence_quality": "developer-primary-source",
+  "id": "gool-andy-gavin-developer-article",
+  "location": "https://all-things-andy-gavin.com/tag/gool/",
+  "notes": "Public-reference-only article for GOOL history and design intent. This repo does not mirror article text beyond short metadata.",
+  "origin": "developer-authored public article",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["andy-gavin-gool-article"],
+  "target_id": "gool-goal",
+  "title": "Andy Gavin GOOL developer article"
+}

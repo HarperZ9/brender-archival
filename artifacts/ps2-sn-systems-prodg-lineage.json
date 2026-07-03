@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "toolchain-lineage",
+  "evidence_quality": "official-press-release",
+  "id": "ps2-sn-systems-prodg-lineage",
+  "location": "https://sonyinteractive.com/en/press-releases/2005/sony-computer-entertainment-to-acquire-sn-systems/",
+  "notes": "Public lineage record for SN Systems, ProDG, and PlayStation 2 developer tooling. This does not include proprietary tool binaries.",
+  "origin": "Sony Interactive Entertainment press release",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["sie-sn-systems-acquisition-2005"],
+  "target_id": "ps2-prodg-eb-linux",
+  "title": "SN Systems ProDG toolchain lineage"
+}

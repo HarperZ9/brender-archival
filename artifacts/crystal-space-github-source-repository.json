@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-repository",
+  "evidence_quality": "public-source",
+  "id": "crystal-space-github-source-repository",
+  "location": "https://github.com/crystalspace/CS",
+  "notes": "Public source repository for Crystal Space with LGPL license metadata and documentation pointers.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["crystal-space-github", "crystal-space-sourceforge"],
+  "target_id": "crystal-space",
+  "title": "Crystal Space source repository"
+}

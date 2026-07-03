@@ -1,0 +1,14 @@
+{
+  "category": "graphics-library",
+  "era": "1980s-2000s",
+  "id": "open-inventor",
+  "name": "Open Inventor",
+  "platforms": ["IRIX", "Linux", "macOS", "OpenGL", "X11", "Motif"],
+  "priority": 72,
+  "public_status": "curated-public-sources",
+  "related_targets": ["opengl-performer", "iris-gl-opengl-bridge"],
+  "restricted_status": "none-known",
+  "revival_lane": "public-source-preservation",
+  "rights_posture": "open",
+  "summary": "Public records now track the SGI-origin Open Inventor source release, build notes, and Coin3D's independent API-compatibility lane."
+}

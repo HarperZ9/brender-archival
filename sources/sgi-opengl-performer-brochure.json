@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGL Performer feature and interoperability brochure metadata",
+  "confidence": "moderate",
+  "id": "sgi-opengl-performer-brochure",
+  "notes": "Public PDF brochure describing OpenGL Performer interoperability with OpenGL and SGI visualization toolkits.",
+  "publisher": "Silicon Graphics / Jurassic.nl mirror",
+  "retrieved_at": "2026-07-02",
+  "source_type": "product-brochure-pdf",
+  "title": "OpenGL Performer product brochure",
+  "url": "https://ftp.jurassic.nl/pub/irix/press/3381.pdf"
+}

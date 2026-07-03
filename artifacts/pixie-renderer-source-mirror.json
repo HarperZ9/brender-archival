@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-mirror",
+  "evidence_quality": "public-source-mirror",
+  "id": "pixie-renderer-source-mirror",
+  "location": "https://github.com/daliborgaric/pixie",
+  "notes": "Public source mirror for Pixie. SourceForge remains the primary registry record for the project.",
+  "origin": "public GitHub source mirror",
+  "redistribution_status": "open",
+  "source_ids": ["pixie-github-mirror", "pixie-sourceforge"],
+  "target_id": "pixie",
+  "title": "Pixie renderer source mirror"
+}

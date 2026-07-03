@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Open-source PS2SDK libraries and homebrew development environment",
+  "confidence": "high",
+  "id": "ps2dev-ps2sdk-github",
+  "notes": "Public repository for PS2SDK, an open-source library set for PlayStation 2 application and homebrew development.",
+  "publisher": "GitHub / ps2dev",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "PS2SDK source repository",
+  "url": "https://github.com/ps2dev/ps2sdk"
+}

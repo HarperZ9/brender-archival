@@ -1,0 +1,11 @@
+{
+  "artifact_id": "open-inventor-readme-first-build-notes",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "open-inventor-readme-first-build-notes-public-reference",
+  "package_type": "build-notes-metadata",
+  "public_notes": "Public-reference accession for Open Inventor README.FIRST build notes.",
+  "rights_review": "open-license",
+  "source_ids": ["open-inventor-readme-first"],
+  "storage_class": "external-url"
+}

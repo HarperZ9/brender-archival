@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "clean-room-sdk",
+  "evidence_quality": "public-source",
+  "id": "ps1-psnoobsdk-open-source-sdk",
+  "location": "https://github.com/Lameguy64/PSn00bSDK/",
+  "notes": "Open-source compatibility lane for PS1 development. This is not a Sony SDK mirror.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["psnoobsdk-github"],
+  "target_id": "ps1-programmer-tool",
+  "title": "PSn00bSDK open-source PS1 SDK"
+}

@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Quesa source repository, QuickDraw 3D API reimplementation, platforms, and BSD license metadata",
+  "confidence": "high",
+  "id": "quesa-github",
+  "notes": "Public repository for Quesa, described as a macOS and Windows 3D rendering and scene graph library begun as a reimplementation of Apple's QuickDraw 3D APIs.",
+  "publisher": "GitHub / James W. Walker",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "Quesa source repository",
+  "url": "https://github.com/jwwalker/Quesa"
+}

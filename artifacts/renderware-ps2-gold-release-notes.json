@@ -1,0 +1,18 @@
+{
+  "access_level": "public",
+  "artifact_type": "release-notes",
+  "date": "2000-01",
+  "evidence_quality": "public-ocr-and-institutional-finding-aid",
+  "id": "renderware-ps2-gold-release-notes",
+  "location": "https://archive.org/stream/render-ware-3-ps-2-gold-1.3-update-release-notes/RenderWare3%20%28PS2%20Gold%20-%201.3%20update%29%20Release%20Notes_djvu.txt",
+  "notes": "Public reference record only. The release notes state the underlying software was furnished under license or NDA.",
+  "origin": "Criterion release notes mirrored as public OCR text",
+  "redistribution_status": "public-reference-only",
+  "source_ids": [
+    "internet-archive-renderware-ps2-gold-notes",
+    "strong-gene-buckle-renderware"
+  ],
+  "target_id": "renderware-ps2",
+  "title": "RenderWare3 PS2 Gold 1.3 update release notes",
+  "version": "PS2 Gold 1.3 update"
+}

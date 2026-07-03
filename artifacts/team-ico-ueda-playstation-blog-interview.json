@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "oral-history-interview",
+  "date": "2010-09-24",
+  "evidence_quality": "official-interview",
+  "id": "team-ico-ueda-playstation-blog-interview",
+  "location": "https://blog.playstation.com/2010/09/24/team-ico-talks-fumito-ueda-on-the-last-guardian-shadow-of-the-colossus/",
+  "notes": "Official interview pointer for public oral-history work around Fumito Ueda, The Last Guardian, Ico, and Shadow of the Colossus.",
+  "origin": "PlayStation Blog interview",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["playstation-blog-team-ico-ueda-interview"],
+  "target_id": "japan-studio-team-ico",
+  "title": "Fumito Ueda PlayStation Blog interview"
+}

@@ -1,0 +1,14 @@
+{
+  "category": "dcc-pipeline",
+  "era": "1980s-2000s",
+  "id": "softimage-alias-bridge",
+  "name": "Softimage / Alias bridge",
+  "platforms": ["Softimage 3D", "Softimage XSI", "Alias", "Maya", "MotionBuilder", "FBX", "Windows NT", "IRIX"],
+  "priority": 71,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["iris-gl-opengl-bridge", "opengl-performer"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "pipeline-history",
+  "rights_posture": "public-reference-only",
+  "summary": "Public DCC pipeline lineage for Softimage and Alias through Microsoft, Avid, Autodesk, Maya, FBX, and Softimage's final-release transition."
+}

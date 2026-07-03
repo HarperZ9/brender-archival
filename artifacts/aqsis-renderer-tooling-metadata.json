@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "tooling-metadata",
+  "evidence_quality": "public-readme-metadata",
+  "id": "aqsis-renderer-tooling-metadata",
+  "location": "https://github.com/aqsis/aqsis",
+  "notes": "Public metadata for Aqsis tooling including renderer, shader compiler, texture preprocessor, RIB processor, framebuffer, and developer libraries.",
+  "origin": "Aqsis repository README",
+  "redistribution_status": "open",
+  "source_ids": ["aqsis-github"],
+  "target_id": "aqsis",
+  "title": "Aqsis renderer tooling metadata"
+}

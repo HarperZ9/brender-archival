@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "studio-closure-record",
+  "date": "2012-08-22",
+  "evidence_quality": "public-sony-statement-in-trade-coverage",
+  "id": "psygnosis-studio-liverpool-closure-report",
+  "location": "https://www.gamedeveloper.com/business/sony-closes-i-wipeout-i-s-studio-liverpool",
+  "notes": "Closure and continuity pointer for public archive context. It records the public statement and facility distinction without storing proprietary studio material.",
+  "origin": "Game Developer public trade report",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["gamedeveloper-studio-liverpool-closure", "wired-studio-liverpool-closure"],
+  "target_id": "psygnosis-studio-liverpool",
+  "title": "Studio Liverpool closure public report"
+}

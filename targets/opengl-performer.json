@@ -1,0 +1,14 @@
+{
+  "category": "graphics-library",
+  "era": "1980s-2000s",
+  "id": "opengl-performer",
+  "name": "OpenGL Performer",
+  "platforms": ["IRIX", "Linux", "Windows", "OpenGL", "SGI visual simulation"],
+  "priority": 76,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["open-inventor", "iris-gl-opengl-bridge"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "partial-public-archive",
+  "rights_posture": "public-reference-only",
+  "summary": "Public records now track OpenGL Performer manuals and SGI feature/interoperability material as public-reference-only documentation anchors."
+}

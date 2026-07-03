@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "trade-press-product-record",
+  "evidence_quality": "trade-press-archive",
+  "id": "reality-lab-release-2-public-report",
+  "location": "https://www.techmonitor.ai/technology/rendermorphics_to_release_new_reality_lab",
+  "notes": "Public report describing Reality Lab release-two platform plans, drivers, object-oriented API framing, and real-time rendering features.",
+  "origin": "Computer Business Review / Tech Monitor archive",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["techmonitor-reality-lab-release-1995"],
+  "target_id": "reality-lab",
+  "title": "RenderMorphics Reality Lab release-two public report"
+}

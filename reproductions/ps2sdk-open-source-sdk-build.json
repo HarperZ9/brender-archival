@@ -1,0 +1,48 @@
+{
+  "id": "ps2sdk-open-source-sdk-build",
+  "target_id": "ps2-prodg-eb-linux",
+  "reproduction_type": "open-source-sdk-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public PS2SDK repository at the recorded ps2sdk-master-head commit",
+    "host compiler and toolchain prerequisites selected from public ps2dev documentation",
+    "no ProDG, proprietary Sony SDK files, or private game assets committed to this repository",
+    "public-safe sample program or toolchain smoke test",
+    "local build transcript and compatibility notes captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public PS2SDK source repository listed in the artifact record",
+    "verify the local checkout commit against the ps2sdk-master-head snapshot record",
+    "use ps2dev public documentation to identify toolchain, library, and environment assumptions",
+    "build the open-source SDK components without using ProDG or proprietary Sony SDK material",
+    "compile a minimal public-safe sample when available",
+    "record build commands, diagnostics, produced libraries or tools, and compatibility boundaries as public metadata",
+    "promote repeatable commands into the PS2 ProDG / EB / Linux clean-room compatibility packet"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "open-source SDK build environment manifest",
+    "compiler transcript",
+    "library and tool inventory",
+    "public-safe sample-build notes",
+    "ProDG and proprietary-boundary notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "ps2-ps2sdk-open-source-sdk",
+    "ps2-linux-release-10-official",
+    "ps2-linux-pal-installation-discs-archive-item",
+    "ps2-sn-systems-prodg-lineage"
+  ],
+  "task_ids": [
+    "ps2-prodg-eb-linux-archive-packet"
+  ],
+  "public_notes": "Planned reproduction recipe for building public PS2SDK as an open-source compatibility lane while keeping ProDG and proprietary Sony material out of the repo.",
+  "source_ids": [
+    "ps2dev-ps2sdk-github",
+    "ps2dev-site",
+    "sie-ps2-linux-release-2002",
+    "internet-archive-ps2-linux-pal-discs",
+    "sie-sn-systems-acquisition-2005"
+  ]
+}

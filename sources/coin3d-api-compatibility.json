@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Coin3D independent Open Inventor API compatibility and clean-room distinction",
+  "confidence": "high",
+  "id": "coin3d-api-compatibility",
+  "notes": "Coin3D site states Coin is based on the Open Inventor API but was independently developed before SGI Open Inventor became open source and does not share code.",
+  "publisher": "Coin3D",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-site",
+  "title": "Coin3D API compatibility statement",
+  "url": "https://www.coin3d.org/"
+}

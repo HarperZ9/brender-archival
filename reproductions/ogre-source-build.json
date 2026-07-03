@@ -1,0 +1,44 @@
+{
+  "id": "ogre-source-build",
+  "target_id": "ogre",
+  "reproduction_type": "source-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public OGRE repository at the recorded ogre-master-head commit",
+    "C++ compiler and build generator selected from the public repository documentation",
+    "public/open rendering backend dependencies only",
+    "public-safe sample scene or headless component smoke test",
+    "local build transcript and dependency manifest captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public OGRE source repository listed in the artifact record",
+    "verify the local checkout commit against the ogre-master-head snapshot record",
+    "inspect repository build documentation, license notes, and configuration files",
+    "configure a clean build with only public/open dependencies and explicitly record selected render backends",
+    "compile the engine libraries, tools, and sample-capable components exposed by the public source tree",
+    "run a minimal public-safe component or sample smoke test when available",
+    "record build commands, diagnostics, dependency gaps, produced outputs, and sample constraints as public metadata"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "build configuration transcript",
+    "compiler transcript",
+    "engine library and tool inventory",
+    "render backend selection notes",
+    "public-safe smoke-test notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "ogre-source-repository",
+    "ogre-licensing-record"
+  ],
+  "task_ids": [
+    "ogre-triage"
+  ],
+  "public_notes": "Planned reproduction recipe for rebuilding OGRE from the public source snapshot and preserving renderer/backend build choices.",
+  "source_ids": [
+    "ogre-github",
+    "ogre-licensing",
+    "ogre-site"
+  ]
+}

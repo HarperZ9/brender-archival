@@ -1,0 +1,7 @@
+{
+  "id": "opengl-performer-triage",
+  "public_notes": "Create public-safe sources and artifact records for OpenGL Performer.",
+  "status": "seeded",
+  "target_id": "opengl-performer",
+  "task_type": "triage-public-record"
+}

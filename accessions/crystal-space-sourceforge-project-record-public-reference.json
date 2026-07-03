@@ -1,0 +1,11 @@
+{
+  "artifact_id": "crystal-space-sourceforge-project-record",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "crystal-space-sourceforge-project-record-public-reference",
+  "package_type": "project-registry-metadata",
+  "public_notes": "Public-reference accession for Crystal Space SourceForge project metadata.",
+  "rights_review": "open-license",
+  "source_ids": ["crystal-space-sourceforge"],
+  "storage_class": "external-url"
+}

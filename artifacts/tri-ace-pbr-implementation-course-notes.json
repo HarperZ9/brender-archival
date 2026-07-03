@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "course-notes",
+  "evidence_quality": "public-course-notes",
+  "id": "tri-ace-pbr-implementation-course-notes",
+  "location": "https://research.tri-ace.com/Data/course_note_practical_implementation_at_triace.pdf",
+  "notes": "Public-reference-only successor-lineage record for tri-Ace rendering research by Yoshiharu Gotanda. This repo does not mirror the PDF.",
+  "origin": "tri-Ace public course notes",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["tri-ace-pbr-course-notes-2010"],
+  "target_id": "tri-ace-ps2-renderer",
+  "title": "Practical Implementation at tri-Ace course notes"
+}

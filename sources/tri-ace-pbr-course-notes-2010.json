@@ -1,0 +1,11 @@
+{
+  "claim_scope": "tri-Ace physically based shading implementation notes and rendering lineage",
+  "confidence": "high",
+  "id": "tri-ace-pbr-course-notes-2010",
+  "notes": "Public course notes by Yoshiharu Gotanda for tri-Ace, useful as a documented successor-lineage reference for the studio's rendering research. Public-reference-only.",
+  "publisher": "tri-Ace Inc.",
+  "retrieved_at": "2026-07-02",
+  "source_type": "course-notes",
+  "title": "Practical Implementation at tri-Ace course notes",
+  "url": "https://research.tri-ace.com/Data/course_note_practical_implementation_at_triace.pdf"
+}

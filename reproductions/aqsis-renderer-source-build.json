@@ -1,0 +1,41 @@
+{
+  "id": "aqsis-renderer-source-build",
+  "target_id": "aqsis",
+  "reproduction_type": "source-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public Aqsis repository at the recorded aqsis-master-head commit",
+    "host compiler and build tooling selected from the public repository documentation and source tree",
+    "public/open dependency set only",
+    "public-safe RenderMan-style validation scenes or procedurally generated inputs",
+    "local build log and dependency manifest captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public Aqsis source repository listed in the artifact record",
+    "verify the local checkout commit against the aqsis-master-head snapshot record",
+    "inspect repository build files and documentation to identify required compilers, generators, and libraries",
+    "configure a clean out-of-tree build using only public/open dependencies",
+    "compile the renderer, tools, and libraries exposed by the public source tree",
+    "run a minimal public-safe render or command-line smoke test when the build succeeds",
+    "record build commands, compiler diagnostics, dependency gaps, produced outputs, and test notes as public metadata"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "build environment manifest",
+    "compiler transcript",
+    "renderer and tool output inventory",
+    "public-safe smoke-test notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "aqsis-renderer-source",
+    "aqsis-renderer-tooling-metadata"
+  ],
+  "task_ids": [
+    "aqsis-triage"
+  ],
+  "public_notes": "Planned reproduction recipe for turning the public Aqsis source snapshot into a repeatable renderer build and smoke-test track.",
+  "source_ids": [
+    "aqsis-github"
+  ]
+}

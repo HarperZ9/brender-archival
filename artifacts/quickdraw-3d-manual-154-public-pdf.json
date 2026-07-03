@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "manual-reference",
+  "evidence_quality": "public-manual-copy",
+  "id": "quickdraw-3d-manual-154-public-pdf",
+  "location": "https://worldcolleges.info/sites/default/files/3D_Graphics_With_QuickDraw_3D.pdf",
+  "notes": "Public-reference-only record for the QuickDraw 3D 1.5.4 programming manual, including 3DMF, RAVE, retained/immediate rendering, and extensibility material.",
+  "origin": "Apple Computer manual mirror",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["apple-quickdraw3d-manual-154-pdf"],
+  "target_id": "quickdraw-3d",
+  "title": "3D Graphics Programming with QuickDraw 3D 1.5.4",
+  "version": "1.5.4"
+}

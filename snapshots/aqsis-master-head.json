@@ -1,0 +1,12 @@
+{
+  "id": "aqsis-master-head",
+  "artifact_id": "aqsis-renderer-source",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/aqsis/aqsis.git",
+  "ref": "refs/heads/master",
+  "commit": "937ead9ac0c7770bbc5ef843e2356a61e5ad23c1",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/aqsis/aqsis.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the Aqsis renderer source repository.",
+  "source_ids": ["aqsis-github"]
+}

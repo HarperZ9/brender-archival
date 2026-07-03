@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "studio-reorganization-record",
+  "date": "2021-04-01",
+  "evidence_quality": "official-blog-and-quoted-statement",
+  "id": "japan-studio-restructure-public-report",
+  "location": "https://blog.playstation.com/2021/06/02/introducing-team-asobi-creators-of-the-astro-bot-series/",
+  "notes": "Public successor-studio pointer for Japan Studio reorganization and Team Asobi continuity. Proprietary Japan Studio and Team Ico materials remain restricted metadata only.",
+  "origin": "PlayStation Blog and public trade report quoting SIE",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["playstation-blog-team-asobi-2021", "siliconera-japan-studio-reorganization"],
+  "target_id": "japan-studio-team-ico",
+  "title": "Japan Studio reorganization public report"
+}

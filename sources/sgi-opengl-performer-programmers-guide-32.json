@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGL Performer 3.2 Programmer's Guide public reference metadata and restriction notice",
+  "confidence": "high",
+  "id": "sgi-opengl-performer-programmers-guide-32",
+  "notes": "Public PDF copy of the OpenGL Performer 3.2 Programmer's Guide. It includes SGI restriction language; this repo records metadata only and does not mirror the PDF.",
+  "publisher": "Silicon Graphics / irix7 mirror",
+  "retrieved_at": "2026-07-02",
+  "source_type": "manual-pdf",
+  "title": "OpenGL Performer Programmer's Guide 3.2",
+  "url": "https://irix7.com/techpubs/007-1680-100.pdf"
+}

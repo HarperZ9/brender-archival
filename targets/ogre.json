@@ -1,0 +1,14 @@
+{
+  "category": "engine",
+  "era": "1980s-2000s",
+  "id": "ogre",
+  "name": "OGRE",
+  "platforms": ["Windows", "Linux", "macOS", "Android", "iOS", "Direct3D", "OpenGL", "Vulkan"],
+  "priority": 72,
+  "public_status": "curated-public-sources",
+  "related_targets": ["mesa"],
+  "restricted_status": "none-known",
+  "revival_lane": "public-source-preservation",
+  "rights_posture": "open",
+  "summary": "Public records now track OGRE's source repository, rendering-backend role, platform/API coverage, and MIT licensing record."
+}

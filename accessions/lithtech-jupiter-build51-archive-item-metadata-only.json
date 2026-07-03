@@ -1,0 +1,21 @@
+{
+  "artifact_id": "lithtech-jupiter-build51-archive-item",
+  "capture_status": "metadata-only",
+  "capture_uri": "https://archive.org/metadata/lithengine",
+  "captured_at": "2026-07-03",
+  "fixity_status": "external-file-metadata-recorded",
+  "hashes": {
+    "LithEngine.iso": {
+      "crc32": "32df92b6",
+      "md5": "b241da2062f2e8bfe49c4b7ef951688b",
+      "sha1": "74d60e5e1a64718f11bd3787095bce19a15caabd"
+    }
+  },
+  "id": "lithtech-jupiter-build51-archive-item-metadata-only",
+  "package_type": "engine-sdk-archive-metadata",
+  "public_notes": "Metadata-only accession for the public IA item; no binary package is held in this repository.",
+  "rights_review": "do-not-redistribute",
+  "size_bytes": 636700672,
+  "source_ids": ["internet-archive-lithtech-jupiter"],
+  "storage_class": "not-held"
+}

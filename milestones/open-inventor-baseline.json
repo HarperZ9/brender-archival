@@ -1,0 +1,8 @@
+{
+  "id": "open-inventor-baseline",
+  "target_id": "open-inventor",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated Open Inventor source, accession, and task records.",
+  "source_ids": ["open-inventor-github", "open-inventor-readme-first", "coin3d-api-compatibility"]
+}

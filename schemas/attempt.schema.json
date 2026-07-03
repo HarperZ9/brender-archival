@@ -1,0 +1,35 @@
+{
+  "kind": "attempt",
+  "required": [
+    "id",
+    "target_id",
+    "attempt_type",
+    "status",
+    "command",
+    "host_platform",
+    "transcript_location",
+    "result_summary",
+    "artifacts_policy",
+    "public_notes",
+    "source_ids"
+  ],
+  "properties": {
+    "id": "string",
+    "target_id": "string",
+    "attempt_type": "string",
+    "status": "string",
+    "command": "string",
+    "host_platform": "string",
+    "harness_id": "string",
+    "build_id": "string",
+    "reproduction_id": "string",
+    "transcript_location": "string",
+    "result_summary": "string",
+    "artifacts_policy": "string",
+    "exit_code": "integer",
+    "blockers": "array",
+    "next_actions": "array",
+    "public_notes": "string",
+    "source_ids": "array"
+  }
+}

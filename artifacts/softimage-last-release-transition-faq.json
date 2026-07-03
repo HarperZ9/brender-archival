@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "product-transition-record",
+  "date": "2014-05-20",
+  "evidence_quality": "official-vendor-faq",
+  "id": "softimage-last-release-transition-faq",
+  "location": "https://damassets.autodesk.net/content/dam/autodesk/www/products/autodesk-softimage/docs/pdf/Softimage%20Last%20Release%20Announcement_FAQ_UPDATE_MAY_20.pdf",
+  "notes": "Public-reference-only pointer to Softimage 2015 final-release and migration guidance. The PDF is not mirrored.",
+  "origin": "Autodesk Softimage transition FAQ",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["autodesk-softimage-last-release-faq"],
+  "target_id": "softimage-alias-bridge",
+  "title": "Softimage last release transition FAQ"
+}

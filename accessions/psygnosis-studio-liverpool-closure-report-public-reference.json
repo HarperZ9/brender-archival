@@ -1,0 +1,14 @@
+{
+  "artifact_id": "psygnosis-studio-liverpool-closure-report",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "psygnosis-studio-liverpool-closure-report-public-reference",
+  "package_type": "studio-closure-metadata",
+  "public_notes": "Public-reference accession for Studio Liverpool closure and continuity metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": [
+    "gamedeveloper-studio-liverpool-closure",
+    "wired-studio-liverpool-closure"
+  ],
+  "storage_class": "external-url"
+}

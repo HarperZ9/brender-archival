@@ -1,0 +1,8 @@
+{
+  "id": "brender-baseline",
+  "target_id": "brender",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated BRender source, accession, and task records.",
+  "source_ids": ["foone-brender-v132", "foone-brender-3dmm", "blazingrender-index"]
+}

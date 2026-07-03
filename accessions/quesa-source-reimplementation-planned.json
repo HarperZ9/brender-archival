@@ -1,0 +1,11 @@
+{
+  "artifact_id": "quesa-source-reimplementation",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "quesa-source-reimplementation-planned",
+  "package_type": "source-snapshot",
+  "public_notes": "Planned accession for public/open source metadata; archival master not stored in git.",
+  "rights_review": "open-license",
+  "source_ids": ["quesa-github"],
+  "storage_class": "external-url"
+}

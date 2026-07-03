@@ -1,0 +1,14 @@
+{
+  "artifact_id": "direct3d-directx2-release-record",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "direct3d-directx2-release-record-public-reference",
+  "package_type": "successor-api-release-metadata",
+  "public_notes": "Public-reference accession for Direct3D DirectX 2 successor-lineage metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": [
+    "microsoft-direct3d-ships-1996",
+    "otto-berkes-directx-reality-lab-history"
+  ],
+  "storage_class": "external-url"
+}

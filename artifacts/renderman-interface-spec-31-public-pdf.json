@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "specification-reference",
+  "evidence_quality": "public-specification-copy",
+  "id": "renderman-interface-spec-31-public-pdf",
+  "location": "https://groups.csail.mit.edu/graphics/classes/6.838/S97/rispec31_4.pdf",
+  "notes": "Public-reference-only anchor for RenderMan Interface and RIB conventions. This repo does not mirror the PDF.",
+  "origin": "MIT CSAIL course mirror of Pixar specification",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["mit-rispec31-pdf"],
+  "target_id": "renderman-interface",
+  "title": "RenderMan Interface Specification v3.1 public PDF",
+  "version": "3.1"
+}

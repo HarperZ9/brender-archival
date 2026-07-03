@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-reimplementation-record",
+  "evidence_quality": "public-project-and-license-records",
+  "id": "openphigs-source-reimplementation",
+  "location": "https://github.com/CERN/OpenPHIGS",
+  "notes": "Public source-reimplementation pointer for PHIGS revival work. This repo stores metadata only; source use should follow the referenced repository licenses and project maturity notes.",
+  "origin": "Open PHIGS public project records",
+  "redistribution_status": "open-with-license-review",
+  "source_ids": ["sourceforge-open-phigs", "github-cern-openphigs", "github-fbradasc-openphigs-license"],
+  "target_id": "phigs",
+  "title": "OpenPHIGS public source reimplementation"
+}

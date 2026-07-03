@@ -1,0 +1,32 @@
+{
+  "artifacts_policy": "The materialized harness, configure tree, build tree, smoke executables, the brender_core_float library, and the generated PPM render output were kept outside this metadata repo. No generated binaries, copied BRender source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-scene-graph-smoke",
+  "blockers": [
+    "the scene smoke still requires a 32-bit C target because the unreworked period code stores some pointer-shaped values in 32-bit fields",
+    "the model is drawn as a wireframe through the pure-C pixelmap path; shaded and textured scene rendering still needs the assembly softrend renderer device (BrZbBegin/BrRendererBegin/BrZbModelRender)",
+    "only camera and model actors are exercised; lights, materials beyond the default, clip planes, and the order table are not covered",
+    "the model is built in code; loading models, materials, and textures from BRender datafiles is not covered yet"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness --source-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132 --output-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-scene-smoke-2026-07-03; cmake -S <harness> -B C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-scene-smoke-2026-07-03 -A Win32 -DBRENDER_SOURCE_DIR=C:\\dev\\public\\engine-revival-workspaces\\brender-v132; cmake --build <build> --config Debug --target brender_core_smoke; ... --target brender_core_startup_smoke; ... --target brender_core_render_smoke; ... --target brender_core_scene_smoke; ctest --test-dir <build> -C Debug --output-on-failure",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe with Visual Studio 18 2026 and MSVC 19.50.35721.0, Win32 Debug target",
+  "id": "brender-v132-portable-core-scene-smoke",
+  "next_actions": [
+    "translate the softrend renderer device so BrZbModelRender can produce shaded and depth-buffered scene output",
+    "extend the scene smoke to load a model and materials from a BRender datafile",
+    "add light and material actors and exercise the default material and order-table paths",
+    "keep generated binaries and PPM output out of git unless an intentional release package is reviewed"
+  ],
+  "public_notes": "This attempt renders a model out of BRender's own v1db scene database rather than a hand-rolled projection. The generated harness materializes a brender_core_scene_smoke target (compiled with the scene database enabled) that starts BRender, builds a world/camera/model actor tree, allocates a br_model cube, prepares it with BrModelUpdate under BR_MODF_UPDATEABLE so the engine computes its bounding radius (1.732) while keeping the vertex and face arrays, asks the engine for the model-to-screen transform with BrActorToScreenMatrix4, projects the model's own vertices with BrMatrix4ApplyP, and draws the twelve triangle faces with BrPixelmapLine. BrBegin starts the scene database and BrEnd tears it down, so BrV1dbBegin/BrV1dbEnd are not called directly. Every plotting call flows through the pure-C memory pixelmap dispatch; the assembly softrend driver is not used. The program produced 1382 lit pixels with all eight cube vertices inside the viewport and passed as CTest case 4 of 4 under a Visual Studio Win32 Debug target. It does not claim x64 portability, shaded or textured scene rendering, datafile model loading, or release packaging.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "The guarded harness configured with -A Win32, built brender_core_float.lib plus all four smoke executables, direct-ran brender_core_scene_smoke.exe with exit 0 (v1db scene database, actor tree, engine-prepared cube radius 1.732, BrActorToScreenMatrix4 projection, 1382 lit pixels, PPM written), and passed 4/4 CTest cases with -C Debug.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-scene-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-scene-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-scene-smoke-2026-07-03.txt"
+}

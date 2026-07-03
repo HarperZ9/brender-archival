@@ -1,0 +1,12 @@
+{
+  "id": "ps2sdk-master-head",
+  "artifact_id": "ps2-ps2sdk-open-source-sdk",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/ps2dev/ps2sdk.git",
+  "ref": "refs/heads/master",
+  "commit": "986ff320cd910c9cd538b151736ddc640fdf51d5",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/ps2dev/ps2sdk.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the PS2SDK open-source PS2 SDK repository.",
+  "source_ids": ["ps2dev-ps2sdk-github", "ps2dev-site"]
+}

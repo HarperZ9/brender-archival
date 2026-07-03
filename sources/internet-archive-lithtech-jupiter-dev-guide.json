@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OCR and PDF reference for the Jupiter Development Guide version 2002.03.19, including toolchain requirements, component layout, build paths, and legal notices.",
+  "confidence": "moderate",
+  "id": "internet-archive-lithtech-jupiter-dev-guide",
+  "notes": "OCR text is useful for indexing and reproduction planning but should be checked against the PDF before quoting. The legal notice identifies the LithTech Development System as copyright 1998-2002 by LithTech, Inc. with rights reserved.",
+  "publisher": "Internet Archive",
+  "retrieved_at": "2026-07-03",
+  "source_type": "document-ocr",
+  "title": "Jupiter Development Guide full text",
+  "url": "https://archive.org/stream/lithengine/JupiterDevGuide_djvu.txt"
+}

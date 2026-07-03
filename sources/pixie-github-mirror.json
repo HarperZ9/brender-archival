@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Pixie public source mirror and LGPL license metadata",
+  "confidence": "moderate",
+  "id": "pixie-github-mirror",
+  "notes": "Public GitHub mirror of Pixie source with README and LGPL metadata. Treated as a mirror, with SourceForge retained as the primary project registry.",
+  "publisher": "GitHub / daliborgaric",
+  "retrieved_at": "2026-07-02",
+  "source_type": "source-mirror",
+  "title": "Pixie source mirror",
+  "url": "https://github.com/daliborgaric/pixie"
+}

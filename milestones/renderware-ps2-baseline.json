@@ -1,0 +1,8 @@
+{
+  "id": "renderware-ps2-baseline",
+  "target_id": "renderware-ps2",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated RenderWare PS2 source, accession, and task records.",
+  "source_ids": ["internet-archive-renderware-ps2-gold-notes", "strong-gene-buckle-renderware", "internet-archive-rw310-ps2"]
+}

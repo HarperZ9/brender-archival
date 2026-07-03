@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "official-release-record",
+  "evidence_quality": "official-press-release",
+  "id": "ps2-linux-release-10-official",
+  "location": "https://sonyinteractive.com/en/press-releases/2002/sony-computer-entertainment-announces-worldwide-release-of-linux-for-playstation2/",
+  "notes": "Official public release record for Linux for PlayStation 2 Release 1.0 and kit contents.",
+  "origin": "Sony Computer Entertainment press release",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["sie-ps2-linux-release-2002"],
+  "target_id": "ps2-prodg-eb-linux",
+  "title": "Linux for PlayStation 2 Release 1.0",
+  "version": "1.0"
+}

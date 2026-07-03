@@ -1,0 +1,14 @@
+{
+  "artifact_id": "opengoal-project-overview-docs",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "opengoal-project-overview-docs-public-reference",
+  "package_type": "toolchain-documentation-metadata",
+  "public_notes": "Public-reference accession for OpenGOAL project overview and decompilation documentation metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": [
+    "opengoal-project-overview",
+    "opengoal-decompiling-getting-started"
+  ],
+  "storage_class": "external-url"
+}

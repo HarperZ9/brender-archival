@@ -1,0 +1,14 @@
+{
+  "category": "graphics-lineage",
+  "era": "1980s-2000s",
+  "id": "iris-gl-opengl-bridge",
+  "name": "IRIS GL / OpenGL bridge",
+  "platforms": ["IRIS GL", "OpenGL", "GLSL", "GLX", "WGL", "GLU", "SGI", "Khronos Registry"],
+  "priority": 68,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["mesa", "open-inventor", "opengl-performer", "phigs"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "upstream-dependency-atlas",
+  "rights_posture": "public-reference-only",
+  "summary": "Public lineage and standards-registry record for OpenGL's transition from SGI IRIS GL into the Khronos-maintained OpenGL specification ecosystem."
+}

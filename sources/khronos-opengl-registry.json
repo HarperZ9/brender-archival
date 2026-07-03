@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Official OpenGL Registry contents including API, shading-language, extension, header, GLX, WGL, and GLU specifications",
+  "confidence": "high",
+  "id": "khronos-opengl-registry",
+  "notes": "Primary specification registry for OpenGL-family public metadata.",
+  "publisher": "Khronos Group",
+  "retrieved_at": "2026-07-02",
+  "source_type": "standards-registry",
+  "title": "Khronos OpenGL Registry",
+  "url": "https://registry.khronos.org/OpenGL/index_gl.php"
+}

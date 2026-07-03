@@ -1,0 +1,7 @@
+{
+  "id": "brender-triage",
+  "target_id": "brender",
+  "task_type": "triage",
+  "status": "planned",
+  "public_notes": "Triage the BRender record."
+}

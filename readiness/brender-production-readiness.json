@@ -1,0 +1,99 @@
+{
+  "blockers": [
+    "x64 startup is not claimed; pointer-width portability still needs audit and modernization",
+    "rendering coverage reaches real datafile model loading (BrModelLoad) rendered through a portable depth-buffered, perspective-correct textured scanline rasterizer; multi-part model assembly, original material/texture resolution, Gouraud shading, and BRender's own period softrend rasterizer are not yet covered",
+    "portable core and host fallback stubs need semantic tests before they can be treated as production replacements",
+    "image output is a raw PPM dump; the native BrPixelmapSave datafile path and drivers are not built",
+    "release packaging has not been implemented",
+    "drivers and deferred FIXED variants have not been translated"
+  ],
+  "build_status": "portable-core-library-and-solid-shaded-smoke-built",
+  "build_ids": [
+    "brender-v132-build-environment"
+  ],
+  "evidence": [
+    "2026-07-03 local public checkout: git rev-parse HEAD returned d88d0ed41122664b9781015b517db64353e16f19",
+    "2026-07-03 source tree probe counted 332 C files, 350 headers, and 68 make/mak/mk files",
+    "2026-07-03 toolchain probe found cmake.exe but not make, nmake, cl, or gcc in PATH",
+    "2026-07-03 portable core harness plan recorded root, core, and drivers make topology",
+    "2026-07-03 materializer command added for out-of-tree BRender core CMake scaffold",
+    "2026-07-03 materializer smoke run wrote CMakeLists.txt, README.md, cmake/brender-core-sources.cmake, and harness-manifest.json outside the source checkout",
+    "2026-07-03 CMake configure succeeded with Visual Studio 18 2026 and MSVC 19.50.35721.0 in an external build tree",
+    "2026-07-03 brender_core_float build reached compilation and failed on legacy inline x86 assembly in inc/mscifix.h under x64 MSVC",
+    "2026-07-03 materializer added BASED_FIXED=0, INLINE_FIXED=0, STATIC=static, DEBUG=0, PARANOID=0, EVAL=0, and ADD_RCS_ID=0 to mirror period release CFLAGS",
+    "2026-07-03 period-defines build attempt moved past mscifix.h and STATIC failures, then failed because module-wide C file globbing included files outside the period OBJS_C lists",
+    "2026-07-03 explicit-source harness configured with Visual Studio 18 2026 and built brender_core_float.lib with MSVC 19.50.35721.0 in an external build tree",
+    "2026-07-03 brender_core_smoke target added to the out-of-tree harness; smoke source exercises BrVector3SetFloat and BrScalarToFloat without framework startup",
+    "2026-07-03 cmake --build completed target brender_core_smoke with exit 0 and produced Debug\\brender_core_smoke.exe",
+    "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 1/1 brender_core_smoke test",
+    "2026-07-03 framework startup target added with portable core and host compatibility stubs for the period ASM boundary",
+    "2026-07-03 unguarded x64 startup executable linked but crashed with 0xC0000005, so the materialized harness now requires a 32-bit C target",
+    "2026-07-03 guarded Visual Studio Win32 configure succeeded, brender_core_smoke.exe and brender_core_startup_smoke.exe direct-ran with exit 0, and CTest passed 2/2 cases",
+    "2026-07-03 verified the pure-C render path: memory pixelmap allocate, fill, line, pixelSet, and pixelQuery in core/pixelmap/pmmem.c dispatch through _MemPixelSet/_MemFill without the assembly softrend driver",
+    "2026-07-03 confirmed the FLOAT build resolves BR_SIN/BR_COS to libc sin/cos in inc/angles.h, so BrMatrix4Perspective links without an engine sine table",
+    "2026-07-03 brender_core_render_smoke target added; allocates a BR_PMT_RGB_888 memory pixelmap, builds a BrMatrix4Perspective projection, transforms a unit cube through BrMatrix4Mul and BrMatrix4ApplyP, and draws twelve edges with BrPixelmapLine",
+    "2026-07-03 brender_core_render_smoke.exe direct-ran with exit 0, self-verified fill, pixel set/get round-trip, red diagonal endpoints, eight cube vertices projecting in front of the camera, and 1051 lit pixels, then wrote a 320x240 PPM (230415 bytes)",
+    "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 3/3 cases including brender_core_render_smoke",
+    "2026-07-03 verified BrBegin auto-starts the v1db scene database (explicit BrV1dbBegin returned BRE_ALLREADY_ACTIVE) and BrEnd performs the matching teardown",
+    "2026-07-03 brender_core_scene_smoke target added; builds a world/camera/model actor tree, prepares a br_model cube with BrModelUpdate under BR_MODF_UPDATEABLE (engine computed bounding radius 1.732), and projects it with BrActorToScreenMatrix4",
+    "2026-07-03 brender_core_scene_smoke.exe direct-ran with exit 0, projected all eight cube vertices inside the viewport, drew twelve triangle faces, produced 1382 lit pixels, and wrote a 320x240 PPM",
+    "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 4/4 cases including brender_core_scene_smoke",
+    "2026-07-03 brender_core_fill_smoke target added; reuses the scene projection, computes per-face world-space normals via BrMatrix34ApplyP, flat-shades by the absolute normal-light dot, and fills triangles with a portable C scanline rasterizer composited back-to-front",
+    "2026-07-03 brender_core_fill_smoke.exe direct-ran with exit 0, produced a solid flat-shaded cube with 8509 lit pixels across three distinct grey levels, and wrote a 320x240 PPM",
+    "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 5/5 cases including brender_core_fill_smoke",
+    "2026-07-03 brender_core_depth_smoke target added; a per-pixel float depth buffer over the rasterizer renders two overlapping cubes with correct per-pixel occlusion (near drawn first rejected 4391 far-cube fragments)",
+    "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 6/6 cases including brender_core_depth_smoke",
+    "2026-07-03 brender_core_texture_smoke target added; perspective-correct texture mapping (u/w,v/w,1/w interpolation) samples a checkerboard pixelmap per pixel, depth-tested and shade-modulated, both texture colours visible across the cube",
+    "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 7/7 cases including brender_core_texture_smoke",
+    "2026-07-03 verified BrModelLoad needs only BrBegin (static chunk table, stdio filesystem via core/std/stdfile.c); loaded models carry populated vertices/faces with no BrModelUpdate needed",
+    "2026-07-03 brender_core_model_smoke target added; loads real period models from native .dat datafiles and renders them solid, flat-shaded and depth-buffered",
+    "2026-07-03 rendered period assets read in place from the public checkout: duck.dat (74v/108f), teapot.dat (821v/1560f), skull.dat (702v/1243f), torus.dat (128v/256f) all render correctly",
+    "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 8/8 cases including brender_core_model_smoke"
+  ],
+  "flagship_score": 78,
+  "harness_ids": [
+    "brender-v132-portable-core-plan"
+  ],
+  "attempt_ids": [
+    "brender-v132-harness-materializer-smoke",
+    "brender-v132-cmake-configure",
+    "brender-v132-core-build-attempt",
+    "brender-v132-period-defines-build-attempt",
+    "brender-v132-explicit-sources-core-build",
+    "brender-v132-vector-smoke-runtime",
+    "brender-v132-framework-startup-smoke-win32",
+    "brender-v132-portable-core-render-smoke",
+    "brender-v132-portable-core-scene-smoke",
+    "brender-v132-portable-core-fill-smoke",
+    "brender-v132-portable-core-depth-smoke",
+    "brender-v132-portable-core-texture-smoke",
+    "brender-v132-portable-core-model-smoke"
+  ],
+  "id": "brender-production-readiness",
+  "modernization_status": "core-portability-audit-needed",
+  "next_actions": [
+    "translate the softrend renderer device so BrZbModelRender can produce shaded and depth-buffered scene output",
+    "extend the scene smoke to load a model and materials from a BRender datafile",
+    "add semantic tests for portable core and host fallback behavior",
+    "audit and classify the MSVC warning transcript",
+    "translate the deferred FIXED variants after the core library and scene path are stable"
+  ],
+  "packaging_status": "not-started",
+  "public_notes": "BRender is the first production-readiness pilot. A public source checkout matched the recorded v1.3.2 snapshot commit, exposed period make/project metadata, and now has a materializer plus successful out-of-tree CMake configure, FLOAT core-library build, vector math runtime smoke, BrBegin/BrEnd framework startup smoke, a wireframe render smoke, and a v1db scene-graph render smoke through CTest under a Visual Studio Win32 target. The render smoke projects a hand-built cube through the engine matrix pipeline; the scene smoke renders a model out of BRender's own scene database, building a world/camera/model actor tree, preparing a br_model with BrModelUpdate, and projecting it with the engine's BrActorToScreenMatrix4 before drawing the faces with BrPixelmapLine; the fill smoke turns that scene into a solid, flat-shaded image with a portable C scanline rasterizer, per-face world-space normals for lighting, and back-to-front compositing. All three draw entirely through the pure-C memory pixelmap dispatch with no assembly software driver, self-verify, and dump a 320x240 PPM. The produced brender_core_float.lib, smoke executables, and PPM output remain outside this metadata repo. x64 portability, shaded and textured scene rendering (which needs the softrend renderer device), datafile model loading, warning cleanup, packaging, drivers, and FIXED variants are not claimed yet.",
+  "readiness_stage": "portable-core-datafile-model-render-passing",
+  "reproduction_ids": [
+    "brender-critical-edition-source-build"
+  ],
+  "runtime_status": "datafile-model-render-passing",
+  "snapshot_ids": [
+    "brender-v132-main-head",
+    "brender-3dmm-main-head"
+  ],
+  "source_ids": [
+    "foone-brender-v132",
+    "foone-brender-3dmm",
+    "blazingrender-index"
+  ],
+  "target_id": "brender",
+  "test_status": "datafile-model-render-passing"
+}

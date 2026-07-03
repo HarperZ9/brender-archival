@@ -1,0 +1,42 @@
+{
+  "id": "crystal-space-source-build",
+  "target_id": "crystal-space",
+  "reproduction_type": "source-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public Crystal Space repository at the recorded crystal-space-master-head commit",
+    "legacy-compatible host compiler and dependency set identified from public repository documentation",
+    "public/open renderer and plugin dependencies only",
+    "public-safe demo or procedural scene inputs",
+    "local build transcript and component manifest captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public Crystal Space source repository listed in the artifact record",
+    "verify the local checkout commit against the crystal-space-master-head snapshot record",
+    "use the SourceForge project record and repository documentation to identify platform, renderer, and dependency expectations",
+    "configure the source tree in a clean compatibility environment",
+    "compile the engine libraries, plugins, and tools exposed by the public source tree",
+    "run a minimal public-safe executable or plugin-load smoke test when available",
+    "record build commands, dependency gaps, produced outputs, and compatibility notes as public metadata"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "legacy compatibility environment notes",
+    "compiler transcript",
+    "engine library and plugin inventory",
+    "public-safe smoke-test notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "crystal-space-github-source-repository",
+    "crystal-space-sourceforge-project-record"
+  ],
+  "task_ids": [
+    "crystal-space-triage"
+  ],
+  "public_notes": "Planned reproduction recipe for rebuilding Crystal Space from its public source repository and recording legacy dependency assumptions.",
+  "source_ids": [
+    "crystal-space-github",
+    "crystal-space-sourceforge"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "blockers": [
+    "production rebuild path not yet verified"
+  ],
+  "build_status": "not-started",
+  "flagship_score": 0,
+  "id": "quickdraw-3d-production-readiness",
+  "modernization_status": "not-started",
+  "next_actions": [
+    "create repeatable build harness"
+  ],
+  "packaging_status": "not-started",
+  "public_notes": "Baseline production-readiness record for QuickDraw 3D. No flagship-quality claim is made until build, runtime, tests, packaging, and modernization evidence are recorded.",
+  "readiness_stage": "baseline-assessment",
+  "runtime_status": "not-started",
+  "source_ids": [
+    "initial-research-reports"
+  ],
+  "target_id": "quickdraw-3d",
+  "test_status": "not-started"
+}

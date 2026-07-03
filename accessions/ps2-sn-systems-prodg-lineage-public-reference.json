@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ps2-sn-systems-prodg-lineage",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "ps2-sn-systems-prodg-lineage-public-reference",
+  "package_type": "lineage-record-metadata",
+  "public_notes": "Public-reference accession for SN Systems and ProDG lineage metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["sie-sn-systems-acquisition-2005"],
+  "storage_class": "external-url"
+}

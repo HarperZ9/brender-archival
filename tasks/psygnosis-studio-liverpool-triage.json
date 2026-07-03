@@ -1,0 +1,7 @@
+{
+  "id": "psygnosis-studio-liverpool-triage",
+  "public_notes": "Create public-safe sources and artifact records for Psygnosis / Studio Liverpool.",
+  "status": "seeded",
+  "target_id": "psygnosis-studio-liverpool",
+  "task_type": "triage-public-record"
+}

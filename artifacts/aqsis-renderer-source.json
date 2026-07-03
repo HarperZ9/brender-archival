@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "renderer-source",
+  "evidence_quality": "public-source",
+  "id": "aqsis-renderer-source",
+  "location": "https://github.com/aqsis/aqsis",
+  "notes": "Public source lane for a RenderMan-compatible renderer suite. Repository metadata records GPL-2.0 licensing.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["aqsis-github"],
+  "target_id": "aqsis",
+  "title": "Aqsis renderer source repository"
+}

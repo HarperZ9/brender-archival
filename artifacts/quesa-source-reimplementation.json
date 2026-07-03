@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-reimplementation",
+  "evidence_quality": "public-source",
+  "id": "quesa-source-reimplementation",
+  "location": "https://github.com/jwwalker/Quesa",
+  "notes": "Open public-source compatibility lane for QuickDraw 3D API revival. Repository metadata records BSD-3-Clause licensing.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["quesa-github"],
+  "target_id": "quesa",
+  "title": "Quesa QuickDraw 3D API reimplementation source"
+}

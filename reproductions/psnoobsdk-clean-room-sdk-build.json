@@ -1,0 +1,47 @@
+{
+  "id": "psnoobsdk-clean-room-sdk-build",
+  "target_id": "ps1-programmer-tool",
+  "reproduction_type": "clean-room-sdk-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public PSn00bSDK repository at the recorded psnoobsdk-master-head commit",
+    "host compiler and toolchain prerequisites selected from the public PSn00bSDK repository documentation",
+    "no proprietary Sony SDK files, runtime library discs, or private game assets committed to this repository",
+    "public-safe sample program or toolchain smoke test",
+    "local build transcript and compatibility notes captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public PSn00bSDK source repository listed in the artifact record",
+    "verify the local checkout commit against the psnoobsdk-master-head snapshot record",
+    "identify compiler, assembler, linker, and emulator or hardware-test boundaries from public repository documentation",
+    "build the open-source SDK components without using proprietary Programmer's Tool files",
+    "compile a minimal public-safe sample when available",
+    "record build commands, diagnostics, produced libraries or tools, and compatibility boundaries as public metadata",
+    "promote repeatable commands into the PS1 Programmer's Tool clean-room compatibility packet"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "clean-room SDK build environment manifest",
+    "compiler transcript",
+    "library and tool inventory",
+    "public-safe sample-build notes",
+    "proprietary-boundary notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "ps1-psnoobsdk-open-source-sdk",
+    "net-yaroze-documentation-set",
+    "ps1-sdevtc-development-environment-manual",
+    "ps1-runtime-library-33-redump-entry"
+  ],
+  "task_ids": [
+    "ps1-programmer-tool-archive-packet"
+  ],
+  "public_notes": "Planned clean-room reproduction recipe for building PSn00bSDK as a public PS1 compatibility lane without redistributing proprietary Programmer's Tool material.",
+  "source_ids": [
+    "psnoobsdk-github",
+    "internet-archive-net-yaroze-documentation",
+    "internet-archive-sdevtc-aug1998",
+    "redump-ps1-runtime-library-33"
+  ]
+}

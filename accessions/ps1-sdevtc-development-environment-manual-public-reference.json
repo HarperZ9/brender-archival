@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ps1-sdevtc-development-environment-manual",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "ps1-sdevtc-development-environment-manual-public-reference",
+  "package_type": "manual-metadata",
+  "public_notes": "Public-reference accession for SDevTC manual metadata; archival master not stored in git.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["internet-archive-sdevtc-aug1998"],
+  "storage_class": "external-url"
+}

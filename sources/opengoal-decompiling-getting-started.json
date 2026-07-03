@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGOAL decompiler inputs and legal-copy workflow boundaries",
+  "confidence": "high",
+  "id": "opengoal-decompiling-getting-started",
+  "notes": "OpenGOAL documentation explaining the decompiler workflow and the requirement to provide local game data as an input.",
+  "publisher": "OpenGOAL",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-documentation",
+  "title": "OpenGOAL decompiling getting started",
+  "url": "https://opengoal.dev/docs/developing/decompiling/getting_started/"
+}

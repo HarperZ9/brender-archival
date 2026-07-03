@@ -1,0 +1,11 @@
+{
+  "artifact_id": "tri-ace-pbr-implementation-course-notes",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "tri-ace-pbr-implementation-course-notes-public-reference",
+  "package_type": "course-notes-metadata",
+  "public_notes": "Public-reference accession for tri-Ace practical implementation course-note metadata; PDF is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["tri-ace-pbr-course-notes-2010"],
+  "storage_class": "external-url"
+}

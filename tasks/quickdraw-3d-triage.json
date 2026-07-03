@@ -1,0 +1,7 @@
+{
+  "id": "quickdraw-3d-triage",
+  "public_notes": "Create public-safe sources and artifact records for QuickDraw 3D.",
+  "status": "seeded",
+  "target_id": "quickdraw-3d",
+  "task_type": "triage-public-record"
+}

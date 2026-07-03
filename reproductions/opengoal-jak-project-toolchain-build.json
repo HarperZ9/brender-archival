@@ -1,0 +1,46 @@
+{
+  "id": "opengoal-jak-project-toolchain-build",
+  "target_id": "gool-goal",
+  "reproduction_type": "clean-room-toolchain-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public OpenGOAL jak-project repository at the recorded opengoal-jak-project-master-head commit",
+    "host compiler and dependencies selected from public OpenGOAL project documentation",
+    "legal user-supplied game copy for any runtime validation outside this public metadata repo",
+    "no game assets, disc contents, or non-public data committed to this repository",
+    "local build and validation transcript captured as public-safe derived metadata"
+  ],
+  "steps": [
+    "clone or update the public OpenGOAL jak-project source repository listed in the artifact record",
+    "verify the local checkout commit against the opengoal-jak-project-master-head snapshot record",
+    "use the project overview and repository documentation to identify compiler, decompiler, runtime, and source-tree assumptions",
+    "build the public OpenGOAL toolchain and project components without committing user-supplied game data",
+    "record the exact commands, dependency versions, and produced public-code outputs",
+    "separately document any legal-copy asset boundary required for runtime validation",
+    "promote repeatable commands and asset-boundary notes into the GOOL/GOAL archive packet"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "toolchain build environment manifest",
+    "compiler transcript",
+    "public-code output inventory",
+    "legal-copy asset-boundary notes",
+    "dependency gap list",
+    "GOOL/GOAL packet reproduction notes"
+  ],
+  "artifact_ids": [
+    "opengoal-jak-project-source",
+    "opengoal-project-overview-docs",
+    "gool-andy-gavin-developer-article"
+  ],
+  "task_ids": [
+    "gool-goal-archive-packet"
+  ],
+  "public_notes": "Planned clean-room reproduction recipe for building the public OpenGOAL toolchain while keeping game assets and legal-copy validation outside the public repo.",
+  "source_ids": [
+    "opengoal-jak-project-github",
+    "opengoal-project-overview",
+    "opengoal-license",
+    "andy-gavin-gool-article"
+  ]
+}

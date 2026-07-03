@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "standards-catalog-record",
+  "evidence_quality": "official-standards-catalog",
+  "id": "phigs-standard-public-metadata",
+  "location": "https://www.iso.org/standard/17363.html",
+  "notes": "Public catalog pointer for PHIGS standard metadata. The standard text is not mirrored or redistributed.",
+  "origin": "ISO standards catalog",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["iso-phigs-9592-3"],
+  "target_id": "phigs",
+  "title": "PHIGS ISO standard public metadata"
+}

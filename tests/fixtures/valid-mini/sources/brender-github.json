@@ -1,0 +1,7 @@
+{
+  "id": "brender-github",
+  "title": "BRender public source repository",
+  "source_type": "repository",
+  "confidence": "high",
+  "claim_scope": "public source availability"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "psnoobsdk-master-head",
+  "artifact_id": "ps1-psnoobsdk-open-source-sdk",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/Lameguy64/PSn00bSDK.git",
+  "ref": "refs/heads/master",
+  "commit": "5d9aa2d3dfc7d6e51c2eb942ab4cdbae5571a40a",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/Lameguy64/PSn00bSDK.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the PSn00bSDK clean-room PS1 SDK source repository.",
+  "source_ids": ["psnoobsdk-github"]
+}

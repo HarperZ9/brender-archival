@@ -1,0 +1,24 @@
+{
+  "id": "lithtech-jupiter-archive-packet",
+  "target_id": "lithtech-jupiter",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the LithTech Jupiter packet around IA metadata, development-guide systems, toolchain requirements, file manifests, and user-supplied build reproduction notes.",
+  "inputs": [
+    "Internet Archive item metadata",
+    "Jupiter Development Guide",
+    "IA file manifest hashes",
+    "rights-safe local build transcript"
+  ],
+  "outputs": [
+    "standalone archival packet",
+    "build environment manifest",
+    "component and tool map",
+    "metadata-only fixity record",
+    "user-supplied reproduction notes"
+  ],
+  "source_ids": [
+    "internet-archive-lithtech-jupiter",
+    "internet-archive-lithtech-jupiter-dev-guide"
+  ]
+}

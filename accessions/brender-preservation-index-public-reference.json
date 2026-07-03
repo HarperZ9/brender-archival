@@ -1,0 +1,11 @@
+{
+  "artifact_id": "brender-preservation-index",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "brender-preservation-index-public-reference",
+  "package_type": "curation-index-metadata",
+  "public_notes": "Public-reference accession for BRender preservation index metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["blazingrender-index"],
+  "storage_class": "external-url"
+}

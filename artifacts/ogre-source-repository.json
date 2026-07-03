@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-repository",
+  "evidence_quality": "public-source",
+  "id": "ogre-source-repository",
+  "location": "https://github.com/OGRECave/ogre",
+  "notes": "Public source repository for OGRE's rendering backend, including renderer abstractions and language bindings.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["ogre-github", "ogre-site"],
+  "target_id": "ogre",
+  "title": "OGRE source repository"
+}

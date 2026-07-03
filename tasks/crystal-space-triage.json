@@ -1,0 +1,7 @@
+{
+  "id": "crystal-space-triage",
+  "public_notes": "Create public-safe sources and artifact records for Crystal Space.",
+  "status": "seeded",
+  "target_id": "crystal-space",
+  "task_type": "triage-public-record"
+}

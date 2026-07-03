@@ -1,0 +1,12 @@
+{
+  "id": "ogre-master-head",
+  "artifact_id": "ogre-source-repository",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/OGRECave/ogre.git",
+  "ref": "refs/heads/master",
+  "commit": "1bc01a4a1cca3b417835cd4cebfd437519cbf0a8",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/OGRECave/ogre.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the OGRE source repository.",
+  "source_ids": ["ogre-github", "ogre-site"]
+}

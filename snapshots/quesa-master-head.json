@@ -1,0 +1,12 @@
+{
+  "id": "quesa-master-head",
+  "artifact_id": "quesa-source-reimplementation",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/jwwalker/Quesa.git",
+  "ref": "refs/heads/master",
+  "commit": "a7dccbffb150a7590b5dea035f256d07c3c201de",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/jwwalker/Quesa.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the Quesa QuickDraw 3D compatibility source repository.",
+  "source_ids": ["quesa-github"]
+}

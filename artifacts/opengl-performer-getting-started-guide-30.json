@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "manual-reference",
+  "evidence_quality": "public-manual-copy",
+  "id": "opengl-performer-getting-started-guide-30",
+  "location": "https://www.infania.net/misc1/sgi_techpubs/techpubs/007-3560-004.pdf",
+  "notes": "Public-reference-only record for OpenGL Performer Getting Started Guide material, including Perfly and platform sample locations.",
+  "origin": "Silicon Graphics manual mirror",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["sgi-opengl-performer-getting-started-30"],
+  "target_id": "opengl-performer",
+  "title": "OpenGL Performer Getting Started Guide 3.0",
+  "version": "3.0"
+}

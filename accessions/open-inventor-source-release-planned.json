@@ -1,0 +1,11 @@
+{
+  "artifact_id": "open-inventor-source-release",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "open-inventor-source-release-planned",
+  "package_type": "source-snapshot",
+  "public_notes": "Planned accession for public/open source metadata; archival master not stored in git.",
+  "rights_review": "open-license",
+  "source_ids": ["open-inventor-github"],
+  "storage_class": "external-url"
+}

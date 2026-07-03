@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "product-brochure",
+  "evidence_quality": "public-brochure-copy",
+  "id": "opengl-performer-product-brochure",
+  "location": "https://ftp.jurassic.nl/pub/irix/press/3381.pdf",
+  "notes": "Public-reference-only feature and interoperability brochure for OpenGL Performer and SGI visualization toolkits.",
+  "origin": "Silicon Graphics brochure mirror",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["sgi-opengl-performer-brochure"],
+  "target_id": "opengl-performer",
+  "title": "OpenGL Performer product brochure"
+}

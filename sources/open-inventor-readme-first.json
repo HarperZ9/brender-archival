@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Open Inventor August 2000 source release notes, source tree structure, and build platforms",
+  "confidence": "high",
+  "id": "open-inventor-readme-first",
+  "notes": "README.FIRST records the August 15, 2000 release notes, source tree structure, build notes, and supported build targets for the open-source release.",
+  "publisher": "GitHub / aumuell",
+  "retrieved_at": "2026-07-02",
+  "source_type": "release-notes",
+  "title": "Open Inventor README.FIRST",
+  "url": "https://github.com/aumuell/open-inventor/blob/master/README.FIRST"
+}

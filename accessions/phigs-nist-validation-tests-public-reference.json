@@ -1,0 +1,11 @@
+{
+  "artifact_id": "phigs-nist-validation-tests",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "phigs-nist-validation-tests-public-reference",
+  "package_type": "validation-suite-metadata",
+  "public_notes": "Public-reference accession for NIST PHIGS validation test publication metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["nist-phigs-validation-guide"],
+  "storage_class": "external-url"
+}

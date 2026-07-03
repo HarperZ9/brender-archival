@@ -1,0 +1,14 @@
+{
+  "category": "platform-toolchain",
+  "era": "1980s-2000s",
+  "id": "ps2-prodg-eb-linux",
+  "name": "PS2 ProDG / EB / Linux stack",
+  "platforms": ["PlayStation 2", "ProDG", "PS2 Linux", "ps2dev"],
+  "priority": 78,
+  "public_status": "curated-public-metadata",
+  "related_targets": [],
+  "restricted_status": "metadata-only",
+  "revival_lane": "clean-room-and-corporate-outreach",
+  "rights_posture": "rights-holder-needed",
+  "summary": "Public records now track SN Systems/ProDG lineage, Linux for PlayStation 2, and open ps2dev/PS2SDK compatibility lanes."
+}

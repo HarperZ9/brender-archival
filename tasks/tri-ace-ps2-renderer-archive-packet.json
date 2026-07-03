@@ -1,0 +1,11 @@
+{
+  "id": "tri-ace-ps2-renderer-archive-packet",
+  "target_id": "tri-ace-ps2-renderer",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the tri-Ace PS2 renderer packet around public course notes, research-publication records, and documentation-based reconstruction steps.",
+  "inputs": ["tri-Ace publication index", "PBR course notes", "PS2 renderer artifact records"],
+  "outputs": ["standalone archival packet", "technique reconstruction checklist", "public-source bibliography"],
+  "blocked_by": ["tri-ace-ps2-renderer-triage"],
+  "source_ids": ["tri-ace-pbr-course-notes-2010", "tri-ace-rd-publications-index"]
+}

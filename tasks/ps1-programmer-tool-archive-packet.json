@@ -1,0 +1,11 @@
+{
+  "id": "ps1-programmer-tool-archive-packet",
+  "target_id": "ps1-programmer-tool",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the PS1 Programmer's Tool packet around SDevTC, Net Yaroze documentation, runtime-library references, and PSn00bSDK clean-room compatibility.",
+  "inputs": ["public documentation records", "runtime-library metadata", "PSn00bSDK source records"],
+  "outputs": ["standalone archival packet", "toolchain dependency map", "clean-room compatibility notes"],
+  "blocked_by": ["ps1-programmer-tool-triage"],
+  "source_ids": ["internet-archive-net-yaroze-documentation", "internet-archive-sdevtc-aug1998", "redump-ps1-runtime-library-33", "psnoobsdk-github"]
+}

@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "standards-registry-anchor",
+  "evidence_quality": "official-standards-registry",
+  "id": "opengl-registry-spec-anchor",
+  "location": "https://registry.khronos.org/OpenGL/index_gl.php",
+  "notes": "Official registry pointer for OpenGL API, GLSL, extension, GLX, WGL, GLU, header, and XML registry metadata.",
+  "origin": "Khronos OpenGL Registry",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["khronos-opengl-registry", "khronos-opengl-registry-github"],
+  "target_id": "iris-gl-opengl-bridge",
+  "title": "Khronos OpenGL registry specification anchor"
+}

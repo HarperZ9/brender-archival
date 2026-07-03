@@ -1,0 +1,11 @@
+{
+  "claim_scope": "License notices for the public OpenPHIGS source tree based on X Consortium and Sun Microsystems permissions",
+  "confidence": "high",
+  "id": "github-fbradasc-openphigs-license",
+  "notes": "Raw license file used to anchor redistribution posture for the referenced OpenPHIGS source tree.",
+  "publisher": "fbradasc on GitHub",
+  "retrieved_at": "2026-07-02",
+  "source_type": "license-file",
+  "title": "fbradasc/OpenPHIGS LICENSE",
+  "url": "https://raw.githubusercontent.com/fbradasc/OpenPHIGS/main/LICENSE"
+}

@@ -1,0 +1,48 @@
+{
+  "id": "mesa-meson-local-build",
+  "target_id": "mesa",
+  "reproduction_type": "source-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of https://gitlab.freedesktop.org/mesa/mesa.git at the recorded mesa-main-head commit",
+    "Linux, BSD, macOS, Haiku, Windows, or another platform supported by Mesa's Meson build documentation",
+    "Meson and Ninja installed",
+    "C or C++ compiler supported by the selected Mesa platform",
+    "Python 3.10 or newer",
+    "Python Mako module and packaging module where required",
+    "Flex and Bison or platform equivalents for IR and GLSL compiler generation",
+    "driver-specific development dependencies selected from Mesa's configure output"
+  ],
+  "steps": [
+    "clone or update the public Mesa source repository listed in the artifact record",
+    "verify the local checkout commit against the mesa-main-head snapshot record",
+    "install platform package dependencies using Mesa's documented package-manager guidance, such as apt-get build-dep mesa or dnf builddep mesa",
+    "configure an out-of-tree build with meson setup builddir/",
+    "inspect and record configuration with meson configure builddir/",
+    "compile with meson compile -C builddir/",
+    "for a temporary local install, configure a prefix with meson setup builddir/ -Dprefix=\"$MESA_INSTALLDIR\" and install with meson install -C builddir/",
+    "run a simple tool through meson devenv -C builddir to verify the local build path before testing larger applications",
+    "record build logs, selected drivers, produced libraries, ICD files, environment variables, and dependency gaps as public-safe metadata"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "Meson configuration transcript",
+    "compiler transcript",
+    "selected driver and platform option list",
+    "local install manifest",
+    "library or driver output inventory",
+    "runtime environment notes for OpenGL, Vulkan, or OpenCL tests",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "mesa-source-repository",
+    "mesa-license-and-api-summary"
+  ],
+  "task_ids": ["mesa-triage"],
+  "public_notes": "First Mesa reproduction recipe for turning the public source repository and official build documentation into a repeatable local-build track.",
+  "source_ids": [
+    "mesa-source-repository-docs",
+    "mesa-build-docs",
+    "mesa-license-docs"
+  ]
+}

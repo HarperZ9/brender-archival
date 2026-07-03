@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-release",
+  "evidence_quality": "public-source",
+  "id": "open-inventor-source-release",
+  "location": "https://github.com/aumuell/open-inventor",
+  "notes": "Public Open Inventor source release record, preserving SGI-origin scene graph code and LGPL metadata.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["open-inventor-github"],
+  "target_id": "open-inventor",
+  "title": "Open Inventor public source release"
+}

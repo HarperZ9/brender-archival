@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ogre-licensing-record",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "ogre-licensing-record-public-reference",
+  "package_type": "license-metadata",
+  "public_notes": "Public-reference accession for OGRE license metadata.",
+  "rights_review": "open-license",
+  "source_ids": ["ogre-licensing", "ogre-github"],
+  "storage_class": "external-url"
+}

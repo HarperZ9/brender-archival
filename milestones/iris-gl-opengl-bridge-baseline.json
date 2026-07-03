@@ -1,0 +1,8 @@
+{
+  "id": "iris-gl-opengl-bridge-baseline",
+  "target_id": "iris-gl-opengl-bridge",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated IRIS GL and OpenGL bridge source, accession, and task records.",
+  "source_ids": ["khronos-opengl-history", "khronos-opengl-registry", "khronos-opengl-registry-github"]
+}

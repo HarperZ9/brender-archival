@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Pixie feature and historical summary",
+  "confidence": "moderate",
+  "id": "renderpixie-summary",
+  "notes": "Public summary page describing Pixie as a free, open-source RenderMan-like renderer. Used as secondary descriptive evidence only.",
+  "publisher": "RenderPixie",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-summary",
+  "title": "Pixie Renderer summary",
+  "url": "https://www.renderpixie.com/pixie_renderer.html"
+}

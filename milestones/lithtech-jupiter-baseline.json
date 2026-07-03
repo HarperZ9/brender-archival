@@ -1,0 +1,11 @@
+{
+  "evidence": "Public dossier has curated LithTech Jupiter target, source, artifact, accession, task, and reproduction records without holding restricted package contents.",
+  "id": "lithtech-jupiter-baseline",
+  "milestone_type": "public-dossier-established",
+  "source_ids": [
+    "internet-archive-lithtech-jupiter",
+    "internet-archive-lithtech-jupiter-dev-guide"
+  ],
+  "status": "curated",
+  "target_id": "lithtech-jupiter"
+}

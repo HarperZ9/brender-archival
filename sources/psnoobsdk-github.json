@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Open-source PS1 SDK and compatibility development lane",
+  "confidence": "high",
+  "id": "psnoobsdk-github",
+  "notes": "Public repository for an open-source PlayStation SDK. Useful as the clean-room compatibility lane for reviving PS1 development workflows without redistributing Sony SDK files.",
+  "publisher": "GitHub / Lameguy64",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "PSn00bSDK source repository",
+  "url": "https://github.com/Lameguy64/PSn00bSDK/"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "aqsis-triage",
+  "public_notes": "Create public-safe sources and artifact records for Aqsis.",
+  "status": "seeded",
+  "target_id": "aqsis",
+  "task_type": "triage-public-record"
+}

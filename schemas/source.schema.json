@@ -1,0 +1,16 @@
+{
+  "kind": "source",
+  "required": ["id", "title", "source_type", "confidence", "claim_scope"],
+  "properties": {
+    "id": "string",
+    "title": "string",
+    "source_type": "string",
+    "confidence": "string",
+    "claim_scope": "string",
+    "url": "string",
+    "local_pointer": "string",
+    "publisher": "string",
+    "retrieved_at": "string",
+    "notes": "string"
+  }
+}

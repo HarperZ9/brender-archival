@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGL creation as an open alternative to proprietary IRIS GL and the early OpenGL 1.0 lineage",
+  "confidence": "moderate",
+  "id": "khronos-opengl-history",
+  "notes": "Khronos-hosted OpenGL Wiki history page; useful for lineage but still treated as wiki-derived public metadata.",
+  "publisher": "Khronos OpenGL Wiki",
+  "retrieved_at": "2026-07-02",
+  "source_type": "standards-wiki",
+  "title": "History of OpenGL",
+  "url": "https://wikis.khronos.org/opengl/History_of_OpenGL"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "phigs-baseline",
+  "target_id": "phigs",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated PHIGS source, accession, and task records.",
+  "source_ids": ["sourceforge-open-phigs", "github-cern-openphigs", "github-fbradasc-openphigs-license"]
+}

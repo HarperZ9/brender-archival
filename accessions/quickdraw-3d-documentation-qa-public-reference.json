@@ -1,0 +1,11 @@
+{
+  "artifact_id": "quickdraw-3d-documentation-qa",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "quickdraw-3d-documentation-qa-public-reference",
+  "package_type": "documentation-index-metadata",
+  "public_notes": "Public-reference accession for QuickDraw 3D documentation index metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["apple-quickdraw3d-documentation-qa"],
+  "storage_class": "external-url"
+}

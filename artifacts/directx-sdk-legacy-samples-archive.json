@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "successor-sample-archive",
+  "evidence_quality": "official-public-source",
+  "id": "directx-sdk-legacy-samples-archive",
+  "location": "https://github.com/microsoft/DirectX-SDK-Samples",
+  "notes": "Open public archive of legacy DirectX SDK samples for historical and educational reference. Included as a successor-lane record, not as Reality Lab source.",
+  "origin": "public Microsoft GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["microsoft-directx-sdk-samples-github"],
+  "target_id": "reality-lab",
+  "title": "DirectX SDK legacy samples archive"
+}

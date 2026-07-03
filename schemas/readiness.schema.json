@@ -1,0 +1,39 @@
+{
+  "kind": "readiness",
+  "required": [
+    "id",
+    "target_id",
+    "readiness_stage",
+    "build_status",
+    "runtime_status",
+    "test_status",
+    "packaging_status",
+    "modernization_status",
+    "flagship_score",
+    "blockers",
+    "next_actions",
+    "public_notes",
+    "source_ids"
+  ],
+  "properties": {
+    "id": "string",
+    "target_id": "string",
+    "readiness_stage": "string",
+    "build_status": "string",
+    "runtime_status": "string",
+    "test_status": "string",
+    "packaging_status": "string",
+    "modernization_status": "string",
+    "flagship_score": "integer",
+    "blockers": "array",
+    "next_actions": "array",
+    "public_notes": "string",
+    "source_ids": "array",
+    "reproduction_ids": "array",
+    "snapshot_ids": "array",
+    "build_ids": "array",
+    "harness_ids": "array",
+    "attempt_ids": "array",
+    "evidence": "array"
+  }
+}

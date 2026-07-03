@@ -1,0 +1,11 @@
+{
+  "artifact_id": "phigs-standard-public-metadata",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "phigs-standard-public-metadata-public-reference",
+  "package_type": "standards-catalog-metadata",
+  "public_notes": "Public-reference accession for PHIGS ISO standards catalog metadata; standard text is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["iso-phigs-9592-3"],
+  "storage_class": "external-url"
+}

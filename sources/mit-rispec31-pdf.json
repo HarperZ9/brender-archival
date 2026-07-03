@@ -1,0 +1,11 @@
+{
+  "claim_scope": "RenderMan Interface Specification v3.1 public reference copy and RIB conventions",
+  "confidence": "high",
+  "id": "mit-rispec31-pdf",
+  "notes": "Public course-hosted copy of the RenderMan Interface Specification v3.1. Public-reference-only; this repo does not mirror the PDF.",
+  "publisher": "MIT CSAIL course mirror / Pixar",
+  "retrieved_at": "2026-07-02",
+  "source_type": "specification-pdf",
+  "title": "The RenderMan Interface Specification v3.1",
+  "url": "https://groups.csail.mit.edu/graphics/classes/6.838/S97/rispec31_4.pdf"
+}

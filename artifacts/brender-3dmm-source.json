@@ -1,0 +1,15 @@
+{
+  "access_level": "public",
+  "artifact_type": "source-release",
+  "date": "1995-05",
+  "evidence_quality": "public-source",
+  "id": "brender-3dmm-source",
+  "location": "https://github.com/foone/BRender-3DMM",
+  "notes": "Public source release of the BRender variant used by 3D Movie Maker. Date is approximate as stated by the repository.",
+  "origin": "public GitHub repository",
+  "redistribution_status": "open",
+  "source_ids": ["foone-brender-3dmm", "blazingrender-index"],
+  "target_id": "brender",
+  "title": "BRender 3D Movie Maker variant source release",
+  "version": "3DMM variant"
+}

@@ -1,0 +1,11 @@
+{
+  "artifact_id": "quickdraw-3d-manual-154-public-pdf",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "quickdraw-3d-manual-154-public-pdf-public-reference",
+  "package_type": "manual-reference-metadata",
+  "public_notes": "Public-reference accession for QuickDraw 3D 1.5.4 manual metadata; manual PDF is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["apple-quickdraw3d-manual-154-pdf"],
+  "storage_class": "external-url"
+}

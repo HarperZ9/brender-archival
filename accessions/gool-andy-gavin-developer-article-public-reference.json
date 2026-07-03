@@ -1,0 +1,11 @@
+{
+  "artifact_id": "gool-andy-gavin-developer-article",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "gool-andy-gavin-developer-article-public-reference",
+  "package_type": "developer-article-metadata",
+  "public_notes": "Public-reference accession for GOOL developer-history metadata; article text is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["andy-gavin-gool-article"],
+  "storage_class": "external-url"
+}

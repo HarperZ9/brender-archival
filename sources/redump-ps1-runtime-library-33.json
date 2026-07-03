@@ -1,0 +1,11 @@
+{
+  "claim_scope": "PlayStation Programmer Tool Runtime Library Version 3.3 disc metadata",
+  "confidence": "high",
+  "id": "redump-ps1-runtime-library-33",
+  "notes": "Disc database entry for PlayStation Programmer Tool Runtime Library Version 3.3. Metadata-only record; this repo does not mirror disc images.",
+  "publisher": "Redump",
+  "retrieved_at": "2026-07-02",
+  "source_type": "disc-database",
+  "title": "PlayStation Programmer Tool Runtime Library Version 3.3 Redump entry",
+  "url": "https://redump.org/disc/50387/"
+}

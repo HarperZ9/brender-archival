@@ -1,0 +1,8 @@
+{
+  "id": "pixie-baseline",
+  "target_id": "pixie",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated Pixie source, accession, and task records.",
+  "source_ids": ["pixie-github-mirror", "pixie-sourceforge", "renderpixie-summary"]
+}

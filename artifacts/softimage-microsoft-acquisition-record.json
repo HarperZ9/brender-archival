@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "acquisition-lineage-record",
+  "date": "1994-02-14",
+  "evidence_quality": "official-corporate-history",
+  "id": "softimage-microsoft-acquisition-record",
+  "location": "https://learn.microsoft.com/en-us/shows/history/history-of-microsoft-1994",
+  "notes": "Public metadata anchor for Softimage's Microsoft era and Windows NT workstation transition. No commercial software or license material is mirrored.",
+  "origin": "Microsoft Learn corporate history",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["microsoft-history-1994-softimage", "microsoft-softimage-3d-nt-release"],
+  "target_id": "softimage-alias-bridge",
+  "title": "Softimage Microsoft acquisition record"
+}

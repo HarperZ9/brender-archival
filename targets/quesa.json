@@ -1,0 +1,14 @@
+{
+  "category": "compatibility-library",
+  "era": "1980s-2000s",
+  "id": "quesa",
+  "name": "Quesa",
+  "platforms": ["macOS", "Windows", "OpenGL", "QuickDraw 3D API", "3DMF"],
+  "priority": 70,
+  "public_status": "curated-public-sources",
+  "related_targets": ["quickdraw-3d"],
+  "restricted_status": "none-known",
+  "revival_lane": "public-source-preservation",
+  "rights_posture": "open",
+  "summary": "Public records now track Quesa's QuickDraw 3D API reimplementation source and early cross-platform release reporting."
+}

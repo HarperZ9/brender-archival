@@ -1,0 +1,7 @@
+{
+  "id": "softimage-alias-bridge-triage",
+  "public_notes": "Create public-safe sources and artifact records for Softimage / Alias bridge.",
+  "status": "seeded",
+  "target_id": "softimage-alias-bridge",
+  "task_type": "triage-public-record"
+}

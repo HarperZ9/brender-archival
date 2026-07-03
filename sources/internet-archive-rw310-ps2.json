@@ -1,0 +1,11 @@
+{
+  "claim_scope": "RenderWare SDK 3.10 PS2 public archive item metadata",
+  "confidence": "moderate",
+  "id": "internet-archive-rw310-ps2",
+  "notes": "Internet Archive item metadata for an SDK package. This repo does not mirror or redistribute SDK files.",
+  "publisher": "Internet Archive",
+  "retrieved_at": "2026-07-02",
+  "source_type": "archive-item",
+  "title": "Renderware SDK 3.10 PS2 archive item",
+  "url": "https://archive.org/details/rw310-ps2"
+}

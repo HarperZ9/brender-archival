@@ -1,0 +1,11 @@
+{
+  "artifact_id": "directx-sdk-legacy-samples-archive",
+  "capture_status": "planned",
+  "fixity_status": "not-started",
+  "id": "directx-sdk-legacy-samples-archive-planned",
+  "package_type": "sample-source-snapshot",
+  "public_notes": "Planned accession for public Microsoft legacy DirectX SDK sample sources.",
+  "rights_review": "open-license",
+  "source_ids": ["microsoft-directx-sdk-samples-github"],
+  "storage_class": "external-url"
+}

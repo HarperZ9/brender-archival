@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "api-lineage-record",
+  "evidence_quality": "standards-wiki-reference",
+  "id": "iris-gl-opengl-history-record",
+  "location": "https://wikis.khronos.org/opengl/History_of_OpenGL",
+  "notes": "Public lineage pointer for OpenGL as an open successor path from SGI's proprietary IRIS GL. Treat as metadata and corroborate before using for fine-grained claims.",
+  "origin": "Khronos OpenGL Wiki history page",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["khronos-opengl-history"],
+  "target_id": "iris-gl-opengl-bridge",
+  "title": "IRIS GL to OpenGL public history record"
+}

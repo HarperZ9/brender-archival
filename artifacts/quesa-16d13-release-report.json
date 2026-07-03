@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "release-report",
+  "evidence_quality": "trade-press-archive",
+  "id": "quesa-16d13-release-report",
+  "location": "https://www.gamedeveloper.com/game-platforms/open-source-implementation-of-quick-draw-3d-updated",
+  "notes": "Public report on Quesa 1.6d13 as an open-source QuickDraw 3D API implementation with cross-platform compatibility.",
+  "origin": "Game Developer archive",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["gamedeveloper-quesa-16d13", "quesa-github"],
+  "target_id": "quesa",
+  "title": "Quesa 1.6d13 release report",
+  "version": "1.6d13"
+}

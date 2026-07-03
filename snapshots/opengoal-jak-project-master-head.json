@@ -1,0 +1,12 @@
+{
+  "id": "opengoal-jak-project-master-head",
+  "artifact_id": "opengoal-jak-project-source",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/open-goal/jak-project.git",
+  "ref": "refs/heads/master",
+  "commit": "2490c94e97f8cd7a15b9a9803f80bbf748a5553b",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/open-goal/jak-project.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the OpenGOAL jak-project source repository.",
+  "source_ids": ["opengoal-jak-project-github", "opengoal-license"]
+}

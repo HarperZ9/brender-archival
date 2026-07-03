@@ -1,0 +1,32 @@
+{
+  "artifacts_policy": "The materialized harness, configure tree, build tree, smoke executables, the brender_core_float library, and the generated PPM render output were kept outside this metadata repo. No generated binaries, copied BRender source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-render-smoke",
+  "blockers": [
+    "the render smoke still requires a 32-bit C target because the unreworked period code stores some pointer-shaped values in 32-bit fields",
+    "rendering coverage is limited to a wireframe drawn through the pure-C memory pixelmap dispatch; the assembly softrend rasterizer, shaded triangles, textures, and z-buffering are not exercised",
+    "the portable core and host fallback stubs still lack semantic tests for the DOS, driver, and rendering behavior they stand in for",
+    "image output is a raw PPM dump of the pixelmap buffer; the native BrPixelmapSave datafile path and drivers are not built yet"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness --source-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132 --output-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-render-smoke-2026-07-03; cmake -S C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-render-smoke-2026-07-03 -B C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-render-smoke-2026-07-03 -A Win32 -DBRENDER_SOURCE_DIR=C:\\dev\\public\\engine-revival-workspaces\\brender-v132; cmake --build C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-render-smoke-2026-07-03 --config Debug --target brender_core_smoke; cmake --build ... --target brender_core_startup_smoke; cmake --build ... --target brender_core_render_smoke; ctest --test-dir C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-render-smoke-2026-07-03 -C Debug --output-on-failure",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe with Visual Studio 18 2026 and MSVC 19.50.35721.0, Win32 Debug target",
+  "id": "brender-v132-portable-core-render-smoke",
+  "next_actions": [
+    "add semantic tests for the portable core and memory fallback functions before treating the wireframe path as a production renderer",
+    "extend the render smoke toward filled and shaded primitives once the generic renderer path is audited",
+    "translate the softrend driver so the hardware-free rasterizer covers triangles, textures, and depth",
+    "keep generated binaries and PPM output out of git unless an intentional release package is reviewed"
+  ],
+  "public_notes": "This attempt is the first BRender revival milestone that produces an actual rendered image rather than only starting the framework. The generated harness materializes a brender_core_render_smoke target that starts BRender, allocates a BR_PMT_RGB_888 memory pixelmap, builds a real BrMatrix4Perspective projection, transforms a unit cube through BrMatrix4Mul and BrMatrix4ApplyP, draws the twelve edges with BrPixelmapLine, reads pixels back with BrPixelmapPixelGet to self-verify, and dumps a 320x240 PPM. Every plotting call flows through the pure-C memory pixelmap dispatch in core/pixelmap/pmmem.c backed by the harness _Mem* primitives; the assembly softrend driver is not used. The program produced 1051 lit pixels and passed as CTest case 3 of 3 under a Visual Studio Win32 Debug target. It does not claim x64 portability, shaded or textured rendering, the native datafile save path, drivers, warning cleanup, or release packaging.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "The guarded harness configured with -A Win32, built brender_core_float.lib plus all three smoke executables, direct-ran brender_core_render_smoke.exe with exit 0 (320x240 RGB_888, 1051 lit pixels, eight cube vertices projected inside the viewport, PPM written), and passed 3/3 CTest cases with -C Debug.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-render-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-render-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-vector-render-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-render-smoke-2026-07-03.txt"
+}

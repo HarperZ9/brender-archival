@@ -1,0 +1,17 @@
+{
+  "access_level": "public",
+  "artifact_type": "official-title-metadata",
+  "evidence_quality": "official-platform-pages",
+  "id": "team-ico-playstation-official-pages",
+  "location": "https://www.playstation.com/en-us/games/the-last-guardian/",
+  "notes": "Public metadata bundle for Team Ico-related PlayStation titles. Records official product-page pointers only; no game binaries, assets, or private production material.",
+  "origin": "PlayStation official product pages and PlayStation Blog",
+  "redistribution_status": "public-reference-only",
+  "source_ids": [
+    "playstation-store-the-last-guardian",
+    "playstation-store-shadow-of-the-colossus",
+    "playstation-blog-team-ico-collection-2010"
+  ],
+  "target_id": "japan-studio-team-ico",
+  "title": "Team Ico official PlayStation public pages"
+}

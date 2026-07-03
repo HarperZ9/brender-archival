@@ -1,0 +1,14 @@
+{
+  "artifact_id": "japan-studio-restructure-public-report",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "japan-studio-restructure-public-report-public-reference",
+  "package_type": "studio-reorganization-metadata",
+  "public_notes": "Public-reference accession for Japan Studio reorganization and Team Asobi continuity metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": [
+    "playstation-blog-team-asobi-2021",
+    "siliconera-japan-studio-reorganization"
+  ],
+  "storage_class": "external-url"
+}

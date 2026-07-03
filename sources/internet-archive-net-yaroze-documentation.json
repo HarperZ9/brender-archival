@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Net Yaroze documentation set contents and public metadata",
+  "confidence": "high",
+  "id": "internet-archive-net-yaroze-documentation",
+  "notes": "Internet Archive record for Sony Computer Entertainment Net Yaroze documentation including user, startup, library, and MIPS reference material. This repo records metadata and does not mirror documentation files.",
+  "publisher": "Internet Archive",
+  "retrieved_at": "2026-07-02",
+  "source_type": "documentation-archive",
+  "title": "Net Yaroze documentation archive item",
+  "url": "https://archive.org/details/NetYarozeDocumentation"
+}

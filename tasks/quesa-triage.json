@@ -1,0 +1,7 @@
+{
+  "id": "quesa-triage",
+  "public_notes": "Create public-safe sources and artifact records for Quesa.",
+  "status": "seeded",
+  "target_id": "quesa",
+  "task_type": "triage-public-record"
+}

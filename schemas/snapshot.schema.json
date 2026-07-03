@@ -1,0 +1,27 @@
+{
+  "kind": "snapshot",
+  "required": [
+    "id",
+    "artifact_id",
+    "snapshot_type",
+    "source_url",
+    "ref",
+    "commit",
+    "retrieved_at",
+    "capture_command",
+    "public_notes",
+    "source_ids"
+  ],
+  "properties": {
+    "id": "string",
+    "artifact_id": "string",
+    "snapshot_type": "string",
+    "source_url": "string",
+    "ref": "string",
+    "commit": "string",
+    "retrieved_at": "string",
+    "capture_command": "string",
+    "public_notes": "string",
+    "source_ids": "array"
+  }
+}

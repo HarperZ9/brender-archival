@@ -1,0 +1,11 @@
+{
+  "claim_scope": "RenderWare3 PS2 Gold 1.3 update release notes content and rights warning",
+  "confidence": "high",
+  "id": "internet-archive-renderware-ps2-gold-notes",
+  "notes": "Public OCR text of release notes. The text itself states the software was furnished under license or NDA, so this repo records metadata only.",
+  "publisher": "Internet Archive",
+  "retrieved_at": "2026-07-02",
+  "source_type": "release-notes-ocr",
+  "title": "RenderWare3 (PS2 Gold - 1.3 update) Release Notes",
+  "url": "https://archive.org/stream/render-ware-3-ps-2-gold-1.3-update-release-notes/RenderWare3%20%28PS2%20Gold%20-%201.3%20update%29%20Release%20Notes_djvu.txt"
+}

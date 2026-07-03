@@ -1,0 +1,7 @@
+{
+  "id": "phigs-triage",
+  "public_notes": "Create public-safe sources and artifact records for PHIGS.",
+  "status": "seeded",
+  "target_id": "phigs",
+  "task_type": "triage-public-record"
+}

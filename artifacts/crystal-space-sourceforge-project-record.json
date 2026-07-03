@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "project-registry-record",
+  "evidence_quality": "public-project-registry",
+  "id": "crystal-space-sourceforge-project-record",
+  "location": "https://sourceforge.net/projects/crystal/",
+  "notes": "Primary public project-registry record for Crystal Space, including platform support and feature summary.",
+  "origin": "SourceForge project registry",
+  "redistribution_status": "open",
+  "source_ids": ["crystal-space-sourceforge"],
+  "target_id": "crystal-space",
+  "title": "Crystal Space SourceForge project record"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "ps2-prodg-eb-linux-archive-packet",
+  "target_id": "ps2-prodg-eb-linux",
+  "task_type": "build-archive-packet",
+  "status": "planned",
+  "public_notes": "Build the PS2 ProDG / EB / Linux packet around public Linux material, PS2SDK clean-room records, SN Systems lineage, and toolchain-dependency notes.",
+  "inputs": ["PS2 Linux records", "PS2SDK records", "SN Systems public lineage"],
+  "outputs": ["standalone archival packet", "toolchain dependency map", "rights-boundary notes"],
+  "blocked_by": ["ps2-prodg-eb-linux-triage"],
+  "source_ids": ["sie-ps2-linux-release-2002", "internet-archive-ps2-linux-pal-discs", "ps2dev-site", "ps2dev-ps2sdk-github", "sie-sn-systems-acquisition-2005"]
+}

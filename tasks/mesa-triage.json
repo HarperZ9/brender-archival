@@ -1,0 +1,7 @@
+{
+  "id": "mesa-triage",
+  "public_notes": "Create public-safe sources and artifact records for Mesa.",
+  "status": "seeded",
+  "target_id": "mesa",
+  "task_type": "triage-public-record"
+}

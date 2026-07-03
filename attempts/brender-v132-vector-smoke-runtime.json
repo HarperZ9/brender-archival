@@ -1,0 +1,31 @@
+{
+  "artifacts_policy": "The materialized harness, configure tree, build tree, smoke executable, and transcripts were kept outside this metadata repo. No generated binaries, copied source, private assets, or restricted SDK material are committed.",
+  "attempt_type": "cmake-runtime-smoke",
+  "blockers": [
+    "runtime coverage is limited to a vector math smoke that exercises BrVector3SetFloat and BrScalarToFloat",
+    "framework startup smoke with BrBegin and BrEnd still needs period ASM or portable fallback modeling for magicsym, memloops, and font symbols plus host-image platform definitions",
+    "drivers and deferred FIXED variants are not built yet"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness --source-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132 --output-root C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-smoke-2026-07-03; cmake -S C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-harness-smoke-2026-07-03 -B C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-smoke-2026-07-03 -DBRENDER_SOURCE_DIR=C:\\dev\\public\\engine-revival-workspaces\\brender-v132; cmake --build C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-smoke-2026-07-03 --target brender_core_smoke; ctest --test-dir C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-smoke-2026-07-03 -C Debug --output-on-failure",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe",
+  "id": "brender-v132-vector-smoke-runtime",
+  "next_actions": [
+    "expand the smoke target from vector math to framework startup after period ASM, portable fallback symbols, and host-image platform definitions are modeled",
+    "audit and classify the x64 MSVC warning transcript",
+    "translate deferred FIXED variants and driver targets",
+    "keep generated binaries out of git unless an intentional release package is reviewed"
+  ],
+  "public_notes": "This attempt verifies the first runtime smoke for the BRender pilot. The generated brender_core_smoke executable links against the out-of-tree brender_core_float library and passes CTest under the Visual Studio Debug configuration. It does not claim BrBegin framework startup, warning cleanup, packaging, drivers, or FIXED variants.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "The smoke harness configured with Visual Studio 18 2026, built brender_core_float.lib and brender_core_smoke.exe with MSVC 19.50.35721.0, and passed 1/1 CTest case with -C Debug.",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-configure-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-smoke-rerun-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-debug-smoke-2026-07-03.txt"
+}

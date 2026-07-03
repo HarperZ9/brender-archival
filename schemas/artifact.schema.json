@@ -1,0 +1,29 @@
+{
+  "kind": "artifact",
+  "required": [
+    "id",
+    "target_id",
+    "artifact_type",
+    "title",
+    "origin",
+    "redistribution_status",
+    "access_level",
+    "evidence_quality"
+  ],
+  "properties": {
+    "id": "string",
+    "target_id": "string",
+    "artifact_type": "string",
+    "title": "string",
+    "origin": "string",
+    "redistribution_status": "string",
+    "access_level": "string",
+    "evidence_quality": "string",
+    "version": "string",
+    "date": "string",
+    "location": "string",
+    "hashes": "object",
+    "source_ids": "array",
+    "notes": "string"
+  }
+}

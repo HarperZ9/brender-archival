@@ -1,0 +1,11 @@
+{
+  "artifact_id": "ps1-runtime-library-33-redump-entry",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "ps1-runtime-library-33-redump-entry-metadata-only",
+  "package_type": "disc-metadata",
+  "public_notes": "Metadata-only accession for a public disc database record; disc image not held or redistributed here.",
+  "rights_review": "do-not-redistribute",
+  "source_ids": ["redump-ps1-runtime-library-33"],
+  "storage_class": "not-held"
+}

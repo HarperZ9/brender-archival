@@ -1,0 +1,7 @@
+{
+  "id": "gool-goal-triage",
+  "public_notes": "Create public-safe sources and artifact records for GOOL and GOAL.",
+  "status": "seeded",
+  "target_id": "gool-goal",
+  "task_type": "triage-public-record"
+}

@@ -1,0 +1,14 @@
+{
+  "category": "graphics-library",
+  "era": "1980s-2000s",
+  "id": "mesa",
+  "name": "Mesa",
+  "platforms": ["Linux", "BSD", "OpenGL", "OpenGL ES", "Vulkan", "OpenCL"],
+  "priority": 72,
+  "public_status": "curated-public-sources",
+  "related_targets": ["iris-gl-opengl-bridge", "opengl-performer"],
+  "restricted_status": "none-known",
+  "revival_lane": "public-source-preservation",
+  "rights_posture": "open",
+  "summary": "Public records now track Mesa's official API summary, upstream freedesktop.org repository documentation, and license posture."
+}

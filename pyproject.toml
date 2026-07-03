@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "engine-revival"
+version = "0.1.0"
+description = "brender-archival: revival of Argonaut BRender and the tooling spine for reviving historical rendering and game engines."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "Zain Dana Harper" }]
+keywords = ["brender", "game-engines", "rendering", "preservation", "archives", "provenance"]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+engine-revival = "engine_revival.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

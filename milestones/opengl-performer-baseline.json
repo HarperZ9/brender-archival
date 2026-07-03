@@ -1,0 +1,8 @@
+{
+  "id": "opengl-performer-baseline",
+  "target_id": "opengl-performer",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated OpenGL Performer source, accession, and task records.",
+  "source_ids": ["sgi-opengl-performer-getting-started-30", "sgi-opengl-performer-brochure", "sgi-opengl-performer-programmers-guide-32"]
+}

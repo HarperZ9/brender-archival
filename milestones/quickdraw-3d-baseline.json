@@ -1,0 +1,8 @@
+{
+  "id": "quickdraw-3d-baseline",
+  "target_id": "quickdraw-3d",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated QuickDraw 3D source, accession, and task records.",
+  "source_ids": ["apple-quickdraw3d-documentation-qa", "apple-quickdraw3d-manual-154-pdf"]
+}

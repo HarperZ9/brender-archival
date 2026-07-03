@@ -1,0 +1,14 @@
+{
+  "category": "rendering-standard",
+  "era": "1980s-2000s",
+  "id": "renderman-interface",
+  "name": "RenderMan Interface",
+  "platforms": ["RenderMan Interface", "RIB", "RSL", "production rendering"],
+  "priority": 74,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["aqsis", "pixie"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "documentation-anchor",
+  "rights_posture": "public-reference-only",
+  "summary": "Public records now anchor the RenderMan Interface to a public v3.1 specification copy and related open renderer lanes."
+}

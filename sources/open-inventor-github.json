@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Open Inventor public source repository, SGI origin, OpenGL scene graph role, and LGPL metadata",
+  "confidence": "high",
+  "id": "open-inventor-github",
+  "notes": "Public repository describes Open Inventor as a C++ object-oriented scene graph library layered on OpenGL, originally developed by SGI, with LGPL-2.1 metadata.",
+  "publisher": "GitHub / aumuell",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "Open Inventor source repository",
+  "url": "https://github.com/aumuell/open-inventor"
+}

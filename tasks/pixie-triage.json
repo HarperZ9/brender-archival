@@ -1,0 +1,7 @@
+{
+  "id": "pixie-triage",
+  "public_notes": "Create public-safe sources and artifact records for Pixie.",
+  "status": "seeded",
+  "target_id": "pixie",
+  "task_type": "triage-public-record"
+}

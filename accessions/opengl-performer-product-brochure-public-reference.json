@@ -1,0 +1,11 @@
+{
+  "artifact_id": "opengl-performer-product-brochure",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "opengl-performer-product-brochure-public-reference",
+  "package_type": "product-brochure-metadata",
+  "public_notes": "Public-reference accession for OpenGL Performer brochure metadata; brochure PDF is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["sgi-opengl-performer-brochure"],
+  "storage_class": "external-url"
+}

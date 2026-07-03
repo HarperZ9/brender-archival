@@ -1,0 +1,11 @@
+{
+  "artifact_id": "net-yaroze-documentation-set",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "net-yaroze-documentation-set-public-reference",
+  "package_type": "documentation-metadata",
+  "public_notes": "Public-reference accession for Net Yaroze documentation metadata; archival master not stored in git.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["internet-archive-net-yaroze-documentation"],
+  "storage_class": "external-url"
+}

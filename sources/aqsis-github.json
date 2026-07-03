@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Aqsis public source repository, RenderMan compatibility claim, tool list, and license metadata",
+  "confidence": "high",
+  "id": "aqsis-github",
+  "notes": "Public repository for Aqsis, describing a RenderMan-compatible renderer suite with renderer, shader compiler, texture tooling, and GPL license metadata.",
+  "publisher": "GitHub / Aqsis Team",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "Aqsis source repository",
+  "url": "https://github.com/aqsis/aqsis"
+}

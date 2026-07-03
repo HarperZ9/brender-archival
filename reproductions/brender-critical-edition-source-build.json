@@ -1,0 +1,44 @@
+{
+  "id": "brender-critical-edition-source-build",
+  "target_id": "brender",
+  "reproduction_type": "source-build",
+  "status": "planned",
+  "environment": [
+    "clean working checkout outside the public metadata repo",
+    "public BRender v1.3.2 source branch",
+    "public BRender 3D Movie Maker source branch",
+    "period-appropriate DOS/Windows C toolchain or documented compatibility layer",
+    "local build log and dependency manifest captured as derived metadata"
+  ],
+  "steps": [
+    "mirror the public source branches listed in the BRender artifact records",
+    "record source commit identifiers, archive URLs, and local snapshot hashes",
+    "identify compiler, SDK, and platform assumptions from repository docs and source tree layout",
+    "attempt a clean build of the v1.3.2 branch without proprietary inputs",
+    "attempt a clean build of the 3D Movie Maker branch without proprietary inputs",
+    "record build commands, compiler diagnostics, missing dependencies, and successful outputs",
+    "promote repeatable commands into the BRender critical-edition packet"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "build environment manifest",
+    "compiler transcript",
+    "dependency gap list",
+    "sample binary or library output when the public source builds",
+    "critical-edition reproduction notes"
+  ],
+  "artifact_ids": [
+    "brender-v132-source",
+    "brender-3dmm-source",
+    "brender-preservation-index"
+  ],
+  "task_ids": [
+    "brender-critical-edition-packet"
+  ],
+  "public_notes": "First public reproduction recipe for turning BRender from archived source records into a repeatable critical-edition build track.",
+  "source_ids": [
+    "foone-brender-v132",
+    "foone-brender-3dmm",
+    "blazingrender-index"
+  ]
+}

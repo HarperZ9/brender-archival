@@ -1,0 +1,11 @@
+{
+  "id": "pixar-renderman-interface-ri-docs",
+  "title": "RenderMan Interface (Ri)",
+  "source_type": "official-documentation",
+  "confidence": "high",
+  "claim_scope": "Official public RenderMan Interface documentation for Ri API concepts",
+  "url": "https://rmanwiki-26.pixar.com/space/REN26/19662055/RenderMan%2BInterface%2B%28Ri%29",
+  "publisher": "Pixar RenderMan",
+  "retrieved_at": "2026-07-02",
+  "notes": "Official public RenderMan wiki page describing the RenderMan Interface as a standard interface between modeling programs and high-quality rendering programs."
+}

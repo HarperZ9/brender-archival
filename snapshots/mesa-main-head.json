@@ -1,0 +1,12 @@
+{
+  "id": "mesa-main-head",
+  "artifact_id": "mesa-source-repository",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://gitlab.freedesktop.org/mesa/mesa.git",
+  "ref": "refs/heads/main",
+  "commit": "99637537e1b33afb21b21bb39290b647b7b67e59",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://gitlab.freedesktop.org/mesa/mesa.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream main branch head for the Mesa freedesktop.org source repository.",
+  "source_ids": ["mesa-source-repository-docs"]
+}

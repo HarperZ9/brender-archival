@@ -1,0 +1,14 @@
+{
+  "category": "studio-lineage",
+  "era": "1980s-2000s",
+  "id": "japan-studio-team-ico",
+  "name": "Japan Studio / Team Ico",
+  "platforms": ["PlayStation 2", "PlayStation 3", "PlayStation 4", "ICO", "Shadow of the Colossus", "The Last Guardian"],
+  "priority": 69,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["ps2-prodg-eb-linux"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "oral-history-and-binary-archaeology",
+  "rights_posture": "restricted",
+  "summary": "Restricted-rights Team Ico and Japan Studio public metadata slice using official PlayStation pages, public interviews, and reorganization reporting only."
+}

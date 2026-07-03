@@ -1,0 +1,47 @@
+{
+  "id": "quesa-source-build",
+  "target_id": "quesa",
+  "reproduction_type": "source-reimplementation-build",
+  "status": "planned",
+  "environment": [
+    "clean checkout of the public Quesa repository at the recorded quesa-master-head commit",
+    "host compiler and platform dependencies selected from public repository files",
+    "public/open QuickDraw 3D compatibility examples or procedural test inputs",
+    "no proprietary Apple SDK redistributables committed to this repository",
+    "local build transcript and compatibility notes captured as derived metadata"
+  ],
+  "steps": [
+    "clone or update the public Quesa source repository listed in the artifact record",
+    "verify the local checkout commit against the quesa-master-head snapshot record",
+    "use public repository metadata and release-history sources to identify supported platforms and dependency assumptions",
+    "configure and compile the QuickDraw 3D API reimplementation with public/open dependencies",
+    "run a minimal public-safe API or scene smoke test when available",
+    "record build commands, compatibility notes, diagnostics, produced outputs, and dependency gaps as public metadata",
+    "promote repeatable commands into the Quesa / QuickDraw 3D compatibility packet"
+  ],
+  "expected_outputs": [
+    "source snapshot manifest",
+    "build environment manifest",
+    "compiler transcript",
+    "library output inventory",
+    "QuickDraw 3D compatibility notes",
+    "public-safe smoke-test notes",
+    "dependency gap list"
+  ],
+  "artifact_ids": [
+    "quesa-source-reimplementation",
+    "quesa-16d13-release-report",
+    "quickdraw-3d-documentation-qa",
+    "quickdraw-3d-manual-154-public-pdf"
+  ],
+  "task_ids": [
+    "quesa-triage"
+  ],
+  "public_notes": "Planned reproduction recipe for rebuilding Quesa as a public QuickDraw 3D API compatibility lane.",
+  "source_ids": [
+    "quesa-github",
+    "gamedeveloper-quesa-16d13",
+    "apple-quickdraw3d-documentation-qa",
+    "apple-quickdraw3d-manual-154-pdf"
+  ]
+}

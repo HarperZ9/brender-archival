@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Crystal Space public source repository, LGPL license metadata, and documentation pointers",
+  "confidence": "high",
+  "id": "crystal-space-github",
+  "notes": "Public repository records LGPL licensing, source/documentation layout, and online manual/API pointers.",
+  "publisher": "GitHub / crystalspace",
+  "retrieved_at": "2026-07-02",
+  "source_type": "repository",
+  "title": "Crystal Space source repository",
+  "url": "https://github.com/crystalspace/CS"
+}

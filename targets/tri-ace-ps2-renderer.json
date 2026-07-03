@@ -1,0 +1,14 @@
+{
+  "category": "rendering-technique",
+  "era": "1980s-2000s",
+  "id": "tri-ace-ps2-renderer",
+  "name": "tri-Ace PS2 renderer",
+  "platforms": ["PlayStation 2", "tri-Ace", "GDC", "SIGGRAPH"],
+  "priority": 74,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["ps2-prodg-eb-linux"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "documentation-based-reconstruction",
+  "rights_posture": "public-reference-only",
+  "summary": "Public records now track tri-Ace's official PS2 SH/HDR presentation metadata and successor rendering course notes as public-reference-only lineage."
+}

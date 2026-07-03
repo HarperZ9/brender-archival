@@ -1,0 +1,11 @@
+{
+  "claim_scope": "NIST publication metadata for the User's Guide for the PHIGS Validation Tests Version 2.1",
+  "confidence": "high",
+  "id": "nist-phigs-validation-guide",
+  "notes": "Official NIST publication page used to anchor PHIGS conformance and validation-test history.",
+  "publisher": "National Institute of Standards and Technology",
+  "retrieved_at": "2026-07-02",
+  "source_type": "government-publication",
+  "title": "User's Guide for the PHIGS Validation Tests (Version 2.1)",
+  "url": "https://www.nist.gov/publications/users-guide-phigs-validation-tests-version-21"
+}

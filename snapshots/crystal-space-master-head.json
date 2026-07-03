@@ -1,0 +1,12 @@
+{
+  "id": "crystal-space-master-head",
+  "artifact_id": "crystal-space-github-source-repository",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/crystalspace/CS.git",
+  "ref": "refs/heads/master",
+  "commit": "3029384a26f1f16d0fa7b05142c2d8aaf5102726",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/crystalspace/CS.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the Crystal Space source repository.",
+  "source_ids": ["crystal-space-github", "crystal-space-sourceforge"]
+}

@@ -1,0 +1,14 @@
+{
+  "access_level": "public",
+  "artifact_type": "acquisition-lineage-record",
+  "date": "2008-11-18",
+  "evidence_quality": "official-press-release",
+  "id": "softimage-autodesk-acquisition-record",
+  "location": "https://investors.autodesk.com/news-releases/news-release-details/autodesk-completes-acquisition-softimage",
+  "notes": "Public metadata anchor for Softimage assets entering Autodesk and for the XSI, Face Robot, CAT, and Crosswalk transition context.",
+  "origin": "Autodesk Investor Relations press release",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["autodesk-softimage-acquisition-2008"],
+  "target_id": "softimage-alias-bridge",
+  "title": "Softimage Autodesk acquisition record"
+}

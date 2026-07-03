@@ -1,0 +1,8 @@
+{
+  "id": "psygnosis-studio-liverpool-baseline",
+  "target_id": "psygnosis-studio-liverpool",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated Psygnosis and Studio Liverpool source, accession, and task records.",
+  "source_ids": ["national-museums-liverpool-psygnosis-history", "gamedeveloper-studio-liverpool-closure", "wired-studio-liverpool-closure"]
+}

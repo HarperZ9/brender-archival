@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "build-and-release-notes",
+  "evidence_quality": "public-release-notes",
+  "id": "open-inventor-readme-first-build-notes",
+  "location": "https://github.com/aumuell/open-inventor/blob/master/README.FIRST",
+  "notes": "Public build and source-tree notes for the August 2000 Open Inventor source release.",
+  "origin": "Open Inventor README.FIRST",
+  "redistribution_status": "open",
+  "source_ids": ["open-inventor-readme-first"],
+  "target_id": "open-inventor",
+  "title": "Open Inventor README.FIRST build notes"
+}

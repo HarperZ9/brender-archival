@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "project-registry-record",
+  "evidence_quality": "public-project-registry",
+  "id": "pixie-sourceforge-project-record",
+  "location": "https://sourceforge.net/projects/pixie/",
+  "notes": "Primary public project-registry record for Pixie, including feature summary, operating systems, project activity, and LGPL metadata.",
+  "origin": "SourceForge project registry",
+  "redistribution_status": "open",
+  "source_ids": ["pixie-sourceforge", "renderpixie-summary"],
+  "target_id": "pixie",
+  "title": "Pixie SourceForge project record"
+}

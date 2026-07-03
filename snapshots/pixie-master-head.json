@@ -1,0 +1,12 @@
+{
+  "id": "pixie-master-head",
+  "artifact_id": "pixie-renderer-source-mirror",
+  "snapshot_type": "git-remote-head",
+  "source_url": "https://github.com/daliborgaric/pixie.git",
+  "ref": "refs/heads/master",
+  "commit": "050166a1ab6709b777b75764f27cff3b134bf93c",
+  "retrieved_at": "2026-07-03",
+  "capture_command": "git ls-remote --symref https://github.com/daliborgaric/pixie.git HEAD refs/heads/*",
+  "public_notes": "Verified public upstream master branch head for the Pixie renderer source mirror.",
+  "source_ids": ["pixie-github-mirror", "pixie-sourceforge"]
+}

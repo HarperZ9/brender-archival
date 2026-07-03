@@ -1,0 +1,14 @@
+{
+  "access_level": "metadata-only",
+  "artifact_type": "sdk-archive-metadata",
+  "evidence_quality": "archive-metadata",
+  "id": "renderware-sdk-310-ps2-archive-item",
+  "location": "https://archive.org/details/rw310-ps2",
+  "notes": "Metadata-only record for a public archive item. This repo does not mirror or redistribute SDK files.",
+  "origin": "Internet Archive item metadata",
+  "redistribution_status": "do-not-redistribute",
+  "source_ids": ["internet-archive-rw310-ps2"],
+  "target_id": "renderware-ps2",
+  "title": "RenderWare SDK 3.10 PS2 archive item",
+  "version": "3.10"
+}

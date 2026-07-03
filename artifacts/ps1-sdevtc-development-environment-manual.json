@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "manual-archive",
+  "evidence_quality": "public-manual-metadata",
+  "id": "ps1-sdevtc-development-environment-manual",
+  "location": "https://archive.org/details/SCE-SDevTC-Aug1998",
+  "notes": "Public-reference-only record for the SDevTC manual. This repo does not mirror the manual or proprietary Sony toolchain files.",
+  "origin": "Sony Computer Entertainment manual mirrored by Internet Archive",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["internet-archive-sdevtc-aug1998"],
+  "target_id": "ps1-programmer-tool",
+  "title": "SDevTC Development Environment manual"
+}

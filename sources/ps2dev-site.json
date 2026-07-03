@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Open-source PS2 development environment overview",
+  "confidence": "high",
+  "id": "ps2dev-site",
+  "notes": "Project site describing ps2dev as an open-source PlayStation 2 development environment for applications, games, and homebrew.",
+  "publisher": "ps2dev",
+  "retrieved_at": "2026-07-02",
+  "source_type": "project-site",
+  "title": "ps2dev project site",
+  "url": "https://ps2dev.github.io/"
+}

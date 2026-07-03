@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "open-source-sdk",
+  "evidence_quality": "public-source",
+  "id": "ps2-ps2sdk-open-source-sdk",
+  "location": "https://github.com/ps2dev/ps2sdk",
+  "notes": "Open-source compatibility lane for PS2 application and homebrew development. This is not a ProDG mirror.",
+  "origin": "ps2dev public repository",
+  "redistribution_status": "open",
+  "source_ids": ["ps2dev-ps2sdk-github", "ps2dev-site"],
+  "target_id": "ps2-prodg-eb-linux",
+  "title": "PS2SDK open-source PS2 SDK"
+}

@@ -1,0 +1,32 @@
+{
+  "kind": "target",
+  "required": [
+    "id",
+    "name",
+    "category",
+    "era",
+    "platforms",
+    "priority",
+    "revival_lane",
+    "rights_posture",
+    "summary",
+    "public_status",
+    "restricted_status"
+  ],
+  "properties": {
+    "id": "string",
+    "name": "string",
+    "category": "string",
+    "era": "string",
+    "platforms": "array",
+    "priority": "integer",
+    "revival_lane": "string",
+    "rights_posture": "string",
+    "summary": "string",
+    "public_status": "string",
+    "restricted_status": "string",
+    "related_targets": "array",
+    "notes": "string",
+    "tags": "array"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "category": "renderer",
+  "era": "1980s-2000s",
+  "id": "pixie",
+  "name": "Pixie",
+  "platforms": ["Windows", "Linux", "macOS", "Unix", "RenderMan-like interface"],
+  "priority": 65,
+  "public_status": "curated-public-sources",
+  "related_targets": ["renderman-interface"],
+  "restricted_status": "none-known",
+  "revival_lane": "public-source-preservation",
+  "rights_posture": "open",
+  "summary": "Public records now track Pixie's SourceForge project registry, feature metadata, and public source mirror."
+}

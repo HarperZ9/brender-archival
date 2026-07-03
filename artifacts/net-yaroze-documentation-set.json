@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "documentation-set",
+  "evidence_quality": "public-documentation-metadata",
+  "id": "net-yaroze-documentation-set",
+  "location": "https://archive.org/details/NetYarozeDocumentation",
+  "notes": "Public-reference-only record for the Net Yaroze documentation set. This repo does not mirror Sony documentation files.",
+  "origin": "Sony Computer Entertainment documentation mirrored by Internet Archive",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["internet-archive-net-yaroze-documentation"],
+  "target_id": "ps1-programmer-tool",
+  "title": "Net Yaroze documentation set"
+}

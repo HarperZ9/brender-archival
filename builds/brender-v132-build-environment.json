@@ -1,0 +1,99 @@
+{
+  "blockers": [
+    "portable core build currently targets only the FLOAT core library; FIXED variants and drivers are deferred",
+    "x64 startup is not claimed; the guarded harness requires a 32-bit C target while pointer-width portability is audited",
+    "MSVC builds still emit enum-conversion and const-qualifier warnings that need portability audit",
+    "runtime coverage is limited to vector math plus BrBegin and BrEnd framework startup; scene rendering, drivers, and full V1DB behavior are not covered",
+    "no packaged release artifact is claimed"
+  ],
+  "build_system": "period makefiles with BR_* environment imports",
+  "host_platform": "Windows local probe",
+  "id": "brender-v132-build-environment",
+  "next_actions": [
+    "audit the completed core-library warning transcript",
+    "add semantic tests for the portable host and memory fallback functions before using them for rendering behavior",
+    "translate deferred FIXED variants and driver targets",
+    "model the fw pretok token-generation boundary for reproducible source regeneration"
+  ],
+  "observed_layout": {
+    "c_files": 332,
+    "headers": 350,
+    "makefiles": 68
+  },
+  "make_rule_map": {
+    "core_active_subdirs": [
+      "inc",
+      "fw",
+      "host",
+      "std",
+      "pixelmap",
+      "dosio",
+      "v1db",
+      "math",
+      "fmt"
+    ],
+    "core_variants_active": [
+      "BR_BASE_TYPE=FLOAT"
+    ],
+    "core_variants_disabled": [
+      "BR_BASE_TYPE=FIXED"
+    ],
+    "drivers_active_subdirs": [
+      "vesa",
+      "mcga",
+      "softrend",
+      "pentprim"
+    ],
+    "drivers_disabled_subdirs": [
+      "ddraw"
+    ],
+    "drivers_target_types": [
+      "DRIVER"
+    ],
+    "root_active_subdirs": [
+      "core",
+      "drivers"
+    ],
+    "root_disabled_subdirs": [
+      "tools",
+      "samples"
+    ],
+    "root_imports": [
+      "BR_SOURCE_DIR",
+      "BR_MAKEFILE",
+      "BR_TARGET_DIR",
+      "BR_MAKE_DIR"
+    ]
+  },
+  "public_notes": "BRender v1.3.2 public source was cloned outside the metadata repo and matched the recorded snapshot commit. The source tree exposes period makefiles and project metadata. The portable harness now configures with CMake, builds brender_core_float.lib with explicit period OBJS_C source lists in an external Visual Studio Win32 tree, and passes vector math plus BrBegin/BrEnd framework startup smoke executables through CTest. No generated binary or packaged release is committed.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "required_variables": [
+    "BR_SOURCE_DIR",
+    "BR_MAKEFILE",
+    "BR_TARGET_DIR",
+    "BR_MAKE_DIR"
+  ],
+  "snapshot_ids": [
+    "brender-v132-main-head"
+  ],
+  "source_checkout": "out-of-tree public checkout at recorded snapshot commit d88d0ed41122664b9781015b517db64353e16f19",
+  "source_ids": [
+    "foone-brender-v132",
+    "blazingrender-index"
+  ],
+  "status": "portable-core-framework-startup-smoke-passing",
+  "target_id": "brender",
+  "toolchain_probe": {
+    "available": [
+      "cmake",
+      "Visual Studio 18 2026 CMake generator",
+      "MSVC 19.50.35721.0 via CMake generator",
+      "Visual Studio Win32 target platform"
+    ],
+    "missing": [
+      "make",
+      "nmake",
+      "gcc"
+    ]
+  }
+}

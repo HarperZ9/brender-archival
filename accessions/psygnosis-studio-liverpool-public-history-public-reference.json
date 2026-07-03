@@ -1,0 +1,14 @@
+{
+  "artifact_id": "psygnosis-studio-liverpool-public-history",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "psygnosis-studio-liverpool-public-history-public-reference",
+  "package_type": "studio-lineage-metadata",
+  "public_notes": "Public-reference accession for Psygnosis and Studio Liverpool public history metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": [
+    "national-museums-liverpool-psygnosis-history",
+    "wired-studio-liverpool-closure"
+  ],
+  "storage_class": "external-url"
+}

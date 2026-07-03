@@ -1,0 +1,11 @@
+{
+  "claim_scope": "Softimage 3D for Windows NT release context, production uses, and Microsoft's statement that Softimage merged with Microsoft in 1994",
+  "confidence": "high",
+  "id": "microsoft-softimage-3d-nt-release",
+  "notes": "Official Microsoft news release documenting Softimage's Windows NT transition and production-market positioning.",
+  "publisher": "Microsoft News",
+  "retrieved_at": "2026-07-02",
+  "source_type": "press-release",
+  "title": "Microsoft Delivers High-End 3-D Animation Software for Microsoft Windows NT",
+  "url": "https://news.microsoft.com/source/1996/01/16/microsoft-delivers-high-end-3-d-animation-software-for-microsoft-windows-nt/"
+}

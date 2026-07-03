@@ -1,0 +1,11 @@
+{
+  "claim_scope": "BRender source-release and binary-SDK index",
+  "confidence": "high",
+  "id": "blazingrender-index",
+  "notes": "Curated public index listing BRender source releases and historical binary SDK entries.",
+  "publisher": "BlazingRender.net",
+  "retrieved_at": "2026-07-02",
+  "source_type": "curated-index",
+  "title": "BRender preservation index",
+  "url": "https://blazingrender.net/"
+}

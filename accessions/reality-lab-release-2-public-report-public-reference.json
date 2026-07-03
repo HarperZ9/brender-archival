@@ -1,0 +1,11 @@
+{
+  "artifact_id": "reality-lab-release-2-public-report",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "reality-lab-release-2-public-report-public-reference",
+  "package_type": "trade-press-product-metadata",
+  "public_notes": "Public-reference accession for Reality Lab release-two product report metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["techmonitor-reality-lab-release-1995"],
+  "storage_class": "external-url"
+}

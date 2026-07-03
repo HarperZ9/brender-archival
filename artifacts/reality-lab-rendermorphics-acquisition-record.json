@@ -1,0 +1,13 @@
+{
+  "access_level": "public",
+  "artifact_type": "acquisition-lineage-record",
+  "evidence_quality": "corporate-record-plus-trade-press",
+  "id": "reality-lab-rendermorphics-acquisition-record",
+  "location": "https://www.microsoft.com/en-us/investor/acquisition-history",
+  "notes": "Public lineage record for Microsoft's February 23, 1995 acquisition of RenderMorphics, with trade-press context tying Reality Lab to Microsoft's Windows 3D plans.",
+  "origin": "Microsoft acquisition history and Dr. Dobb's archive",
+  "redistribution_status": "public-reference-only",
+  "source_ids": ["microsoft-acquisition-history-rendermorphics", "drdobbs-reality-lab-windows-plan"],
+  "target_id": "reality-lab",
+  "title": "RenderMorphics acquisition and Reality Lab Windows plan"
+}

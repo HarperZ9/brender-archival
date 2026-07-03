@@ -1,0 +1,7 @@
+{
+  "id": "ps1-programmer-tool-triage",
+  "public_notes": "Create public-safe sources and artifact records for PS1 Programmer's Tool / SDevTC / Net Yaroze.",
+  "status": "seeded",
+  "target_id": "ps1-programmer-tool",
+  "task_type": "triage-public-record"
+}

@@ -1,0 +1,11 @@
+{
+  "artifact_id": "softimage-last-release-transition-faq",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "softimage-last-release-transition-faq-public-reference",
+  "package_type": "product-transition-metadata",
+  "public_notes": "Public-reference accession for Softimage final-release transition metadata; vendor PDF is not mirrored here.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["autodesk-softimage-last-release-faq"],
+  "storage_class": "external-url"
+}

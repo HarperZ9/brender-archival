@@ -1,0 +1,11 @@
+{
+  "claim_scope": "OpenGL-family API and extension registry repository, XML API registry, headers, and related registry tools",
+  "confidence": "high",
+  "id": "khronos-opengl-registry-github",
+  "notes": "Public GitHub repository for the Khronos OpenGL Registry; complements the formal registry page.",
+  "publisher": "KhronosGroup on GitHub",
+  "retrieved_at": "2026-07-02",
+  "source_type": "source-repository",
+  "title": "KhronosGroup/OpenGL-Registry",
+  "url": "https://github.com/KhronosGroup/OpenGL-Registry"
+}

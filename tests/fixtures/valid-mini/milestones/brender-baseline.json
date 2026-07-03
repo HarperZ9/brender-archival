@@ -1,0 +1,8 @@
+{
+  "id": "brender-baseline",
+  "target_id": "brender",
+  "milestone_type": "baseline-public-record",
+  "status": "planned",
+  "evidence": "BRender valid-mini fixture has a public source repository record.",
+  "source_ids": ["brender-github"]
+}

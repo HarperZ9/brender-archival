@@ -1,0 +1,39 @@
+{
+  "kind": "harness",
+  "required": [
+    "id",
+    "target_id",
+    "build_id",
+    "reproduction_id",
+    "status",
+    "harness_type",
+    "entrypoint",
+    "source_policy",
+    "implementation_units",
+    "steps",
+    "expected_outputs",
+    "blockers",
+    "next_actions",
+    "public_notes",
+    "source_ids"
+  ],
+  "properties": {
+    "id": "string",
+    "target_id": "string",
+    "build_id": "string",
+    "reproduction_id": "string",
+    "status": "string",
+    "harness_type": "string",
+    "entrypoint": "string",
+    "materializer_command": "string",
+    "output_policy": "string",
+    "source_policy": "string",
+    "implementation_units": "array",
+    "steps": "array",
+    "expected_outputs": "array",
+    "blockers": "array",
+    "next_actions": "array",
+    "public_notes": "string",
+    "source_ids": "array"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "claim_scope": "ISO public metadata for ISO/IEC 9592-3:1989 PHIGS clear-text archive encoding and its withdrawn status",
+  "confidence": "high",
+  "id": "iso-phigs-9592-3",
+  "notes": "Official ISO standard metadata page. The standard text is not mirrored in this repository.",
+  "publisher": "International Organization for Standardization",
+  "retrieved_at": "2026-07-02",
+  "source_type": "standards-catalog",
+  "title": "ISO/IEC 9592-3:1989",
+  "url": "https://www.iso.org/standard/17363.html"
+}

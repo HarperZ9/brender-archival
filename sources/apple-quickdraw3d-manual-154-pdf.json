@@ -1,0 +1,11 @@
+{
+  "claim_scope": "QuickDraw 3D 1.5.4 API manual, service list, 3DMF, RAVE, and rendering modes",
+  "confidence": "high",
+  "id": "apple-quickdraw3d-manual-154-pdf",
+  "notes": "Public PDF copy of 3D Graphics Programming with QuickDraw 3D 1.5.4. Public-reference-only; this repo does not mirror the PDF.",
+  "publisher": "Apple Computer manual mirror",
+  "retrieved_at": "2026-07-02",
+  "source_type": "manual-pdf",
+  "title": "3D Graphics Programming with QuickDraw 3D 1.5.4",
+  "url": "https://worldcolleges.info/sites/default/files/3D_Graphics_With_QuickDraw_3D.pdf"
+}

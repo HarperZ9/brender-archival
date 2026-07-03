@@ -1,0 +1,8 @@
+{
+  "id": "ps2-prodg-eb-linux-baseline",
+  "target_id": "ps2-prodg-eb-linux",
+  "milestone_type": "public-dossier-established",
+  "status": "curated",
+  "evidence": "Public dossier has curated PS2 ProDG, EB, and Linux stack source, accession, and task records.",
+  "source_ids": ["internet-archive-ps2-linux-pal-discs", "sie-ps2-linux-release-2002", "ps2dev-ps2sdk-github"]
+}

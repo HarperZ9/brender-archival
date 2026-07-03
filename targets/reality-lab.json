@@ -1,0 +1,14 @@
+{
+  "category": "middleware",
+  "era": "1980s-2000s",
+  "id": "reality-lab",
+  "name": "RenderMorphics Reality Lab",
+  "platforms": ["Windows 95", "Windows NT", "WinG", "PlayStation", "Direct3D", "DirectX 2"],
+  "priority": 77,
+  "public_status": "curated-public-metadata",
+  "related_targets": ["brender", "renderware-ps2"],
+  "restricted_status": "metadata-only",
+  "revival_lane": "private-lead-public-metadata",
+  "rights_posture": "rights-holder-needed",
+  "summary": "Public records now track Reality Lab's RenderMorphics lineage, Microsoft's acquisition, release-two reporting, Direct3D successor evidence, and legacy DirectX sample archive."
+}

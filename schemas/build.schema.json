@@ -1,0 +1,38 @@
+{
+  "kind": "build",
+  "required": [
+    "id",
+    "target_id",
+    "reproduction_id",
+    "status",
+    "host_platform",
+    "source_checkout",
+    "snapshot_ids",
+    "toolchain_probe",
+    "build_system",
+    "required_variables",
+    "observed_layout",
+    "blockers",
+    "next_actions",
+    "public_notes",
+    "source_ids"
+  ],
+  "properties": {
+    "id": "string",
+    "target_id": "string",
+    "reproduction_id": "string",
+    "status": "string",
+    "host_platform": "string",
+    "source_checkout": "string",
+    "snapshot_ids": "array",
+    "toolchain_probe": "object",
+    "build_system": "string",
+    "required_variables": "array",
+    "observed_layout": "object",
+    "make_rule_map": "object",
+    "blockers": "array",
+    "next_actions": "array",
+    "public_notes": "string",
+    "source_ids": "array"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "artifact_id": "alias-autodesk-acquisition-record",
+  "capture_status": "metadata-only",
+  "fixity_status": "not-applicable",
+  "id": "alias-autodesk-acquisition-record-public-reference",
+  "package_type": "acquisition-record-metadata",
+  "public_notes": "Public-reference accession for Alias acquisition lineage metadata.",
+  "rights_review": "public-reference-only",
+  "source_ids": ["autodesk-alias-acquisition-2006"],
+  "storage_class": "external-url"
+}

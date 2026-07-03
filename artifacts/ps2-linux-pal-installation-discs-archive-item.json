@@ -1,0 +1,13 @@
+{
+  "access_level": "metadata-only",
+  "artifact_type": "archive-item-metadata",
+  "evidence_quality": "archive-metadata",
+  "id": "ps2-linux-pal-installation-discs-archive-item",
+  "location": "https://archive.org/details/disc-1_20220424",
+  "notes": "Metadata-only record for an Internet Archive item containing PS2 Linux PAL installation disc images. This repo does not mirror or redistribute disc images.",
+  "origin": "Internet Archive item metadata",
+  "redistribution_status": "do-not-redistribute",
+  "source_ids": ["internet-archive-ps2-linux-pal-discs"],
+  "target_id": "ps2-prodg-eb-linux",
+  "title": "PS2 Linux PAL installation discs archive item"
+}
