@@ -1,0 +1,27 @@
+{
+  "artifacts_policy": "The materialized harness, build tree, smoke executables, the brender_core_float library, and the generated PPM output were kept outside this metadata repo. Model datafiles are read in place from the public checkout. No generated binaries, vendored BRender source or assets, or restricted material are committed.",
+  "attempt_type": "cmake-multipart-model-smoke",
+  "blockers": [
+    "the multimodel smoke still requires a 32-bit C target",
+    "parts are rendered with the portable rasterizer's flat shading and per-part tint, not the models' original materials",
+    "part transforms use one shared centre/scale/rotation over the combined bounds; per-part hierarchy transforms stored in the datafile are not applied"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness ...; cmake -S <harness> -B <build> -A Win32 -DBRENDER_SOURCE_DIR=<checkout>; cmake --build <build> --config Debug --target brender_core_multimodel_smoke; ctest --test-dir <build> -C Debug  (test loads ${BRENDER_SOURCE_DIR}/dat/coupe.dat)",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe with Visual Studio 18 2026 and MSVC 19.50.35721.0, Win32 Debug target",
+  "id": "brender-v132-portable-core-multimodel-smoke",
+  "next_actions": [
+    "apply per-part hierarchy transforms from the datafile so assembled scenes match the authored layout",
+    "resolve original materials/textures per part",
+    "keep generated binaries and PPM output out of git"
+  ],
+  "public_notes": "This attempt renders a multi-part datafile whole rather than a single chunk. The generated brender_core_multimodel_smoke target loads every model chunk of dat/coupe.dat with BrModelLoadMany (12 parts, 412 combined vertices), frames them together from their combined bounds, and renders every part into one shared depth buffer so the assembled object composites correctly (658 faces drawn, 5562 lit pixels). Parts are tinted by index to show the separate chunks. All rendering is pure C over the memory pixelmap; the assembly softrend driver is not used. Passed as CTest case 10 of 10 under a Visual Studio Win32 Debug target.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "Built and ran brender_core_multimodel_smoke.exe with exit 0 loading 12 coupe.dat parts and depth-compositing them (658 faces, 5562 lit pixels); passed 10/10 CTest cases with -C Debug.",
+  "source_ids": ["foone-brender-v132", "blazingrender-index"],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-multimodel-2026-07-03.txt"
+}

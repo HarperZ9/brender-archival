@@ -12,7 +12,11 @@
 | brender | [brender-v132-period-defines-build-attempt](attempts/brender-v132-period-defines-build-attempt.md) | cmake-build | failed | brender-v132-portable-core-plan |
 | brender | [brender-v132-portable-core-depth-smoke](attempts/brender-v132-portable-core-depth-smoke.md) | cmake-depth-buffer-smoke | completed | brender-v132-portable-core-plan |
 | brender | [brender-v132-portable-core-fill-smoke](attempts/brender-v132-portable-core-fill-smoke.md) | cmake-solid-shaded-smoke | completed | brender-v132-portable-core-plan |
+| brender | [brender-v132-portable-core-gouraud-smoke](attempts/brender-v132-portable-core-gouraud-smoke.md) | cmake-gouraud-shading-smoke | completed | brender-v132-portable-core-plan |
+| brender | [brender-v132-portable-core-material-smoke](attempts/brender-v132-portable-core-material-smoke.md) | cmake-textured-model-smoke | completed | brender-v132-portable-core-plan |
 | brender | [brender-v132-portable-core-model-smoke](attempts/brender-v132-portable-core-model-smoke.md) | cmake-datafile-model-render-smoke | completed | brender-v132-portable-core-plan |
+| brender | [brender-v132-portable-core-multimodel-smoke](attempts/brender-v132-portable-core-multimodel-smoke.md) | cmake-multipart-model-smoke | completed | brender-v132-portable-core-plan |
+| brender | [brender-v132-portable-core-plotter-smoke](attempts/brender-v132-portable-core-plotter-smoke.md) | cmake-plotter-svg-smoke | completed | brender-v132-portable-core-plan |
 | brender | [brender-v132-portable-core-render-smoke](attempts/brender-v132-portable-core-render-smoke.md) | cmake-render-smoke | completed | brender-v132-portable-core-plan |
 | brender | [brender-v132-portable-core-scene-smoke](attempts/brender-v132-portable-core-scene-smoke.md) | cmake-scene-graph-smoke | completed | brender-v132-portable-core-plan |
 | brender | [brender-v132-portable-core-texture-smoke](attempts/brender-v132-portable-core-texture-smoke.md) | cmake-texture-mapping-smoke | completed | brender-v132-portable-core-plan |

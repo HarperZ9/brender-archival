@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Target | brender |
-| Status | portable-core-datafile-model-render-passing |
+| Status | portable-core-plotter-lane-passing |
 | Type | portable-build-plan |
 | Build | brender-v132-build-environment |
 | Reproduction | brender-critical-edition-source-build |
@@ -34,12 +34,16 @@ This is the first public harness design record for the BRender pilot. It convert
 - core depth smoke target: brender_core_depth_smoke adds a per-pixel float depth buffer and z-test so two overlapping cubes at different depths composite with correct per-pixel occlusion
 - core texture smoke target: brender_core_texture_smoke adds perspective-correct texture mapping (u/w,v/w,1/w interpolation) sampling a checkerboard pixelmap per pixel, depth-tested and shade-modulated
 - core model smoke target: brender_core_model_smoke loads a real period model from a native .dat datafile with BrModelLoad, auto-frames it, and renders every face solid, flat-shaded and depth-buffered
+- core material smoke target: brender_core_material_smoke textures a loaded model through its own br_vertex.map UV coordinates, perspective-correct and depth-buffered
 - portable compatibility sources: compat/brender-portable-core-stubs.c and compat/brender-portable-host-stubs.c
 - CMake platform guard: require a 32-bit C target such as Visual Studio -A Win32
 - core deferred variants: v1db FIXED, math FIXED, fmt FIXED
 - driver order: vesa, mcga, softrend FLOAT/FIXED, pentprim FLOAT/FIXED
 - driver deferred target: ddraw
 - required public source variables: BR_SOURCE_DIR, BR_MAKEFILE, BR_TARGET_DIR, BR_MAKE_DIR
+- core multimodel smoke target: brender_core_multimodel_smoke loads all model chunks of a datafile with BrModelLoadMany and depth-composites them (the full coupe car)
+- core gouraud smoke target: brender_core_gouraud_smoke computes per-vertex normals and interpolates shade across triangles for smooth Gouraud shading
+- core plotter smoke target: brender_core_plotter_smoke emits hidden-line-removed, crease-filtered SVG polylines (plus a raster preview) from a loaded period model, the first Telos Engine plotter-lane capability
 
 ## Steps
 

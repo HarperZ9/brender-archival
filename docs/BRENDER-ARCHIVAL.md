@@ -58,6 +58,8 @@ a PPM, so it doubles as a minimal model viewer for the period asset library.
 - Build BRender's core from a public checkout on a modern MSVC toolchain.
 - Load and render BRender's own period models straight from their datafiles.
 - Extend the portable rasterizer (Gouraud shading, materials, a wider viewer).
+- Plot period models on a pen plotter: `brender_core_plotter_smoke` emits
+  hidden-line-removed SVG polylines from any `.dat` model.
 - Use the harness as the pattern for reviving other engines in this archive.
 
 ## Honestly deferred

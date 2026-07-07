@@ -36,7 +36,7 @@ Open BRender source releases and historical SDK references are now tracked as th
 
 | Readiness | Stage | Build | Score | Next Actions |
 |---|---|---|---:|---|
-| brender-production-readiness | portable-core-datafile-model-render-passing | portable-core-library-and-solid-shaded-smoke-built | 78 | translate the softrend renderer device so BrZbModelRender can produce shaded and depth-buffered scene output; extend the scene smoke to load a model and materials from a BRender datafile; add semantic tests for portable core and host fallback behavior; audit and classify the MSVC warning transcript; translate the deferred FIXED variants after the core library and scene path are stable |
+| brender-production-readiness | portable-core-plotter-lane-passing | portable-core-library-and-solid-shaded-smoke-built | 86 | complete the x64 pointer-width port (resource.c + loader.c fixes done out-of-tree; remaining 32-bit-pointer-field sites need a debugger to pinpoint); translate the softrend 386-assembly renderer for period-accurate rasterization (portable C rasterizer is the current functional replacement); resolve original materials/textures from period .mat/.pal/.pix files and add semantic tests for the portable stubs; apply per-part hierarchy transforms for multi-part assets |
 
 ## Tasks
 
@@ -67,7 +67,7 @@ Open BRender source releases and historical SDK references are now tracked as th
 
 | Harness | Status | Type | Build |
 |---|---|---|---|
-| brender-v132-portable-core-plan | portable-core-datafile-model-render-passing | portable-build-plan | brender-v132-build-environment |
+| brender-v132-portable-core-plan | portable-core-plotter-lane-passing | portable-build-plan | brender-v132-build-environment |
 
 ## Attempts
 
@@ -81,7 +81,11 @@ Open BRender source releases and historical SDK references are now tracked as th
 | brender-v132-period-defines-build-attempt | cmake-build | failed | The updated harness configured and began compiling with MSVC after adding FLOAT, fixed-inline-disabled, and period release build definitions. The build then failed because the harness source glob included files that the period makefiles did not compile as normal C translation units. |
 | brender-v132-portable-core-depth-smoke | cmake-depth-buffer-smoke | completed | Built and ran brender_core_depth_smoke.exe with exit 0 (near cube 6697 px, far cube 1809 px, 4391 far-cube depth rejections proving per-pixel occlusion) and passed 6/6 CTest cases with -C Debug. |
 | brender-v132-portable-core-fill-smoke | cmake-solid-shaded-smoke | completed | The guarded harness configured with -A Win32, built brender_core_float.lib plus all five smoke executables, direct-ran brender_core_fill_smoke.exe with exit 0 (solid flat-shaded cube, 8509 lit pixels, three grey levels), and passed 5/5 CTest cases with -C Debug. |
+| brender-v132-portable-core-gouraud-smoke | cmake-gouraud-shading-smoke | completed | Built and ran brender_core_gouraud_smoke.exe with exit 0 smooth-shading sph32.dat (194 grey levels, 25876 lit); passed 11/11 CTest cases. |
+| brender-v132-portable-core-material-smoke | cmake-textured-model-smoke | completed | Built and ran brender_core_material_smoke.exe with exit 0 texturing dat/sph32.dat through its own UVs (20816 lit pixels, 11 colours); passed 9/9 CTest cases with -C Debug. |
 | brender-v132-portable-core-model-smoke | cmake-datafile-model-render-smoke | completed | Built and ran brender_core_model_smoke.exe with exit 0 loading dat/duck.dat (id 'Object03', 74 verts, 108 faces, 3756 lit pixels) and additionally rendered teapot/skull/torus period models; passed 8/8 CTest cases with -C Debug. |
+| brender-v132-portable-core-multimodel-smoke | cmake-multipart-model-smoke | completed | Built and ran brender_core_multimodel_smoke.exe with exit 0 loading 12 coupe.dat parts and depth-compositing them (658 faces, 5562 lit pixels); passed 10/10 CTest cases with -C Debug. |
+| brender-v132-portable-core-plotter-smoke | cmake-plotter-svg-smoke | completed | Built and ran brender_core_plotter_smoke.exe with exit 0 emitting a hidden-line SVG plot of teapot.dat (1002 segments, occlusion active) plus torus/skull/duck; passed 12/12 CTest cases with -C Debug. |
 | brender-v132-portable-core-render-smoke | cmake-render-smoke | completed | The guarded harness configured with -A Win32, built brender_core_float.lib plus all three smoke executables, direct-ran brender_core_render_smoke.exe with exit 0 (320x240 RGB_888, 1051 lit pixels, eight cube vertices projected inside the viewport, PPM written), and passed 3/3 CTest cases with -C Debug. |
 | brender-v132-portable-core-scene-smoke | cmake-scene-graph-smoke | completed | The guarded harness configured with -A Win32, built brender_core_float.lib plus all four smoke executables, direct-ran brender_core_scene_smoke.exe with exit 0 (v1db scene database, actor tree, engine-prepared cube radius 1.732, BrActorToScreenMatrix4 projection, 1382 lit pixels, PPM written), and passed 4/4 CTest cases with -C Debug. |
 | brender-v132-portable-core-texture-smoke | cmake-texture-mapping-smoke | completed | Built and ran brender_core_texture_smoke.exe with exit 0 (11855 lit pixels, both checkerboard colours present, perspective-correct mapping) and passed 7/7 CTest cases with -C Debug. |

@@ -7,6 +7,20 @@ work valuable.
 The goal is to become the public source of record for lost, fragmented, and
 historically important rendering engines and game engines.
 
+## Two Roles
+
+The archive does two things, and keeps them distinct:
+
+1. It hosts archival restorations of the engines it rebuilds itself, with a
+   reproducible harness and a verified build. BRender is the first.
+2. It acts as a directory for finding other lost engine resources. When a
+   project is actively maintained, the archive does not fork or re-host it; it
+   points to the maintainer. See [the directory](DIRECTORY.md).
+
+A project being open source is not the same as it being lost. Reviving a living
+project would just be a stale mirror, so living projects are indexed, not
+rebuilt.
+
 ## What This Means
 
 For each engine or technology lineage, the archive should move through five

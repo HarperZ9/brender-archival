@@ -13,7 +13,7 @@ From the public BRender v1.3.2 source (MIT, provenance via Foone Turing, release
 authorized by former Argonaut CEO Jez San), pinned at commit `d88d0ed4`, the
 materializer generates an out-of-tree CMake harness that builds the FLOAT core
 through BRender's own pure-C memory-pixelmap path, with no dependence on the
-period 386-assembly software renderer. It stands up an eight-rung ladder of
+period 386-assembly software renderer. It stands up a twelve-rung ladder of
 self-verifying render smokes, all green under CTest on a Visual Studio Win32
 target:
 
@@ -27,6 +27,10 @@ target:
 | Depth buffer | correct per-pixel occlusion |
 | Textured | perspective-correct texture mapping |
 | Datafile models | `BrModelLoad` renders real `.dat` models |
+| UV-textured models | a loaded model textured through its own UV coordinates |
+| Multi-part assembly | `BrModelLoadMany` composites the 12-part coupe |
+| Gouraud shading | per-vertex normals, smooth gradients (194 grey levels) |
+| Plotter lane | hidden-line-removed SVG polylines, pen-plotter ready |
 
 ### Gallery
 
@@ -38,10 +42,14 @@ sample models. They are the release output, not committed build artifacts.
 | ![wireframe](gallery/01-wireframe-cube.png) | ![scene graph](gallery/02-scene-graph-cube.png) |
 | ![solid shaded](gallery/03-solid-shaded.png) | ![depth buffer](gallery/04-depth-buffer.png) |
 | ![textured](gallery/05-texture-mapped.png) | ![datafile models](gallery/06-datafile-models.png) |
+| ![uv globe](gallery/07-uv-textured-globe.png) | ![multipart coupe](gallery/08-multipart-coupe.png) |
+| ![gouraud sphere](gallery/09-gouraud-sphere.png) | ![teapot plotter](gallery/10-teapot-plotter.png) |
 
-The bottom-right frame is the Utah teapot, a skull, a car panel, and a torus,
-each loaded straight from its native binary `.dat` datafile and rendered solid
-and depth-buffered.
+The datafile frame is the Utah teapot, a skull, a car panel, and a torus, each
+loaded straight from its native binary `.dat` datafile and rendered solid and
+depth-buffered. The final frame is the plotter lane: the same teapot as a
+hidden-line pen-plotter drawing, emitted as ready-to-plot SVG
+([gallery/10-teapot-plotter.svg](gallery/10-teapot-plotter.svg)).
 
 See [docs/BRENDER-ARCHIVAL.md](docs/BRENDER-ARCHIVAL.md) for the full packet:
 provenance, reproduction, what a developer can do today, and the honestly

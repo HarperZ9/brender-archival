@@ -135,6 +135,47 @@ target_link_libraries(brender_core_model_smoke PRIVATE brender_core_float)
 add_test(NAME brender_core_model_smoke
   COMMAND brender_core_model_smoke
     "${{BRENDER_SOURCE_DIR}}/dat/duck.dat" brender-core-model-smoke.ppm)
+
+add_executable(brender_core_material_smoke smoke/brender-core-material-smoke.c)
+target_include_directories(brender_core_material_smoke PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_material_smoke PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_material_smoke PRIVATE brender_core_float)
+add_test(NAME brender_core_material_smoke
+  COMMAND brender_core_material_smoke
+    "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat" brender-core-material-smoke.ppm)
+
+add_executable(brender_core_multimodel_smoke smoke/brender-core-multimodel-smoke.c)
+target_include_directories(brender_core_multimodel_smoke PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_multimodel_smoke PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_multimodel_smoke PRIVATE brender_core_float)
+add_test(NAME brender_core_multimodel_smoke
+  COMMAND brender_core_multimodel_smoke
+    "${{BRENDER_SOURCE_DIR}}/dat/coupe.dat" brender-core-multimodel-smoke.ppm)
+
+add_executable(brender_core_gouraud_smoke smoke/brender-core-gouraud-smoke.c)
+target_include_directories(brender_core_gouraud_smoke PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_gouraud_smoke PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_gouraud_smoke PRIVATE brender_core_float)
+add_test(NAME brender_core_gouraud_smoke
+  COMMAND brender_core_gouraud_smoke
+    "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat" brender-core-gouraud-smoke.ppm)
+
+add_executable(brender_core_plotter_smoke smoke/brender-core-plotter-smoke.c)
+target_include_directories(brender_core_plotter_smoke PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_plotter_smoke PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_plotter_smoke PRIVATE brender_core_float)
+add_test(NAME brender_core_plotter_smoke
+  COMMAND brender_core_plotter_smoke
+    "${{BRENDER_SOURCE_DIR}}/dat/teapot.dat"
+    brender-core-plotter-smoke.svg brender-core-plotter-smoke.ppm)
 """
 
 

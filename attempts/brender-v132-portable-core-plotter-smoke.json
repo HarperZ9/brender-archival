@@ -1,0 +1,27 @@
+{
+  "artifacts_policy": "Harness, build tree, executables, library, SVG plots, and PPM previews kept outside this metadata repo; model datafiles read in place from the public checkout. No binaries, vendored source or assets, or restricted material committed.",
+  "attempt_type": "cmake-plotter-svg-smoke",
+  "blockers": [
+    "still requires a 32-bit C target",
+    "edge visibility uses screen-space depth sampling with a relative bias; extreme grazing angles can drop or keep sub-pixel segments",
+    "HPGL output and paper-size scaling profiles are not emitted yet, only SVG"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "cmake --build <build> --config Debug --target brender_core_plotter_smoke; ctest -C Debug  (loads ${BRENDER_SOURCE_DIR}/dat/teapot.dat, writes SVG + PPM preview)",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows, Visual Studio 18 2026, MSVC 19.50, Win32 Debug",
+  "id": "brender-v132-portable-core-plotter-smoke",
+  "next_actions": [
+    "add HPGL and paper-profile output for direct pen-plotter runs",
+    "expose the plotter pipeline as a Telos Engine adapter with seeded generative scene input",
+    "register the plotter lane in the Telos creative-engine manifest once the telos working tree is safe to modify"
+  ],
+  "public_notes": "This attempt opens the Telos Engine plotter lane on the revival substrate: the generated brender_core_plotter_smoke target loads a real period model from its native datafile, projects it through the engine's own BrActorToScreenMatrix4 scene-graph transform, rasterizes faces depth-only into a z-buffer, dedupes model edges and drops edges shared by near-coplanar faces (crease filter), samples every kept edge against the depth buffer, and emits the visible runs as pen-plotter-ready SVG polylines plus a raster preview drawn from the same segments. On teapot.dat (821v/1560f): 2380 unique edges, 1590 kept after the crease filter, 1002 visible segments, 9553 visible vs 7332 hidden samples, so hidden-line removal is demonstrably active. Torus (far ring hidden, hole reads through), skull, and duck also plot correctly. Pure C, no assembly renderer. Passed as CTest case 12 of 12 under a Visual Studio Win32 Debug target.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "Built and ran brender_core_plotter_smoke.exe with exit 0 emitting a hidden-line SVG plot of teapot.dat (1002 segments, occlusion active) plus torus/skull/duck; passed 12/12 CTest cases with -C Debug.",
+  "source_ids": ["foone-brender-v132", "blazingrender-index"],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-plotter-2026-07-03.txt"
+}

@@ -14,6 +14,10 @@ from engine_revival.brender_fill_sources import fill_smoke_source
 from engine_revival.brender_depth_sources import depth_smoke_source
 from engine_revival.brender_texture_sources import texture_smoke_source
 from engine_revival.brender_model_sources import model_smoke_source
+from engine_revival.brender_material_sources import material_smoke_source
+from engine_revival.brender_multimodel_sources import multimodel_smoke_source
+from engine_revival.brender_gouraud_sources import gouraud_smoke_source
+from engine_revival.brender_plotter_sources import plotter_smoke_source
 from engine_revival.brender_host_sources import portable_host_stubs_source
 from engine_revival.brender_harness_templates import cmake_project_source, readme_source
 
@@ -45,6 +49,10 @@ OUTPUT_FILES = (
     "smoke/brender-core-depth-smoke.c",
     "smoke/brender-core-texture-smoke.c",
     "smoke/brender-core-model-smoke.c",
+    "smoke/brender-core-material-smoke.c",
+    "smoke/brender-core-multimodel-smoke.c",
+    "smoke/brender-core-gouraud-smoke.c",
+    "smoke/brender-core-plotter-smoke.c",
     "harness-manifest.json",
 )
 
@@ -73,6 +81,10 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
         "smoke/brender-core-depth-smoke.c": depth_smoke_source(),
         "smoke/brender-core-texture-smoke.c": texture_smoke_source(),
         "smoke/brender-core-model-smoke.c": model_smoke_source(),
+        "smoke/brender-core-material-smoke.c": material_smoke_source(),
+        "smoke/brender-core-multimodel-smoke.c": multimodel_smoke_source(),
+        "smoke/brender-core-gouraud-smoke.c": gouraud_smoke_source(),
+        "smoke/brender-core-plotter-smoke.c": plotter_smoke_source(),
         "harness-manifest.json": _manifest_json(source_lists),
     }
     written: list[Path] = []
@@ -212,6 +224,10 @@ def _manifest_json(source_lists: dict[str, list[str]]) -> str:
             "brender_core_depth_smoke",
             "brender_core_texture_smoke",
             "brender_core_model_smoke",
+            "brender_core_material_smoke",
+            "brender_core_multimodel_smoke",
+            "brender_core_gouraud_smoke",
+            "brender_core_plotter_smoke",
         ],
         "source_lists": source_lists,
         "source_policy": "out-of-tree; explicit period OBJS_C lists; no vendored BRender source",

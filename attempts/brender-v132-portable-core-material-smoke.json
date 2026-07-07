@@ -1,0 +1,27 @@
+{
+  "artifacts_policy": "The materialized harness, build tree, smoke executables, the brender_core_float library, and the generated PPM output were kept outside this metadata repo. Model datafiles are read in place from the public checkout. No generated binaries, vendored BRender source or assets, or restricted material are committed.",
+  "attempt_type": "cmake-textured-model-smoke",
+  "blockers": [
+    "the material smoke still requires a 32-bit C target",
+    "the texture is generated in code, not decoded from a period .pix: indexed .pix (earth.pix) carries no embedded palette (->map is NULL) and needs an external .pal, and the 15-bit .pix (earth15.pix) loads only a quarter of its pixels through BrPixelmapLoad in this harness (rest reads back as the 0xcccc debug fill). Faithful .pix decode is a documented follow-up.",
+    "materials from .mat are not resolved; the model is shaded and textured by the portable rasterizer"
+  ],
+  "build_id": "brender-v132-build-environment",
+  "command": "engine-revival materialize-brender-harness ...; cmake -S <harness> -B <build> -A Win32 -DBRENDER_SOURCE_DIR=<checkout>; cmake --build <build> --config Debug --target brender_core_material_smoke; ctest --test-dir <build> -C Debug --output-on-failure  (test loads ${BRENDER_SOURCE_DIR}/dat/sph32.dat)",
+  "exit_code": 0,
+  "harness_id": "brender-v132-portable-core-plan",
+  "host_platform": "Windows local probe with Visual Studio 18 2026 and MSVC 19.50.35721.0, Win32 Debug target",
+  "id": "brender-v132-portable-core-material-smoke",
+  "next_actions": [
+    "decode period .pix textures faithfully: attach an external .pal palette for indexed textures and fix the partial 15-bit load, then render the real earth globe",
+    "resolve loaded models' original materials via BrMaterialFindHook/BrMapFindHook",
+    "keep generated binaries and PPM output out of git"
+  ],
+  "public_notes": "This attempt textures a real loaded model through the model's own UV coordinates. The generated brender_core_material_smoke target loads dat/sph32.dat (525 vertices, 960 faces) with BrModelLoad, builds a land/sea globe texture in a BRender pixelmap, projects the model with BrActorToScreenMatrix4, and maps the texture onto it per pixel using the model's br_vertex.map UV coordinates, perspective-correct and depth-buffered, shaded from face normals. The grid and land/sea regions wrap correctly around the sphere (20816 lit pixels, 11 distinct colours), proving datafile models carry usable texture coordinates that drive the portable rasterizer. Faithful decoding of the period .pix texture files is recorded as a follow-up: the indexed variants need an external palette and the 15-bit variant loads partially through BrPixelmapLoad in this harness. All rendering is pure C over the memory pixelmap; the assembly softrend driver is not used. Passed as CTest case 9 of 9 under a Visual Studio Win32 Debug target.",
+  "reproduction_id": "brender-critical-edition-source-build",
+  "result_summary": "Built and ran brender_core_material_smoke.exe with exit 0 texturing dat/sph32.dat through its own UVs (20816 lit pixels, 11 colours); passed 9/9 CTest cases with -C Debug.",
+  "source_ids": ["foone-brender-v132", "blazingrender-index"],
+  "status": "completed",
+  "target_id": "brender",
+  "transcript_location": "external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-build-material-smoke-2026-07-03.txt; external-workspace:C:\\dev\\public\\engine-revival-workspaces\\brender-v132-portable-core-ctest-material-smoke-2026-07-03.txt"
+}
