@@ -8,7 +8,7 @@
     "release packaging has not been implemented",
     "drivers and deferred FIXED variants have not been translated"
   ],
-  "build_status": "portable-core-library-and-solid-shaded-smoke-built",
+  "build_status": "portable-core-plotter-lane-built",
   "build_ids": [
     "brender-v132-build-environment"
   ],
@@ -82,6 +82,13 @@
     "brender-v132-portable-core-plotter-smoke"
   ],
   "id": "brender-production-readiness",
+  "evidence_checkpoint": {
+    "id": "brender-v132-portable-core-plotter-2026-07-03",
+    "stage": "portable-core-plotter-lane-passing",
+    "passed": 12,
+    "total": 12,
+    "source_snapshot": "d88d0ed41122664b9781015b517db64353e16f19"
+  },
   "modernization_status": "portable-render-complete-x64-port-scoped",
   "next_actions": [
     "complete the x64 pointer-width port (resource.c + loader.c fixes done out-of-tree; remaining 32-bit-pointer-field sites need a debugger to pinpoint)",
@@ -90,7 +97,7 @@
     "apply per-part hierarchy transforms for multi-part assets"
   ],
   "packaging_status": "not-started",
-  "public_notes": "BRender is the first production-readiness pilot. A public source checkout matched the recorded v1.3.2 snapshot commit, exposed period make/project metadata, and now has a materializer plus successful out-of-tree CMake configure, FLOAT core-library build, vector math runtime smoke, BrBegin/BrEnd framework startup smoke, a wireframe render smoke, and a v1db scene-graph render smoke through CTest under a Visual Studio Win32 target. The render smoke projects a hand-built cube through the engine matrix pipeline; the scene smoke renders a model out of BRender's own scene database, building a world/camera/model actor tree, preparing a br_model with BrModelUpdate, and projecting it with the engine's BrActorToScreenMatrix4 before drawing the faces with BrPixelmapLine; the fill smoke turns that scene into a solid, flat-shaded image with a portable C scanline rasterizer, per-face world-space normals for lighting, and back-to-front compositing. All three draw entirely through the pure-C memory pixelmap dispatch with no assembly software driver, self-verify, and dump a 320x240 PPM. The produced brender_core_float.lib, smoke executables, and PPM output remain outside this metadata repo. x64 portability, shaded and textured scene rendering (which needs the softrend renderer device), datafile model loading, warning cleanup, packaging, drivers, and FIXED variants are not claimed yet.",
+  "public_notes": "BRender's pinned public v1.3.2 snapshot now has a successful out-of-tree CMake/MSVC Win32 FLOAT core-library build and a twelve-rung self-verifying CTest ladder: vector math, framework startup, wireframe, v1db scene graph, flat fill, depth buffering, perspective-correct texturing, native datafile model loading, UV material rendering with a generated texture, multi-part loading, Gouraud shading, and hidden-line SVG plotter output. CTest 12/12 passed and flagship score 86 is recorded. The pure-C portable render path does not claim x64 pointer-width portability, semantic compatibility-stub coverage, period softrend translation, native .mat/.pal/.pix resolution, drivers, FIXED variants, packaged release binaries, or a full viewer; packaging remains not started.",
   "readiness_stage": "portable-core-plotter-lane-passing",
   "reproduction_ids": [
     "brender-critical-edition-source-build"

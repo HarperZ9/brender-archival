@@ -4,4 +4,4 @@
 
 | Target | Build | Status | Reproduction | Snapshots | Host | Build System |
 |---|---|---|---|---|---|---|
-| brender | [brender-v132-build-environment](builds/brender-v132-build-environment.md) | portable-core-framework-startup-smoke-passing | brender-critical-edition-source-build | brender-v132-main-head | Windows local probe | period makefiles with BR_* environment imports |
+| brender | [brender-v132-build-environment](builds/brender-v132-build-environment.md) | portable-core-plotter-lane-passing | brender-critical-edition-source-build | brender-v132-main-head | Windows local probe | period makefiles with BR_* environment imports |

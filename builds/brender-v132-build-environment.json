@@ -3,12 +3,19 @@
     "portable core build currently targets only the FLOAT core library; FIXED variants and drivers are deferred",
     "x64 startup is not claimed; the guarded harness requires a 32-bit C target while pointer-width portability is audited",
     "MSVC builds still emit enum-conversion and const-qualifier warnings that need portability audit",
-    "runtime coverage is limited to vector math plus BrBegin and BrEnd framework startup; scene rendering, drivers, and full V1DB behavior are not covered",
+    "runtime coverage reaches the twelve-rung portable-core ladder through plotter output; semantic compatibility-stub coverage, drivers, period softrend, and full renderer parity are not covered",
     "no packaged release artifact is claimed"
   ],
   "build_system": "period makefiles with BR_* environment imports",
   "host_platform": "Windows local probe",
   "id": "brender-v132-build-environment",
+  "evidence_checkpoint": {
+    "id": "brender-v132-portable-core-plotter-2026-07-03",
+    "stage": "portable-core-plotter-lane-passing",
+    "passed": 12,
+    "total": 12,
+    "source_snapshot": "d88d0ed41122664b9781015b517db64353e16f19"
+  },
   "next_actions": [
     "audit the completed core-library warning transcript",
     "add semantic tests for the portable host and memory fallback functions before using them for rendering behavior",
@@ -65,7 +72,7 @@
       "BR_MAKE_DIR"
     ]
   },
-  "public_notes": "BRender v1.3.2 public source was cloned outside the metadata repo and matched the recorded snapshot commit. The source tree exposes period makefiles and project metadata. The portable harness now configures with CMake, builds brender_core_float.lib with explicit period OBJS_C source lists in an external Visual Studio Win32 tree, and passes vector math plus BrBegin/BrEnd framework startup smoke executables through CTest. No generated binary or packaged release is committed.",
+  "public_notes": "BRender v1.3.2 public source was cloned outside the metadata repo and matched the recorded snapshot commit. The out-of-tree CMake/MSVC Win32 harness builds brender_core_float.lib and passes CTest 12/12 across vector math, framework startup, wireframe, v1db scene graph, flat fill, depth buffering, perspective-correct texturing, native datafile model loading, UV material rendering with a generated texture, multi-part loading, Gouraud shading, and hidden-line SVG plotter output. It does not claim x64 pointer-width portability, semantic compatibility-stub coverage, drivers, period softrend translation, native .mat/.pal/.pix resolution, FIXED variants, packaged release binaries, or a full viewer.",
   "reproduction_id": "brender-critical-edition-source-build",
   "required_variables": [
     "BR_SOURCE_DIR",
@@ -81,7 +88,7 @@
     "foone-brender-v132",
     "blazingrender-index"
   ],
-  "status": "portable-core-framework-startup-smoke-passing",
+  "status": "portable-core-plotter-lane-passing",
   "target_id": "brender",
   "toolchain_probe": {
     "available": [

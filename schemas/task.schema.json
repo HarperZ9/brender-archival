@@ -11,6 +11,7 @@
     "inputs": "array",
     "outputs": "array",
     "blocked_by": "array",
-    "source_ids": "array"
+    "source_ids": "array",
+    "evidence_checkpoint": "object"
   }
 }

@@ -22,6 +22,7 @@
     "artifact_ids": "array",
     "task_ids": "array",
     "public_notes": "string",
-    "source_ids": "array"
+    "source_ids": "array",
+    "evidence_checkpoint": "object"
   }
 }

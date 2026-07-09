@@ -5,12 +5,12 @@
 | Field | Value |
 |---|---|
 | Target | brender |
-| Status | portable-render-lane-complete-publish-pending |
+| Status | portable-render-lane-published |
 | Task type | build-archive-packet |
 
 ## Public Notes
 
-The BRender critical-edition revival is complete for the portable pure-C render lane and is publish-ready as the standalone brender-archival deliverable. From the pinned public v1.3.2 snapshot (commit d88d0ed4, MIT, provenance via Foone Turing with release authorized by former Argonaut CEO Jez San), the engine-revival materializer generates an out-of-tree CMake harness that builds the FLOAT core library and eight verifying render smokes forming a full ladder: vector math, BrBegin/BrEnd framework startup, hand-rolled wireframe, v1db scene-graph render via the engine's own BrActorToScreenMatrix4, solid flat-shaded fill, per-pixel depth buffer, perspective-correct texture mapping, and loading and rendering real period models (duck, teapot, skull, torus) straight from their native binary .dat datafiles with BrModelLoad. Everything runs through BRender's own pure-C memory-pixelmap path with no assembly softrend driver, under Visual Studio Win32 with CTest 8/8 green; readiness flagship_score 78. Deliberately deferred (documented, not claimed): BRender's period 386-assembly softrend renderer, x64 pointer-width portability, original material/texture resolution, multi-part model assembly, and release packaging. Publishing the standalone brender-archival repository is an outward-facing step gated on operator approval.
+The BRender critical-edition portable pure-C render lane is published as the standalone brender-archival repository. From the pinned public v1.3.2 snapshot at d88d0ed41122664b9781015b517db64353e16f19, the engine-revival materializer builds the FLOAT core library and twelve verifying CTest rungs: vector math, framework startup, wireframe, v1db scene graph, flat fill, depth buffering, perspective-correct texturing, native datafile model loading, UV material rendering, multi-part loading, Gouraud shading, and hidden-line SVG plotter output. CTest 12/12 passed and readiness score 86 is recorded. Deferred work remains explicit: x64 pointer-width portability, period softrend translation, native .mat/.pal/.pix resolution, semantic compatibility-stub coverage, FIXED variants, drivers, packaged release binaries, and a full viewer.
 
 ## Inputs
 
@@ -26,7 +26,7 @@ The BRender critical-edition revival is complete for the portable pure-C render 
 - version graph
 - reproducible build checklist
 - portable pure-C render harness generator
-- eight verifying render smokes (startup through datafile-model)
+- twelve verifying render smokes (vector math through hidden-line plotter)
 - public-safe render captures
 
 ## Blocked By

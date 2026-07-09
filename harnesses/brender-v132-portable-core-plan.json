@@ -20,10 +20,21 @@
     "depth-buffered render smoke executable, PPM image, and CTest transcript",
     "perspective-correct textured render smoke executable, PPM image, and CTest transcript",
     "datafile model render smoke executable loading real period models, PPM image, and CTest transcript",
+    "UV-material render smoke executable, PPM image, and CTest transcript",
+    "multi-part datafile render smoke executable, PPM image, and CTest transcript",
+    "Gouraud render smoke executable, PPM image, and CTest transcript",
+    "hidden-line plotter smoke executable, SVG/PPM images, and CTest transcript",
     "driver variant build matrix"
   ],
   "harness_type": "portable-build-plan",
   "id": "brender-v132-portable-core-plan",
+  "evidence_checkpoint": {
+    "id": "brender-v132-portable-core-plotter-2026-07-03",
+    "stage": "portable-core-plotter-lane-passing",
+    "passed": 12,
+    "total": 12,
+    "source_snapshot": "d88d0ed41122664b9781015b517db64353e16f19"
+  },
   "implementation_units": [
     "root dispatch: core and drivers active, tools and samples deferred",
     "core order: inc, fw, host, std, pixelmap, dosio, v1db FLOAT, math FLOAT, fmt FLOAT",
@@ -55,7 +66,7 @@
     "translate deferred FIXED variants and driver targets after the core library path is stable"
   ],
   "output_policy": "Write generated harness files outside the BRender source checkout and outside this metadata repo unless they are intentionally reviewed as public-safe scaffolding.",
-  "public_notes": "This is the first public harness design record for the BRender pilot. It converts the inspected period make topology into a portable build-plan boundary, carries the FLOAT, fixed-inline-disabled, and period release build definitions, and now builds the FLOAT core library with explicit OBJS_C source lists in an external CMake/MSVC Win32 tree. The harness builds and runs vector math plus BrBegin/BrEnd framework startup smoke targets through CTest. It does not claim x64 portability, full V1DB startup, scene rendering, warning cleanup, packaging, drivers, or FIXED variants.",
+  "public_notes": "This public BRender harness design record converts the inspected period make topology into an out-of-tree CMake/MSVC Win32 build for the FLOAT core library. Its twelve-rung CTest ladder covers vector math, framework startup, wireframe, v1db scene graph, flat fill, depth buffering, perspective-correct texturing, native datafile model loading, UV material rendering with a generated texture, multi-part loading, Gouraud shading, and hidden-line SVG plotter output. It does not claim x64 pointer-width portability, semantic compatibility-stub coverage, warning cleanup, period softrend translation, native .mat/.pal/.pix resolution, drivers, FIXED variants, packaged release binaries, or a full viewer.",
   "reproduction_id": "brender-critical-edition-source-build",
   "source_ids": [
     "foone-brender-v132",
@@ -69,7 +80,7 @@
     "verify the materialized scaffold references BRENDER_SOURCE_DIR instead of copying source",
     "translate the active core FLOAT path before deferred FIXED variants",
     "configure the harness with a 32-bit C target such as Visual Studio -A Win32",
-    "build brender_core_smoke, brender_core_startup_smoke, and brender_core_render_smoke and run CTest with the selected multi-config build configuration",
+    "build all twelve brender_core_* smoke targets and run CTest with the selected multi-config build configuration",
     "translate driver targets after the core library path is captured",
     "record compiler output as transcript evidence before advancing readiness"
   ],

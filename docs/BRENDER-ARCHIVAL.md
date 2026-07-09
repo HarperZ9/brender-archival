@@ -20,7 +20,7 @@ renders, reproduced from public material with nothing proprietary vendored in.
 A materializer turns the period makefile topology into an out-of-tree CMake
 harness. It builds the FLOAT core library through BRender's own pure-C
 memory-pixelmap path, with no dependence on the period 386-assembly software
-renderer, and stands up a ladder of eight self-verifying render smokes:
+renderer, and stands up a ladder of twelve self-verifying render smokes:
 
 1. Vector math smoke (`BrVector3`, `BrScalar`).
 2. Framework startup smoke (`BrBegin` / `BrEnd`).
@@ -34,6 +34,13 @@ renderer, and stands up a ladder of eight self-verifying render smokes:
 7. Perspective-correct texture mapping.
 8. Real datafile models: `BrModelLoad` reads native binary `.dat` models
    (duck, teapot, skull, torus) and renders them solid and depth-buffered.
+9. UV material render: a loaded model uses its own texture coordinates with the
+   portable perspective-correct rasterizer.
+10. Multi-part assembly: `BrModelLoadMany` loads and depth-composites all 12
+    parts of the coupe datafile.
+11. Gouraud shading: per-vertex normals produce smooth gradients.
+12. Plotter lane: hidden-line-removed, crease-filtered SVG polylines from a
+    loaded period model.
 
 Every stage passes under CTest on a Visual Studio Win32 target. The render
 captures are generated as a public-safe release artifact.
@@ -46,7 +53,7 @@ engine-revival materialize-brender-harness `
   --source-root C:\path\to\BRender-v1.3.2 `
   --output-root C:\path\to\brender-portable-core-harness
 cmake -S <harness> -B <build> -A Win32 "-DBRENDER_SOURCE_DIR=C:\path\to\BRender-v1.3.2"
-cmake --build <build> --config Debug --target brender_core_model_smoke
+cmake --build <build> --config Debug
 ctest --test-dir <build> -C Debug --output-on-failure
 ```
 
@@ -57,7 +64,8 @@ a PPM, so it doubles as a minimal model viewer for the period asset library.
 
 - Build BRender's core from a public checkout on a modern MSVC toolchain.
 - Load and render BRender's own period models straight from their datafiles.
-- Extend the portable rasterizer (Gouraud shading, materials, a wider viewer).
+- Build on the portable rasterizer (for example, native material resolution or
+  a wider viewer).
 - Plot period models on a pen plotter: `brender_core_plotter_smoke` emits
   hidden-line-removed SVG polylines from any `.dat` model.
 - Use the harness as the pattern for reviving other engines in this archive.
@@ -69,7 +77,6 @@ These are documented, not claimed, so the revival is not oversold:
 - BRender's period 386-assembly `softrend` renderer (the hard portability item).
 - x64 pointer-width portability (the unreworked period code is 32-bit bound).
 - Original material and texture resolution for loaded models.
-- Multi-part datafile assembly (`BrModelLoadMany`).
 - Release packaging and a full interactive viewer.
 
 ## Records

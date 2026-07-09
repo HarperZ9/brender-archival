@@ -2,7 +2,7 @@
   "id": "brender-critical-edition-source-build",
   "target_id": "brender",
   "reproduction_type": "source-build",
-  "status": "planned",
+  "status": "v132-portable-core-verified-3dmm-pending",
   "environment": [
     "clean working checkout outside the public metadata repo",
     "public BRender v1.3.2 source branch",
@@ -35,7 +35,14 @@
   "task_ids": [
     "brender-critical-edition-packet"
   ],
-  "public_notes": "First public reproduction recipe for turning BRender from archived source records into a repeatable critical-edition build track.",
+  "public_notes": "The public BRender v1.3.2 portable-core lane is verified through CTest 12/12 at the pinned source snapshot. The separate 3D Movie Maker branch build attempt remains pending, so this reproduction recipe is not complete and its unexecuted 3D Movie Maker build step remains in the sequence.",
+  "evidence_checkpoint": {
+    "id": "brender-v132-portable-core-plotter-2026-07-03",
+    "stage": "portable-core-plotter-lane-passing",
+    "passed": 12,
+    "total": 12,
+    "source_snapshot": "d88d0ed41122664b9781015b517db64353e16f19"
+  },
   "source_ids": [
     "foone-brender-v132",
     "foone-brender-3dmm",

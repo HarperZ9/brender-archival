@@ -79,6 +79,87 @@ def _validate_source_ids_present(records: list[RecordFile], kind: str) -> list[s
     return messages
 
 
+CHECKPOINT_KINDS = ("task", "reproduction", "build", "harness", "readiness")
+CHECKPOINT_FIELDS = ("id", "stage", "passed", "total", "source_snapshot")
+CHECKPOINT_STRING_FIELDS = ("id", "stage", "source_snapshot")
+
+
+def _validate_evidence_checkpoints(
+    records_by_kind: dict[str, list[RecordFile]],
+) -> list[str]:
+    messages: list[str] = []
+    first_by_id: dict[str, tuple[RecordFile, dict[str, object]]] = {}
+
+    for kind in CHECKPOINT_KINDS:
+        for record in records_by_kind[kind]:
+            checkpoint = record.payload.get("evidence_checkpoint")
+            if checkpoint is None:
+                continue
+            if not isinstance(checkpoint, dict):
+                continue  # _validate_types already reports this.
+
+            missing = [field for field in CHECKPOINT_FIELDS if field not in checkpoint]
+            unexpected = sorted(set(checkpoint) - set(CHECKPOINT_FIELDS))
+            for field in missing:
+                messages.append(
+                    f"{record.path}: evidence_checkpoint missing field: {field}"
+                )
+            for field in unexpected:
+                messages.append(
+                    f"{record.path}: evidence_checkpoint unexpected field: {field}"
+                )
+            if missing or unexpected:
+                continue
+
+            shape_valid = True
+            for field in CHECKPOINT_STRING_FIELDS:
+                value = checkpoint[field]
+                if not isinstance(value, str) or not value.strip():
+                    messages.append(
+                        f"{record.path}: evidence_checkpoint {field} must be non-empty string"
+                    )
+                    shape_valid = False
+            for field in ("passed", "total"):
+                value = checkpoint[field]
+                if not isinstance(value, int) or isinstance(value, bool):
+                    messages.append(
+                        f"{record.path}: evidence_checkpoint {field} must be integer"
+                    )
+                    shape_valid = False
+            if not shape_valid:
+                continue
+
+            passed = int(checkpoint["passed"])
+            total = int(checkpoint["total"])
+            if total <= 0:
+                messages.append(
+                    f"{record.path}: evidence_checkpoint total must be > 0"
+                )
+            if passed < 0:
+                messages.append(
+                    f"{record.path}: evidence_checkpoint passed must be >= 0"
+                )
+            if passed > total:
+                messages.append(
+                    f"{record.path}: evidence_checkpoint passed must be <= total"
+                )
+
+            checkpoint_id = str(checkpoint["id"])
+            first = first_by_id.get(checkpoint_id)
+            if first is None:
+                first_by_id[checkpoint_id] = (record, checkpoint)
+                continue
+            first_record, first_checkpoint = first
+            for field in CHECKPOINT_FIELDS[1:]:
+                if checkpoint[field] != first_checkpoint[field]:
+                    messages.append(
+                        f"{record.path}: evidence_checkpoint {checkpoint_id} field {field} "
+                        f"differs from {first_record.path}: "
+                        f"{checkpoint[field]!r} != {first_checkpoint[field]!r}"
+                    )
+    return messages
+
+
 def validate_workspace(root: Path) -> list[str]:
     messages: list[str] = []
     if not (root / "targets").exists():
@@ -92,6 +173,8 @@ def validate_workspace(root: Path) -> list[str]:
         messages.extend(kind_messages)
         messages.extend(_validate_unique_ids(records, kind))
         messages.extend(_validate_filename_ids(records, kind))
+
+    messages.extend(_validate_evidence_checkpoints(records_by_kind))
 
     target_ids = {str(record.payload.get("id")) for record in records_by_kind["target"]}
     source_ids = {str(record.payload.get("id")) for record in records_by_kind["source"]}

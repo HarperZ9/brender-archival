@@ -34,6 +34,7 @@
     "build_ids": "array",
     "harness_ids": "array",
     "attempt_ids": "array",
-    "evidence": "array"
+    "evidence": "array",
+    "evidence_checkpoint": "object"
   }
 }

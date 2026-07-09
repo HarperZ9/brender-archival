@@ -6,11 +6,11 @@
 |---|---|
 | Target | brender |
 | Type | source-build |
-| Status | planned |
+| Status | v132-portable-core-verified-3dmm-pending |
 
 ## Public Notes
 
-First public reproduction recipe for turning BRender from archived source records into a repeatable critical-edition build track.
+The public BRender v1.3.2 portable-core lane is verified through CTest 12/12 at the pinned source snapshot. The separate 3D Movie Maker branch build attempt remains pending, so this reproduction recipe is not complete and its unexecuted 3D Movie Maker build step remains in the sequence.
 
 ## Environment
 

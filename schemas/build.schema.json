@@ -33,6 +33,7 @@
     "blockers": "array",
     "next_actions": "array",
     "public_notes": "string",
-    "source_ids": "array"
+    "source_ids": "array",
+    "evidence_checkpoint": "object"
   }
 }
