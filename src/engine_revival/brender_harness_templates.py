@@ -223,6 +223,18 @@ target_link_libraries(brender_core_pixelmap_roundtrip PRIVATE brender_core_float
 add_test(NAME brender_core_pixelmap_roundtrip
   COMMAND brender_core_pixelmap_roundtrip
     "${{BRENDER_SOURCE_DIR}}/dat/logo.pix")
+
+add_executable(brender_core_material_resolve smoke/brender-core-material-resolve.c)
+target_include_directories(brender_core_material_resolve PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_material_resolve PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_material_resolve PRIVATE brender_core_float)
+add_test(NAME brender_core_material_resolve
+  COMMAND brender_core_material_resolve
+    "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat"
+    "${{BRENDER_SOURCE_DIR}}/dat/std.mat"
+    brender-core-material-resolve.ppm)
 """
 
 
