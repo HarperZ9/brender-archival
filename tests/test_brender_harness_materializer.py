@@ -62,6 +62,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "smoke" / "brender-core-plotter-smoke.c",
         output / "smoke" / "brender-core-asset-audit.c",
         output / "smoke" / "brender-core-material-audit.c",
+        output / "smoke" / "brender-core-material-file-audit.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -106,6 +107,9 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "add_executable(brender_core_material_audit" in cmake
     assert "target_link_libraries(brender_core_material_audit PRIVATE brender_core_float)" in cmake
     assert "add_test(NAME brender_core_material_audit" in cmake
+    assert "add_executable(brender_core_material_file_audit" in cmake
+    assert "${BRENDER_SOURCE_DIR}/dat/std.mat" in cmake
+    assert "add_test(NAME brender_core_material_file_audit" in cmake
     assert "compat/brender-portable-core-stubs.c" in cmake
     assert "compat/brender-portable-host-stubs.c" in cmake
     assert "CMAKE_SIZEOF_VOID_P" in cmake
@@ -213,6 +217,13 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "BrPixelmapLoad(" in material_audit
     assert "pixels_decoded" in material_audit
     assert "BrPixelmapFree(pm)" in material_audit
+    material_file = (output / "smoke" / "brender-core-material-file-audit.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrMaterialLoad(" in material_file
+    assert "has_colour_map" in material_file
+    assert "BrMaterialFree(mat)" in material_file
+    assert "faces_with_material" in asset_audit
     compat = (output / "compat" / "brender-portable-core-stubs.c").read_text(
         encoding="utf-8"
     )
@@ -253,6 +264,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "brender_core_plotter_smoke",
         "brender_core_asset_audit",
         "brender_core_material_audit",
+        "brender_core_material_file_audit",
     ]
     assert manifest["portable_compat_source"] == "compat/brender-portable-core-stubs.c"
     assert manifest["portable_compat_sources"] == [

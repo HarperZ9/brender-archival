@@ -200,6 +200,17 @@ add_test(NAME brender_core_material_audit
   COMMAND brender_core_material_audit
     "${{BRENDER_SOURCE_DIR}}/dat/earth.pix"
     "${{BRENDER_SOURCE_DIR}}/dat/earth15.pix")
+
+add_executable(brender_core_material_file_audit smoke/brender-core-material-file-audit.c)
+target_include_directories(brender_core_material_file_audit PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_material_file_audit PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_material_file_audit PRIVATE brender_core_float)
+add_test(NAME brender_core_material_file_audit
+  COMMAND brender_core_material_file_audit
+    "${{BRENDER_SOURCE_DIR}}/dat/std.mat"
+    "${{BRENDER_SOURCE_DIR}}/dat/winstd.mat")
 """
 
 
