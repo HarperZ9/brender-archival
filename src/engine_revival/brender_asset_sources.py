@@ -119,3 +119,82 @@ int main(int argc, char **argv)
     return all_valid ? 0 : 6;
 }
 """
+
+
+def material_audit_source() -> str:
+    """C source for the BRender portable-core material/pixelmap audit rung.
+
+    Second R4 rung: probe period pixelmap assets (.pix) through BrPixelmapLoad
+    and report decode results honestly instead of claiming fidelity. Known
+    issues recorded up front: indexed variants carry no embedded palette and
+    need an external .pal, and 15-bit variants currently decode only partially
+    through this harness's BrPixelmapLoad path. The audit surfaces what loaded,
+    its geometry, and whether pixels decoded at all; .mat and .pal loaders are
+    verified against the pinned checkout before they get a rung of their own.
+    """
+    return r"""/*
+ * BRender v1.3.2 portable-core material/pixelmap audit rung.
+ *
+ * Loads period pixelmap assets with BrPixelmapLoad and emits one JSON object
+ * per file describing what actually decoded: dimensions, BRender pixel type,
+ * row bytes, and whether pixels are present. This rung does NOT render and
+ * does not claim full decode fidelity; the texture smoke documents that
+ * indexed .pix need an external .pal and 15-bit variants partially decode.
+ *
+ * Usage: brender_core_material_audit <texture.pix> [more ...]
+ */
+#define __BR_V1DB__ 1
+#include "brender.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+static int audit_pixelmap(const char *path, int *all_valid)
+{
+    br_pixelmap *pm;
+    int valid;
+
+    pm = BrPixelmapLoad((char *)path);
+    if (pm == NULL) {
+        fprintf(stderr, "material-audit: BrPixelmapLoad failed: %s\n", path);
+        printf("{\"file\":\"%s\",\"loaded\":false,\"valid\":false}\n", path);
+        *all_valid = 0;
+        return 0;
+    }
+
+    valid = (pm->pixels != NULL) && (pm->width > 0) && (pm->height > 0)
+        && (pm->row_bytes > 0);
+    if (!valid) *all_valid = 0;
+
+    printf("{\"file\":\"%s\",\"loaded\":true,\"type\":%d,"
+        "\"width\":%d,\"height\":%d,\"row_bytes\":%d,"
+        "\"pixels_decoded\":%s,\"valid\":%s}\n",
+        path, (int)pm->type, (int)pm->width, (int)pm->height,
+        (int)pm->row_bytes, (pm->pixels != NULL) ? "true" : "false",
+        valid ? "true" : "false");
+
+    BrPixelmapFree(pm);
+    return 1;
+}
+
+int main(int argc, char **argv)
+{
+    int i, all_valid = 1, audited = 0;
+
+    if (argc < 2) {
+        fprintf(stderr, "usage: %s <texture.pix> [more ...]\n", argv[0]);
+        return 2;
+    }
+
+    if (BrBegin() != BRE_OK) return 3;
+
+    for (i = 1; i < argc; i++) {
+        if (!audit_pixelmap(argv[i], &all_valid)) continue;
+        audited++;
+    }
+
+    if (BrEnd() != BRE_OK) return 4;
+    if (audited < 1) return 5;
+    return all_valid ? 0 : 6;
+}
+"""

@@ -189,6 +189,17 @@ add_test(NAME brender_core_asset_audit
     "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat"
     "${{BRENDER_SOURCE_DIR}}/dat/coupe.dat"
     "${{BRENDER_SOURCE_DIR}}/dat/teapot.dat")
+
+add_executable(brender_core_material_audit smoke/brender-core-material-audit.c)
+target_include_directories(brender_core_material_audit PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_material_audit PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_material_audit PRIVATE brender_core_float)
+add_test(NAME brender_core_material_audit
+  COMMAND brender_core_material_audit
+    "${{BRENDER_SOURCE_DIR}}/dat/earth.pix"
+    "${{BRENDER_SOURCE_DIR}}/dat/earth15.pix")
 """
 
 
