@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from engine_revival.brender_asset_sources import asset_audit_source
 from engine_revival.brender_compat_sources import (
     portable_core_stubs_source,
     startup_smoke_source,
@@ -53,6 +54,7 @@ OUTPUT_FILES = (
     "smoke/brender-core-multimodel-smoke.c",
     "smoke/brender-core-gouraud-smoke.c",
     "smoke/brender-core-plotter-smoke.c",
+    "smoke/brender-core-asset-audit.c",
     "harness-manifest.json",
 )
 
@@ -85,7 +87,8 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
         "smoke/brender-core-multimodel-smoke.c": multimodel_smoke_source(),
         "smoke/brender-core-gouraud-smoke.c": gouraud_smoke_source(),
         "smoke/brender-core-plotter-smoke.c": plotter_smoke_source(),
-        "harness-manifest.json": _manifest_json(source_lists),
+    "smoke/brender-core-asset-audit.c": asset_audit_source(),
+    "harness-manifest.json": _manifest_json(source_lists),
     }
     written: list[Path] = []
     for relative_name in OUTPUT_FILES:
@@ -228,6 +231,7 @@ def _manifest_json(source_lists: dict[str, list[str]]) -> str:
             "brender_core_multimodel_smoke",
             "brender_core_gouraud_smoke",
             "brender_core_plotter_smoke",
+        "brender_core_asset_audit",
         ],
         "source_lists": source_lists,
         "source_policy": "out-of-tree; explicit period OBJS_C lists; no vendored BRender source",

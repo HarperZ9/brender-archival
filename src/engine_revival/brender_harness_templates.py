@@ -176,6 +176,19 @@ add_test(NAME brender_core_plotter_smoke
   COMMAND brender_core_plotter_smoke
     "${{BRENDER_SOURCE_DIR}}/dat/teapot.dat"
     brender-core-plotter-smoke.svg brender-core-plotter-smoke.ppm)
+
+add_executable(brender_core_asset_audit smoke/brender-core-asset-audit.c)
+target_include_directories(brender_core_asset_audit PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_asset_audit PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_asset_audit PRIVATE brender_core_float)
+add_test(NAME brender_core_asset_audit
+  COMMAND brender_core_asset_audit
+    "${{BRENDER_SOURCE_DIR}}/dat/duck.dat"
+    "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat"
+    "${{BRENDER_SOURCE_DIR}}/dat/coupe.dat"
+    "${{BRENDER_SOURCE_DIR}}/dat/teapot.dat")
 """
 
 

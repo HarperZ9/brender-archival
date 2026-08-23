@@ -60,6 +60,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "smoke" / "brender-core-multimodel-smoke.c",
         output / "smoke" / "brender-core-gouraud-smoke.c",
         output / "smoke" / "brender-core-plotter-smoke.c",
+        output / "smoke" / "brender-core-asset-audit.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -98,6 +99,9 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "add_executable(brender_core_gouraud_smoke" in cmake
     assert "add_executable(brender_core_plotter_smoke" in cmake
     assert "${BRENDER_SOURCE_DIR}/dat/teapot.dat" in cmake
+    assert "add_executable(brender_core_asset_audit" in cmake
+    assert "target_link_libraries(brender_core_asset_audit PRIVATE brender_core_float)" in cmake
+    assert "add_test(NAME brender_core_asset_audit" in cmake
     assert "compat/brender-portable-core-stubs.c" in cmake
     assert "compat/brender-portable-host-stubs.c" in cmake
     assert "CMAKE_SIZEOF_VOID_P" in cmake
@@ -191,6 +195,14 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     plotter_smoke = (output / "smoke" / "brender-core-plotter-smoke.c").read_text(encoding="utf-8")
     assert "raster_depth(" in plotter_smoke
     assert "<svg xmlns=" in plotter_smoke
+    asset_audit = (output / "smoke" / "brender-core-asset-audit.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrModelLoad(" in asset_audit
+    assert "nonfinite_vertices" in asset_audit
+    assert "out_of_range_faces" in asset_audit
+    assert "degenerate_faces" in asset_audit
+    assert "BrModelFree(model)" in asset_audit
     compat = (output / "compat" / "brender-portable-core-stubs.c").read_text(
         encoding="utf-8"
     )
@@ -229,6 +241,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "brender_core_multimodel_smoke",
         "brender_core_gouraud_smoke",
         "brender_core_plotter_smoke",
+        "brender_core_asset_audit",
     ]
     assert manifest["portable_compat_source"] == "compat/brender-portable-core-stubs.c"
     assert manifest["portable_compat_sources"] == [
