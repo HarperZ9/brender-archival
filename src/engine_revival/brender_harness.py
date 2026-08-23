@@ -7,6 +7,7 @@ from engine_revival.brender_asset_sources import (
     asset_audit_source,
     material_audit_source,
     material_file_audit_source,
+    pixelmap_roundtrip_source,
 )
 from engine_revival.brender_compat_sources import (
     portable_core_stubs_source,
@@ -61,6 +62,7 @@ OUTPUT_FILES = (
     "smoke/brender-core-asset-audit.c",
     "smoke/brender-core-material-audit.c",
     "smoke/brender-core-material-file-audit.c",
+    "smoke/brender-core-pixelmap-roundtrip.c",
     "harness-manifest.json",
 )
 
@@ -96,6 +98,7 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
     "smoke/brender-core-asset-audit.c": asset_audit_source(),
     "smoke/brender-core-material-audit.c": material_audit_source(),
     "smoke/brender-core-material-file-audit.c": material_file_audit_source(),
+    "smoke/brender-core-pixelmap-roundtrip.c": pixelmap_roundtrip_source(),
     "harness-manifest.json": _manifest_json(source_lists),
     }
     written: list[Path] = []
@@ -242,6 +245,7 @@ def _manifest_json(source_lists: dict[str, list[str]]) -> str:
         "brender_core_asset_audit",
         "brender_core_material_audit",
         "brender_core_material_file_audit",
+        "brender_core_pixelmap_roundtrip",
         ],
         "source_lists": source_lists,
         "source_policy": "out-of-tree; explicit period OBJS_C lists; no vendored BRender source",

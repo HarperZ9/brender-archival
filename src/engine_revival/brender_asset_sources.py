@@ -205,6 +205,100 @@ int main(int argc, char **argv)
 """
 
 
+def pixelmap_roundtrip_source() -> str:
+    """C source for the BRender portable-core pixelmap round-trip rung.
+
+    Closes a recorded readiness blocker: the archive previously wrote only raw
+    PPM dumps. BrPixelmapSave is verified public API in the pinned tree
+    (core/pixelmap/pmfile.c), so this rung exercises the native datafile write
+    path end to end: load a period .pix asset, save it as a BRender datafile,
+    reload it, and compare type and geometry. The temporary file is removed on
+    every exit path; the archive commits no generated assets.
+    """
+    return r"""/*
+ * BRender v1.3.2 portable-core pixelmap round-trip rung.
+ *
+ * Native datafile write-path proof:
+ *
+ *   BrBegin
+ *     -> src = BrPixelmapLoad("<...>/dat/<asset>.pix")
+ *     -> BrPixelmapSave("brender-roundtrip-check.pix", src)
+ *     -> back = BrPixelmapLoad("brender-roundtrip-check.pix")
+ *     -> compare type, width, height, row_bytes
+ *   BrEnd (temp file removed on every exit path)
+ *
+ * One JSON object on stdout; exit 0 only when the round trip preserves type
+ * and geometry.
+ *
+ * Usage: brender_core_pixelmap_roundtrip <asset.pix> [workfile]
+ */
+#define __BR_V1DB__ 1
+#include "brender.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static void emit(const char *asset, const char *result, int ok)
+{
+    printf("{\"asset\":\"%s\",\"roundtrip\":\"%s\",\"valid\":%s}\n",
+        asset, result, ok ? "true" : "false");
+}
+
+int main(int argc, char **argv)
+{
+    const char *asset_path = (argc > 1) ? argv[1] : NULL;
+    const char *work_path = (argc > 2) ? argv[2] : "brender-roundtrip-check.pix";
+    br_pixelmap *src = NULL, *back = NULL;
+    int ok = 0;
+
+    if (asset_path == NULL) {
+        fprintf(stderr, "usage: %s <asset.pix> [workfile]\n", argv[0]);
+        return 2;
+    }
+
+    if (BrBegin() != BRE_OK) return 3;
+
+    src = BrPixelmapLoad((char *)asset_path);
+    if (src == NULL || src->pixels == NULL) {
+        fprintf(stderr, "pixelmap-roundtrip: source load failed: %s\n", asset_path);
+        emit(asset_path, "source-load-failed", 0);
+        goto out;
+    }
+
+    if (BrPixelmapSave((char *)work_path, src) != BRE_OK) {
+        fprintf(stderr, "pixelmap-roundtrip: BrPixelmapSave failed: %s\n", work_path);
+        emit(asset_path, "save-failed", 0);
+        goto out;
+    }
+
+    back = BrPixelmapLoad((char *)work_path);
+    if (back == NULL || back->pixels == NULL) {
+        fprintf(stderr, "pixelmap-roundtrip: reload failed: %s\n", work_path);
+        emit(asset_path, "reload-failed", 0);
+        goto out;
+    }
+
+    ok = (back->type == src->type)
+        && (back->width == src->width)
+        && (back->height == src->height)
+        && (back->row_bytes == src->row_bytes);
+
+    printf("{\"asset\":\"%s\",\"type\":%d,\"width\":%d,\"height\":%d,"
+        "\"row_bytes\":%d,\"match\":%s,\"valid\":%s}\n",
+        asset_path, (int)src->type, (int)src->width, (int)src->height,
+        (int)src->row_bytes, ok ? "true" : "false", ok ? "true" : "false");
+
+out:
+    remove(work_path);
+    if (back != NULL) BrPixelmapFree(back);
+    if (src != NULL) BrPixelmapFree(src);
+    if (BrEnd() != BRE_OK) return 4;
+    return ok ? 0 : 5;
+}
+"""
+
+
 def material_file_audit_source() -> str:
     """C source for the BRender portable-core material-file audit rung.
 
