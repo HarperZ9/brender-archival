@@ -15,7 +15,7 @@ materializer generates an out-of-tree CMake harness that builds the FLOAT core
 through BRender's own pure-C memory-pixelmap path, with no dependence on the
 period 386-assembly software renderer. It stands up a nineteen-target ladder of
 self-verifying rungs, all green under CTest on a Visual Studio Win32
-target:
+target (2026-08-22 transcript: 19/19 passed, captured in builds/):
 
 | Rung | What it proves |
 |---|---|

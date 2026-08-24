@@ -34,6 +34,9 @@ def texture_file_sample_source() -> str:
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
 
 #define RENDER_W 320
 #define RENDER_H 240
@@ -157,7 +160,8 @@ int main(int argc, char **argv)
     br_actor *world, *camera_actor, *model_actor;
     br_camera *camera;
     br_model *model;
-    br_matrix34 mm, m2s;
+    br_matrix34 mm;
+    br_matrix4 m2s;
     long sampled = 0, distinct = 0, any = 0, drew = 0;
     int i, nv, nf;
 
@@ -167,6 +171,11 @@ int main(int argc, char **argv)
     }
 
     if (BrBegin() != BRE_OK) return 3;
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
 
     tex = BrPixelmapLoad((char *)tex_path);
     if (tex == NULL || tex->pixels == NULL) {
@@ -295,6 +304,7 @@ int main(int argc, char **argv)
         drew, sampled, any, distinct);
 
     BrPixelmapFree(pm);
+    tex->map = NULL;
     if (pal != NULL) BrPixelmapFree(pal);
     BrPixelmapFree(tex);
     if (BrEnd() != BRE_OK) return 14;

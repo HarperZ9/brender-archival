@@ -33,6 +33,9 @@ def game_shell_source() -> str:
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
 #include <string.h>
 
 #define RENDER_W 320
@@ -119,11 +122,11 @@ static void fill_triangle_tex(br_pixelmap *pm, br_pixelmap *tex,
     }
 }
 
-static void dump_ppm(br_pixelmap *pm, const char *path)
+static int dump_ppm(br_pixelmap *pm, const char *path)
 {
     FILE *f = fopen(path, "wb");
     const unsigned char *base; int x, y;
-    if (f == NULL) return;
+    if (f == NULL) return 0;
     fprintf(f, "P6\n%d %d\n255\n", (int)pm->width, (int)pm->height);
     base = (const unsigned char *)pm->pixels;
     for (y = 0; y < (int)pm->height; y++) {
@@ -135,6 +138,7 @@ static void dump_ppm(br_pixelmap *pm, const char *path)
         }
     }
     fclose(f);
+    return 1;
 }
 
 int main(int argc, char **argv)
@@ -149,7 +153,7 @@ int main(int argc, char **argv)
     br_actor *world = NULL, *camera_actor = NULL, *model_actor = NULL;
     br_camera *camera;
     br_model *model = NULL;
-    br_matrix34 m2s;
+    br_matrix4 m2s;
     long total_sampled = 0;
     int frames_written = 0, i, frame;
 
@@ -161,6 +165,11 @@ int main(int argc, char **argv)
     if (frames > MAX_FRAMES) frames = MAX_FRAMES;
 
     /* SHELL_INIT */
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
     if (BrBegin() != BRE_OK) { state = SHELL_FAILED; goto teardown; }
     pm = BrPixelmapAllocate(BR_PMT_RGB_888, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
     if (pm == NULL || pm->pixels == NULL) { state = SHELL_FAILED; goto teardown; }
@@ -277,11 +286,17 @@ int main(int argc, char **argv)
         }
         free(sx); free(sy); free(siw); free(sw);
 
-        if (snprintf(path, sizeof(path), "%s%sshell-frame-%02d.ppm",
-                outdir, (strchr(outdir, '\\') || outdir[strlen(outdir)-1] == '/') ? "" : "/", frame) >= (int)sizeof(path)) {
+        {
+            size_t ol = strlen(outdir);
+            const char *sep = (ol > 0 && (outdir[ol-1] == '/' || outdir[ol-1] == '\\')) ? "" : "/";
+            if (snprintf(path, sizeof(path), "%s%sshell-frame-%02d.ppm", outdir, sep, frame) >= (int)sizeof(path)) {
+                state = SHELL_FAILED; goto teardown;
+            }
+        }
+        if (!dump_ppm(pm, path)) {
+            fprintf(stderr, "game shell: frame dump failed: %s\n", path);
             state = SHELL_FAILED; goto teardown;
         }
-        dump_ppm(pm, path);
         frames_written++;
         total_sampled += sampled;
     }
@@ -295,6 +310,7 @@ teardown:
     if (camera_actor != NULL) BrActorRemove(camera_actor);
     if (world != NULL) BrActorFree(world);
     if (model != NULL) BrModelFree(model);
+    if (tex != NULL && pal != NULL) tex->map = NULL;
     if (pal != NULL) BrPixelmapFree(pal);
     if (tex != NULL) BrPixelmapFree(tex);
     if (pm != NULL) BrPixelmapFree(pm);

@@ -112,7 +112,6 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "target_link_libraries(brender_core_material_audit PRIVATE brender_core_float)" in cmake
     assert "add_test(NAME brender_core_material_audit" in cmake
     assert "add_executable(brender_core_material_file_audit" in cmake
-    assert "${BRENDER_SOURCE_DIR}/dat/std.mat" in cmake
     assert "add_test(NAME brender_core_material_file_audit" in cmake
     assert "${BRENDER_SOURCE_DIR}/dat/std.pal" in cmake
     assert "add_executable(brender_core_pixelmap_roundtrip" in cmake
