@@ -65,6 +65,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "smoke" / "brender-core-material-file-audit.c",
         output / "smoke" / "brender-core-pixelmap-roundtrip.c",
         output / "smoke" / "brender-core-material-resolve.c",
+        output / "smoke" / "brender-core-texture-file-sample.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -117,6 +118,9 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "add_test(NAME brender_core_pixelmap_roundtrip" in cmake
     assert "add_executable(brender_core_material_resolve" in cmake
     assert "add_test(NAME brender_core_material_resolve" in cmake
+    assert "add_executable(brender_core_texture_file_sample" in cmake
+    assert "${BRENDER_SOURCE_DIR}/dat/std.pal" in cmake
+    assert "add_test(NAME brender_core_texture_file_sample" in cmake
     assert "compat/brender-portable-core-stubs.c" in cmake
     assert "compat/brender-portable-host-stubs.c" in cmake
     assert "CMAKE_SIZEOF_VOID_P" in cmake
@@ -243,6 +247,13 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "BrMaterialLoad(" in resolve
     assert ".material = mat;" in resolve
     assert "faces_attached" in resolve
+    texfile = (output / "smoke" / "brender-core-texture-file-sample.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrPixelmapLoad(" in texfile
+    assert "BrPixelmapPixelGet(tex, tu, tv)" in texfile
+    assert ".map.v[0]" in texfile
+    assert "distinct_colours" in texfile
     compat = (output / "compat" / "brender-portable-core-stubs.c").read_text(
         encoding="utf-8"
     )
@@ -286,6 +297,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "brender_core_material_file_audit",
         "brender_core_pixelmap_roundtrip",
         "brender_core_material_resolve",
+        "brender_core_texture_file_sample",
     ]
     assert manifest["portable_compat_source"] == "compat/brender-portable-core-stubs.c"
     assert manifest["portable_compat_sources"] == [

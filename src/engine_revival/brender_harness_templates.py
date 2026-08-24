@@ -235,6 +235,19 @@ add_test(NAME brender_core_material_resolve
     "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat"
     "${{BRENDER_SOURCE_DIR}}/dat/std.mat"
     brender-core-material-resolve.ppm)
+
+add_executable(brender_core_texture_file_sample smoke/brender-core-texture-file-sample.c)
+target_include_directories(brender_core_texture_file_sample PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_texture_file_sample PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_texture_file_sample PRIVATE brender_core_float)
+add_test(NAME brender_core_texture_file_sample
+  COMMAND brender_core_texture_file_sample
+    "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat"
+    "${{BRENDER_SOURCE_DIR}}/dat/earth.pix"
+    "${{BRENDER_SOURCE_DIR}}/dat/std.pal"
+    brender-core-texture-file-sample.ppm)
 """
 
 
