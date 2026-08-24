@@ -21,6 +21,7 @@ get_filename_component(BRENDER_SOURCE_DIR "${{BRENDER_SOURCE_DIR}}" ABSOLUTE)
 
 include(${{CMAKE_CURRENT_LIST_DIR}}/cmake/brender-core-sources.cmake)
 include(${{CMAKE_CURRENT_LIST_DIR}}/cmake/brender-softrend.cmake)
+include(${{CMAKE_CURRENT_LIST_DIR}}/cmake/brender-pentprim.cmake)
 
 set(BRENDER_PORTABLE_COMPAT_SOURCES
   "${{CMAKE_CURRENT_LIST_DIR}}/compat/brender-portable-core-stubs.c"
