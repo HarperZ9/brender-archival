@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from engine_revival.brender_json_receipt import json_receipt_helpers_source
+
 
 def asset_audit_source() -> str:
     """C source for the BRender portable-core asset-audit rung.
@@ -34,6 +36,7 @@ def asset_audit_source() -> str:
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+""" + json_receipt_helpers_source() + r"""
 
 static int audit_model(const char *path, int *all_valid)
 {
@@ -48,7 +51,9 @@ static int audit_model(const char *path, int *all_valid)
     model = BrModelLoad((char *)path);
     if (model == NULL) {
         fprintf(stderr, "asset-audit: BrModelLoad failed: %s\n", path);
-        printf("{\"model\":\"%s\",\"loaded\":false,\"valid\":false}\n", path);
+        fputs("{\"model\":", stdout);
+        json_write_string(stdout, path);
+        fputs(",\"loaded\":false,\"valid\":false}\n", stdout);
         *all_valid = 0;
         return 0;
     }
@@ -91,11 +96,13 @@ static int audit_model(const char *path, int *all_valid)
         && (out_of_range_faces == 0);
     if (!valid) *all_valid = 0;
 
-    printf("{\"model\":\"%s\",\"loaded\":true,\"id\":\"%s\","
-        "\"nvertices\":%d,\"nfaces\":%d,"
+    fputs("{\"model\":", stdout);
+    json_write_string(stdout, path);
+    fputs(",\"loaded\":true,\"id\":", stdout);
+    json_write_string(stdout, model->identifier ? model->identifier : "?");
+    printf(",\"nvertices\":%d,\"nfaces\":%d,"
         "\"nonfinite_vertices\":%ld,\"out_of_range_faces\":%ld,"
         "\"degenerate_faces\":%ld,\"faces_with_material\":%ld,\"valid\":%s}\n",
-        path, model->identifier ? model->identifier : "?",
         nv, nf, nonfinite_vertices, out_of_range_faces, degenerate_faces,
         faces_with_material, valid ? "true" : "false");
 
@@ -153,6 +160,7 @@ def material_audit_source() -> str:
 
 #include <stdio.h>
 #include <stdlib.h>
+""" + json_receipt_helpers_source() + r"""
 
 static int audit_pixelmap(const char *path, int *all_valid)
 {
@@ -162,7 +170,9 @@ static int audit_pixelmap(const char *path, int *all_valid)
     pm = BrPixelmapLoad((char *)path);
     if (pm == NULL) {
         fprintf(stderr, "material-audit: BrPixelmapLoad failed: %s\n", path);
-        printf("{\"file\":\"%s\",\"loaded\":false,\"valid\":false}\n", path);
+        fputs("{\"file\":", stdout);
+        json_write_string(stdout, path);
+        fputs(",\"loaded\":false,\"valid\":false}\n", stdout);
         *all_valid = 0;
         return 0;
     }
@@ -171,10 +181,12 @@ static int audit_pixelmap(const char *path, int *all_valid)
         && (pm->row_bytes > 0);
     if (!valid) *all_valid = 0;
 
-    printf("{\"file\":\"%s\",\"loaded\":true,\"type\":%d,"
+    fputs("{\"file\":", stdout);
+    json_write_string(stdout, path);
+    printf(",\"loaded\":true,\"type\":%d,"
         "\"width\":%d,\"height\":%d,\"row_bytes\":%d,"
         "\"pixels_decoded\":%s,\"valid\":%s}\n",
-        path, (int)pm->type, (int)pm->width, (int)pm->height,
+        (int)pm->type, (int)pm->width, (int)pm->height,
         (int)pm->row_bytes, (pm->pixels != NULL) ? "true" : "false",
         valid ? "true" : "false");
 
@@ -238,11 +250,23 @@ def pixelmap_roundtrip_source() -> str:
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+""" + json_receipt_helpers_source() + r"""
 
 static void emit(const char *asset, const char *result, int ok)
 {
-    printf("{\"asset\":\"%s\",\"roundtrip\":\"%s\",\"valid\":%s}\n",
-        asset, result, ok ? "true" : "false");
+    fputs("{\"asset\":", stdout);
+    json_write_string(stdout, asset);
+    fputs(",\"roundtrip\":", stdout);
+    json_write_string(stdout, result);
+    printf(",\"valid\":%s}\n", ok ? "true" : "false");
+}
+
+static int path_exists(const char *path)
+{
+    FILE *f = fopen(path, "rb");
+    if (f == NULL) return 0;
+    fclose(f);
+    return 1;
 }
 
 int main(int argc, char **argv)
@@ -251,6 +275,7 @@ int main(int argc, char **argv)
     const char *work_path = (argc > 2) ? argv[2] : "brender-roundtrip-check.pix";
     br_pixelmap *src = NULL, *back = NULL;
     int ok = 0;
+    int created_workfile = 0;
 
     if (asset_path == NULL) {
         fprintf(stderr, "usage: %s <asset.pix> [workfile]\n", argv[0]);
@@ -266,11 +291,19 @@ int main(int argc, char **argv)
         goto out;
     }
 
+    if (path_exists(work_path)) {
+        fprintf(stderr, "pixelmap-roundtrip: workfile already exists: %s\n", work_path);
+        emit(asset_path, "workfile-exists", 0);
+        goto out;
+    }
+
     if (BrPixelmapSave((char *)work_path, src) != BRE_OK) {
+        if (path_exists(work_path)) created_workfile = 1;
         fprintf(stderr, "pixelmap-roundtrip: BrPixelmapSave failed: %s\n", work_path);
         emit(asset_path, "save-failed", 0);
         goto out;
     }
+    created_workfile = 1;
 
     back = BrPixelmapLoad((char *)work_path);
     if (back == NULL || back->pixels == NULL) {
@@ -284,13 +317,15 @@ int main(int argc, char **argv)
         && (back->height == src->height)
         && (back->row_bytes == src->row_bytes);
 
-    printf("{\"asset\":\"%s\",\"type\":%d,\"width\":%d,\"height\":%d,"
+    fputs("{\"asset\":", stdout);
+    json_write_string(stdout, asset_path);
+    printf(",\"type\":%d,\"width\":%d,\"height\":%d,"
         "\"row_bytes\":%d,\"match\":%s,\"valid\":%s}\n",
-        asset_path, (int)src->type, (int)src->width, (int)src->height,
+        (int)src->type, (int)src->width, (int)src->height,
         (int)src->row_bytes, ok ? "true" : "false", ok ? "true" : "false");
 
 out:
-    remove(work_path);
+    if (created_workfile) remove(work_path);
     if (back != NULL) BrPixelmapFree(back);
     if (src != NULL) BrPixelmapFree(src);
     if (BrEnd() != BRE_OK) return 4;
@@ -324,6 +359,7 @@ def material_file_audit_source() -> str:
 
 #include <stdio.h>
 #include <stdlib.h>
+""" + json_receipt_helpers_source() + r"""
 
 static int audit_material_file(const char *path, int *all_valid)
 {
@@ -333,7 +369,9 @@ static int audit_material_file(const char *path, int *all_valid)
     mat = BrMaterialLoad((char *)path);
     if (mat == NULL) {
         fprintf(stderr, "material-file-audit: BrMaterialLoad failed: %s\n", path);
-        printf("{\"file\":\"%s\",\"loaded\":false,\"valid\":false}\n", path);
+        fputs("{\"file\":", stdout);
+        json_write_string(stdout, path);
+        fputs(",\"loaded\":false,\"valid\":false}\n", stdout);
         *all_valid = 0;
         return 0;
     }
@@ -341,10 +379,12 @@ static int audit_material_file(const char *path, int *all_valid)
     valid = (mat->identifier != NULL);
     if (!valid) *all_valid = 0;
 
-    printf("{\"file\":\"%s\",\"loaded\":true,\"id\":\"%s\","
-        "\"flags\":%lu,\"index_base\":%d,"
+    fputs("{\"file\":", stdout);
+    json_write_string(stdout, path);
+    fputs(",\"loaded\":true,\"id\":", stdout);
+    json_write_string(stdout, mat->identifier ? mat->identifier : "?");
+    printf(",\"flags\":%lu,\"index_base\":%d,"
         "\"has_colour_map\":%s,\"valid\":%s}\n",
-        path, mat->identifier ? mat->identifier : "?",
         (unsigned long)mat->flags, (int)mat->index_base,
         (mat->colour_map != NULL) ? "true" : "false",
         valid ? "true" : "false");

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from engine_revival.brender_json_receipt import json_receipt_helpers_source
+
 
 def texture_file_sample_source() -> str:
     """C source for the BRender portable-core file-texture sampling rung.
@@ -34,6 +36,7 @@ def texture_file_sample_source() -> str:
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+""" + json_receipt_helpers_source() + r"""
 
 #define RENDER_W 320
 #define RENDER_H 240
@@ -46,6 +49,20 @@ typedef struct tvert {
 } tvert;
 
 static float g_zbuf[RENDER_H * RENDER_W];
+
+static br_uint_32 resolve_texel_colour(br_pixelmap *tex, int x, int y)
+{
+    br_uint_32 texel = BrPixelmapPixelGet(tex, x, y);
+    switch (tex->type) {
+    case BR_PMT_INDEX_8:
+        if (tex->map != NULL) {
+            return BrPixelmapPixelGet(tex->map, 0, texel);
+        }
+        return texel;
+    default:
+        return texel;
+    }
+}
 
 static void fill_triangle_tex(br_pixelmap *pm, br_pixelmap *tex,
     tvert p0, tvert p1, tvert p2, float shade, long *sampled)
@@ -98,7 +115,7 @@ static void fill_triangle_tex(br_pixelmap *pm, br_pixelmap *tex,
                 tv = (int)(vv * th); tv &= (th - 1);
                 if (tu < 0) tu += tw;
                 if (tv < 0) tv += th;
-                texel = BrPixelmapPixelGet(tex, tu, tv);
+                texel = resolve_texel_colour(tex, tu, tv);
                 r  = (int)(((texel >> 16) & 0xff) * shade);
                 g  = (int)(((texel >> 8) & 0xff) * shade);
                 bl = (int)((texel & 0xff) * shade);
@@ -157,7 +174,8 @@ int main(int argc, char **argv)
     br_actor *world, *camera_actor, *model_actor;
     br_camera *camera;
     br_model *model;
-    br_matrix34 mm, m2s;
+    br_matrix34 mm;
+    br_matrix4 m2s;
     long sampled = 0, distinct = 0, any = 0, drew = 0;
     int i, nv, nf;
 
@@ -286,11 +304,15 @@ int main(int argc, char **argv)
     if (drew < 1 || sampled < 3000 || any < 3000 || distinct < 8) { BrEnd(); return 12; }
     if (!dump_ppm(pm, out_path)) { BrEnd(); return 13; }
 
-    printf("{\"model\":\"%s\",\"texture\":\"%s\",\"palette\":\"%s\","
-        "\"texture_type\":%d,\"texture_width\":%d,\"texture_height\":%d,"
+    fputs("{\"model\":", stdout);
+    json_write_string(stdout, model_path);
+    fputs(",\"texture\":", stdout);
+    json_write_string(stdout, tex_path);
+    fputs(",\"palette\":", stdout);
+    json_write_string(stdout, pal_path ? pal_path : "-");
+    printf(",\"texture_type\":%d,\"texture_width\":%d,\"texture_height\":%d,"
         "\"faces_drawn\":%ld,\"pixels_sampled\":%ld,"
         "\"lit_pixels\":%ld,\"distinct_colours\":%ld,\"valid\":true}\n",
-        model_path, tex_path, pal_path ? pal_path : "-",
         (int)tex->type, (int)tex->width, (int)tex->height,
         drew, sampled, any, distinct);
 

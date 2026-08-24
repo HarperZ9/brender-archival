@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from engine_revival.brender_json_receipt import json_receipt_helpers_source
+
 
 def material_resolve_source() -> str:
     """C source for the BRender portable-core material-resolution rung.
@@ -35,6 +37,7 @@ def material_resolve_source() -> str:
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+""" + json_receipt_helpers_source() + r"""
 
 #define RENDER_W 320
 #define RENDER_H 240
@@ -58,7 +61,7 @@ static void fill_triangle_z(br_pixelmap *pm,
         int ex[3][2], ey[3][2]; float ew[3][2];
         ex[0][0]=x0; ey[0][0]=y0; ew[0][0]=w0; ex[0][1]=x1; ey[0][1]=y1; ew[0][1]=w1;
         ex[1][0]=x1; ey[1][0]=y1; ew[1][0]=w1; ex[1][1]=x2; ey[1][1]=y2; ew[1][1]=w2;
-        ex[2][0]=x2; ey[2][0]=y2; ew[2][1]=w2; ex[2][1]=x0; ey[2][1]=y0; ew[2][1]=w0;
+        ex[2][0]=x2; ey[2][0]=y2; ew[2][0]=w2; ex[2][1]=x0; ey[2][1]=y0; ew[2][1]=w0;
         for (e = 0; e < 3; e++) {
             int ya = ey[e][0], yb = ey[e][1];
             if (ya == yb) continue;
@@ -251,10 +254,14 @@ int main(int argc, char **argv)
     if (attached < 1 || drawn < 1) { BrEnd(); return 11; }
     if (!dump_ppm(pm, out_path)) { BrEnd(); return 12; }
 
-    printf("{\"model\":\"%s\",\"material\":\"%s\",\"material_id\":\"%s\","
-        "\"nfaces\":%d,\"faces_attached\":%ld,\"faces_drawn\":%ld,"
+    fputs("{\"model\":", stdout);
+    json_write_string(stdout, model_path);
+    fputs(",\"material\":", stdout);
+    json_write_string(stdout, mat_path);
+    fputs(",\"material_id\":", stdout);
+    json_write_string(stdout, mat->identifier ? mat->identifier : "?");
+    printf(",\"nfaces\":%d,\"faces_attached\":%ld,\"faces_drawn\":%ld,"
         "\"valid\":true}\n",
-        model_path, mat_path, mat->identifier ? mat->identifier : "?",
         nf, attached, drawn);
 
     BrPixelmapFree(pm);

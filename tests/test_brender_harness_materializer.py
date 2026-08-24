@@ -35,6 +35,14 @@ def _write_source_fixture(root):
         )
 
 
+def _materialized_smoke_sources(tmp_path):
+    source = tmp_path / "source"
+    output = tmp_path / "harness"
+    _write_source_fixture(source)
+    materialize_brender_core_harness(source, output)
+    return output / "smoke"
+
+
 def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     source = tmp_path / "source"
     output = tmp_path / "harness"
@@ -251,7 +259,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         encoding="utf-8"
     )
     assert "BrPixelmapLoad(" in texfile
-    assert "BrPixelmapPixelGet(tex, tu, tv)" in texfile
+    assert "resolve_texel_colour(tex, tu, tv)" in texfile
     assert ".map.v[0]" in texfile
     assert "distinct_colours" in texfile
     compat = (output / "compat" / "brender-portable-core-stubs.c").read_text(
@@ -316,6 +324,95 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "STATIC=static",
         "ADD_RCS_ID=0",
     ]
+
+
+def test_material_resolve_scanline_edge_initializes_third_edge_w2(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    resolve = (smoke / "brender-core-material-resolve.c").read_text(encoding="utf-8")
+
+    assert "ex[2][0]=x2; ey[2][0]=y2; ew[2][0]=w2;" in resolve
+    assert "ex[2][0]=x2; ey[2][0]=y2; ew[2][1]=w2;" not in resolve
+
+
+def test_pixelmap_roundtrip_rejects_existing_workfile_and_cleans_only_owned_path(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    roundtrip = (smoke / "brender-core-pixelmap-roundtrip.c").read_text(
+        encoding="utf-8"
+    )
+
+    assert "path_exists(work_path)" in roundtrip
+    assert '"workfile-exists"' in roundtrip
+    assert "created_workfile = 1;" in roundtrip
+    assert "if (created_workfile) remove(work_path);" in roundtrip
+    assert (
+        roundtrip.replace("if (created_workfile) remove(work_path);", "").find(
+            "remove(work_path);"
+        )
+        == -1
+    )
+
+
+def test_generated_receipts_escape_json_string_values(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+    generated_sources = [
+        smoke / "brender-core-asset-audit.c",
+        smoke / "brender-core-material-audit.c",
+        smoke / "brender-core-material-file-audit.c",
+        smoke / "brender-core-pixelmap-roundtrip.c",
+        smoke / "brender-core-material-resolve.c",
+        smoke / "brender-core-texture-file-sample.c",
+    ]
+    unsafe_receipt_formats = [
+        '{"model":"%s"',
+        '{"file":"%s"',
+        '{"asset":"%s"',
+        ',"id":"%s"',
+        ',"roundtrip":"%s"',
+        ',"material":"%s"',
+        ',"material_id":"%s"',
+        ',"texture":"%s"',
+        ',"palette":"%s"',
+    ]
+
+    for path in generated_sources:
+        source = path.read_text(encoding="utf-8")
+        assert "static void json_write_string" in source
+        assert "case '\"':" in source
+        assert "case '\\\\':" in source
+        assert "ch < 0x20" in source
+        assert "\\\\u%04x" in source
+        for unsafe_format in unsafe_receipt_formats:
+            assert unsafe_format not in source
+
+
+def test_texture_file_sample_uses_matrix4_for_screen_transform(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    texfile = (smoke / "brender-core-texture-file-sample.c").read_text(
+        encoding="utf-8"
+    )
+
+    assert "br_matrix34 mm;\n    br_matrix4 m2s;" in texfile
+    assert "br_matrix34 mm, m2s;" not in texfile
+
+
+def test_texture_file_sample_resolves_indexed_texels_through_palette(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    texfile = (smoke / "brender-core-texture-file-sample.c").read_text(
+        encoding="utf-8"
+    )
+
+    assert "resolve_texel_colour(tex, tu, tv)" in texfile
+    assert "case BR_PMT_INDEX_8:" in texfile
+    assert "if (tex->map != NULL)" in texfile
+    assert "BrPixelmapPixelGet(tex->map, 0, texel)" in texfile
+    assert (
+        "texel = BrPixelmapPixelGet(tex, tu, tv);\n"
+        "                r  = (int)(((texel >> 16) & 0xff) * shade);"
+    ) not in texfile
 
 
 def test_materializer_refuses_output_inside_source_checkout(tmp_path):
