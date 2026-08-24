@@ -33,6 +33,9 @@ def asset_audit_source() -> str:
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
 #include <string.h>
 
 static int audit_model(const char *path, int *all_valid)
@@ -113,6 +116,11 @@ int main(int argc, char **argv)
     }
 
     if (BrBegin() != BRE_OK) return 3;
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
 
     for (i = 1; i < argc; i++) {
         if (!audit_model(argv[i], &all_valid)) continue;
@@ -153,6 +161,9 @@ def material_audit_source() -> str:
 
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
 
 static int audit_pixelmap(const char *path, int *all_valid)
 {
@@ -192,6 +203,11 @@ int main(int argc, char **argv)
     }
 
     if (BrBegin() != BRE_OK) return 3;
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
 
     for (i = 1; i < argc; i++) {
         if (!audit_pixelmap(argv[i], &all_valid)) continue;
@@ -237,6 +253,9 @@ def pixelmap_roundtrip_source() -> str:
 
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
 #include <string.h>
 
 static void emit(const char *asset, const char *result, int ok)
@@ -258,6 +277,11 @@ int main(int argc, char **argv)
     }
 
     if (BrBegin() != BRE_OK) return 3;
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
 
     src = BrPixelmapLoad((char *)asset_path);
     if (src == NULL || src->pixels == NULL) {
@@ -266,7 +290,8 @@ int main(int argc, char **argv)
         goto out;
     }
 
-    if (BrPixelmapSave((char *)work_path, src) != BRE_OK) {
+    /* BrPixelmapSave returns the count saved (1), not a br_error. */
+    if (BrPixelmapSave((char *)work_path, src) != 1) {
         fprintf(stderr, "pixelmap-roundtrip: BrPixelmapSave failed: %s\n", work_path);
         emit(asset_path, "save-failed", 0);
         goto out;
@@ -288,7 +313,6 @@ int main(int argc, char **argv)
         "\"row_bytes\":%d,\"match\":%s,\"valid\":%s}\n",
         asset_path, (int)src->type, (int)src->width, (int)src->height,
         (int)src->row_bytes, ok ? "true" : "false", ok ? "true" : "false");
-
 out:
     remove(work_path);
     if (back != NULL) BrPixelmapFree(back);
@@ -302,75 +326,108 @@ out:
 def material_file_audit_source() -> str:
     """C source for the BRender portable-core material-file audit rung.
 
-    Loader availability verified against the pinned checkout: BrMaterialLoad
-    lives in core/v1db/v1dbfile.c and BrPixelmapLoad in core/pixelmap/pmfile.c,
-    both inside the harness's FLOAT core source lists. This rung loads .mat
-    material files and reports identifier, flags, index_base, and whether a
-    colour_map is attached. Palette (.pal) chunk decoding stays deferred until
-    its load path is verified the same way; BrPaletteLoad does not exist in
-    this BRender version's public API.
+    Ground truth from the pinned tree and local build: BrMaterialLoad/
+    BrMaterialSave live in core/v1db/v1dbfile.c and read/write BINARY chunk
+    datafiles only; the period .mat files shipped in dat/ (std.mat,
+    winstd.mat) are TEXT material scripts the binary loader legitimately
+    rejects. This rung therefore does two things honestly:
+
+      1. probes each argv path and reports whether it is a text script
+         (leading '##') or an unreadable/unrecognized file;
+      2. proves the binary material datafile path end to end: allocate,
+         save, reload, compare identifier, free, remove the temp file.
+
+    Exit 0 iff the binary round trip holds; argv probe results are recorded
+    in the receipt without failing the rung.
     """
     return r"""/*
  * BRender v1.3.2 portable-core material-file audit rung.
  *
- * Loads period .mat material files with BrMaterialLoad (v1dbfile datafile
- * reader) and emits one JSON object per file: identifier, flags, index_base,
- * and colour_map attachment. Read-only audit; no rendering, no writes.
- *
- * Usage: brender_core_material_file_audit <materials.mat> [more ...]
+ * Usage: brender_core_material_file_audit [paths-to-probe ...]
  */
 #define __BR_V1DB__ 1
 #include "brender.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-static int audit_material_file(const char *path, int *all_valid)
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
+
+static void probe_path(const char *path)
 {
     br_material *mat;
-    int valid;
+    FILE *f;
+    char magic[2] = {0, 0};
 
+    f = fopen(path, "rb");
+    if (f != NULL) {
+        if (fread(magic, 1, 2, f) != 2) { magic[0] = 0; }
+        fclose(f);
+    }
+    if (magic[0] == '#' && magic[1] == '#') {
+        printf("{\"file\":\"%s\",\"kind\":\"text-material-script\","
+            "\"binary_loadable\":false}\n", path);
+        return;
+    }
     mat = BrMaterialLoad((char *)path);
     if (mat == NULL) {
-        fprintf(stderr, "material-file-audit: BrMaterialLoad failed: %s\n", path);
-        printf("{\"file\":\"%s\",\"loaded\":false,\"valid\":false}\n", path);
-        *all_valid = 0;
-        return 0;
+        printf("{\"file\":\"%s\",\"kind\":\"unrecognized\","
+            "\"binary_loadable\":false}\n", path);
+        return;
     }
-
-    valid = (mat->identifier != NULL);
-    if (!valid) *all_valid = 0;
-
-    printf("{\"file\":\"%s\",\"loaded\":true,\"id\":\"%s\","
-        "\"flags\":%lu,\"index_base\":%d,"
-        "\"has_colour_map\":%s,\"valid\":%s}\n",
+    printf("{\"file\":\"%s\",\"kind\":\"binary-datafile\",\"loaded\":true,"
+        "\"id\":\"%s\",\"flags\":%lu,\"index_base\":%d,"
+        "\"has_colour_map\":%s}\n",
         path, mat->identifier ? mat->identifier : "?",
         (unsigned long)mat->flags, (int)mat->index_base,
-        (mat->colour_map != NULL) ? "true" : "false",
-        valid ? "true" : "false");
-
+        (mat->colour_map != NULL) ? "true" : "false");
     BrMaterialFree(mat);
-    return 1;
 }
 
 int main(int argc, char **argv)
 {
-    int i, all_valid = 1, audited = 0;
+    const char *work_path = "material-audit-roundtrip.mat";
+    br_material *mat = NULL, *back = NULL;
+    int i, ok = 0;
 
-    if (argc < 2) {
-        fprintf(stderr, "usage: %s <materials.mat> [more ...]\n", argv[0]);
-        return 2;
-    }
-
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
     if (BrBegin() != BRE_OK) return 3;
 
+    /* Binary material datafile round trip: the positive control. */
+    mat = BrMaterialAllocate("audit-default");
+    if (mat == NULL) { BrEnd(); return 4; }
+    if (BrMaterialSave((char *)work_path, mat) != 1) {
+        fprintf(stderr, "material-file-audit: BrMaterialSave failed\n");
+        goto out;
+    }
+    back = BrMaterialLoad((char *)work_path);
+    if (back == NULL) {
+        fprintf(stderr, "material-file-audit: reload failed\n");
+        goto out;
+    }
+    ok = (back->identifier != NULL
+        && strcmp(back->identifier, "audit-default") == 0);
+    printf("{\"roundtrip\":\"%s\",\"id_match\":%s,\"valid\":%s}\n",
+        work_path, ok ? "true" : "false", ok ? "true" : "false");
+
+out:
+    remove(work_path);
+    if (back != NULL) BrMaterialFree(back);
+    if (mat != NULL) BrMaterialFree(mat);
+
+    /* Informational probes of operator-supplied paths. */
     for (i = 1; i < argc; i++) {
-        if (!audit_material_file(argv[i], &all_valid)) continue;
-        audited++;
+        probe_path(argv[i]);
     }
 
-    if (BrEnd() != BRE_OK) return 4;
-    if (audited < 1) return 5;
-    return all_valid ? 0 : 6;
+    if (BrEnd() != BRE_OK) return 6;
+    return ok ? 0 : 5;
 }
 """

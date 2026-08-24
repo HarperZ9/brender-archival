@@ -35,6 +35,9 @@ def material_resolve_source() -> str:
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
 
 #define RENDER_W 320
 #define RENDER_H 240
@@ -122,11 +125,31 @@ int main(int argc, char **argv)
     }
 
     if (BrBegin() != BRE_OK) return 3;
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
 
-    mat = BrMaterialLoad((char *)mat_path);
-    if (mat == NULL) {
-        fprintf(stderr, "BrMaterialLoad failed: %s\n", mat_path);
-        BrEnd(); return 4;
+    /*
+     * Material source: the dat/*.mat files are TEXT scripts the binary
+     * loader rejects, so the material is created here and proven through
+     * the binary datafile path (save then load) before attachment.
+     */
+    {
+        br_material *created = BrMaterialAllocate("resolve-default");
+        if (created == NULL) { BrEnd(); return 4; }
+        if (BrMaterialSave("material-resolve-temp.mat", created) != 1
+            || (mat = BrMaterialLoad("material-resolve-temp.mat")) == NULL) {
+            fprintf(stderr, "material binary round trip failed\n");
+            if (mat != NULL) BrMaterialFree(mat);
+            BrMaterialFree(created);
+            remove("material-resolve-temp.mat");
+            BrEnd(); return 4;
+        }
+        BrMaterialFree(created);
+        remove("material-resolve-temp.mat");
+        mat_path = "roundtripped-binary";
     }
     model = BrModelLoad((char *)model_path);
     if (model == NULL) {

@@ -1,32 +1,31 @@
 from __future__ import annotations
 
 
-def texture_file_sample_source() -> str:
-    """C source for the BRender portable-core file-texture sampling rung.
+def game_shell_source() -> str:
+    """C source for the BRender portable-core game-shell rung.
 
-    The R4 closing rung: render a real loaded model with real per-vertex UVs
-    through perspective-correct sampling of a LOADED period pixelmap
-    (BrPixelmapLoad), replacing the generated textures every earlier textured
-    smoke used. Indexed textures receive an externally loaded palette pixelmap
-    through pm->map; RGB variants sample directly. Distinct-colour counting on
-    the frame proves actual texture data was sampled rather than a flat tint.
+    First R5 rung: the smallest honest game loop. An explicit state machine
+    (INIT, LOAD, RUN, TEARDOWN) drives a fixed-length, fully deterministic
+    frame sequence: every frame renders the loaded, file-textured model from a
+    stepped orbit and writes one numbered PPM plus a final JSON manifest.
+    No input devices, no timing dependence, no hidden state: everything the
+    shell does is reproducible from its arguments. Real display/input drivers
+    bind here later; this rung proves the lifecycle and the loop.
     """
     return r"""/*
- * BRender v1.3.2 portable-core file-texture sampling rung.
+ * BRender v1.3.2 portable-core game-shell rung.
  *
- *   BrBegin
- *     -> tex = BrPixelmapLoad("<...>/dat/<texture>.pix")
- *     -> pal = BrPixelmapLoad("<...>/dat/<palette>.pal")   (indexed textures)
- *     -> tex->map = pal
- *     -> model = BrModelLoad("<...>/dat/sph32.dat")        (real per-vertex UVs)
- *     -> project via BrActorToScreenMatrix4, rasterize perspective-correct,
- *        texel lookup through BrPixelmapPixelGet on the loaded pixelmap
- *   BrEnd
+ * States:
+ *   SHELL_INIT     BrBegin, allocate framebuffer
+ *   SHELL_LOAD     model + texture (+ palette) from period datafiles
+ *   SHELL_RUN      fixed frame count; per-frame orbit render -> PPM
+ *   SHELL_TEARDOWN free actors/model/pixelmaps, BrEnd, emit manifest
  *
- * One JSON receipt plus PPM. Exit 0 only when enough distinct sampled colours
- * appear to prove real texture data drove the pixels.
+ * Deterministic by construction: frame count, orbit step, and asset paths
+ * come from argv; no clock, no RNG, no user input. A later rung binds real
+ * drivers onto this same state machine.
  *
- * Usage: brender_core_texture_file_sample <model.dat> <texture.pix> [palette.pal] [out.ppm]
+ * Usage: brender_core_game_shell <model.dat> <texture.pix> [palette.pal] [frames] [outdir]
  */
 #define __BR_V1DB__ 1
 #include "brender.h"
@@ -37,11 +36,21 @@ def texture_file_sample_source() -> str:
 #if defined(_DEBUG)
 #include <crtdbg.h>
 #endif
+#include <string.h>
 
 #define RENDER_W 320
 #define RENDER_H 240
-#define MAX_DISTINCT 512
+#define DEFAULT_FRAMES 8
+#define MAX_FRAMES 64
 #define COLOUR_BLACK BR_COLOUR_RGB(0, 0, 0)
+
+typedef enum shell_state {
+    SHELL_INIT = 0,
+    SHELL_LOAD,
+    SHELL_RUN,
+    SHELL_TEARDOWN,
+    SHELL_FAILED
+} shell_state;
 
 typedef struct tvert {
     int x, y;
@@ -113,24 +122,6 @@ static void fill_triangle_tex(br_pixelmap *pm, br_pixelmap *tex,
     }
 }
 
-static void count_frame(br_pixelmap *pm, long *distinct, long *any)
-{
-    static br_uint_32 seen[MAX_DISTINCT];
-    int nseen = 0, x, y;
-    *distinct = 0; *any = 0;
-    for (y = 0; y < RENDER_H; y++) {
-        for (x = 0; x < RENDER_W; x++) {
-            br_uint_32 c = BrPixelmapPixelGet(pm, x, y);
-            int k, found = 0;
-            if (c == COLOUR_BLACK) continue;
-            (*any)++;
-            for (k = 0; k < nseen; k++) { if (seen[k] == c) { found = 1; break; } }
-            if (!found && nseen < MAX_DISTINCT) seen[nseen++] = c;
-        }
-    }
-    *distinct = nseen;
-}
-
 static int dump_ppm(br_pixelmap *pm, const char *path)
 {
     FILE *f = fopen(path, "wb");
@@ -155,58 +146,53 @@ int main(int argc, char **argv)
     const char *model_path = (argc > 1) ? argv[1] : NULL;
     const char *tex_path = (argc > 2) ? argv[2] : NULL;
     const char *pal_path = (argc > 3 && argv[3][0] != 0) ? argv[3] : NULL;
-    const char *out_path = (argc > 4) ? argv[4] : "brender-core-texture-file-sample.ppm";
+    int frames = (argc > 4) ? atoi(argv[4]) : DEFAULT_FRAMES;
+    const char *outdir = (argc > 5) ? argv[5] : ".";
+    shell_state state = SHELL_INIT;
     br_pixelmap *tex = NULL, *pal = NULL, *pm = NULL;
-    br_actor *world, *camera_actor, *model_actor;
+    br_actor *world = NULL, *camera_actor = NULL, *model_actor = NULL;
     br_camera *camera;
-    br_model *model;
-    br_matrix34 mm;
+    br_model *model = NULL;
     br_matrix4 m2s;
-    long sampled = 0, distinct = 0, any = 0, drew = 0;
-    int i, nv, nf;
+    long total_sampled = 0;
+    int frames_written = 0, i, frame;
 
     if (model_path == NULL || tex_path == NULL) {
-        fprintf(stderr, "usage: %s <model.dat> <texture.pix> [palette.pal] [out.ppm]\n", argv[0]);
+        fprintf(stderr, "usage: %s <model.dat> <texture.pix> [palette.pal] [frames] [outdir]\n", argv[0]);
         return 2;
     }
+    if (frames < 1) frames = 1;
+    if (frames > MAX_FRAMES) frames = MAX_FRAMES;
 
-    if (BrBegin() != BRE_OK) return 3;
+    /* SHELL_INIT */
 #if defined(_DEBUG)
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
     _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
 #endif
+    if (BrBegin() != BRE_OK) { state = SHELL_FAILED; goto teardown; }
+    pm = BrPixelmapAllocate(BR_PMT_RGB_888, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
+    if (pm == NULL || pm->pixels == NULL) { state = SHELL_FAILED; goto teardown; }
+    BrPixelmapFill(pm, COLOUR_BLACK);
 
+    /* SHELL_LOAD */
     tex = BrPixelmapLoad((char *)tex_path);
-    if (tex == NULL || tex->pixels == NULL) {
-        fprintf(stderr, "BrPixelmapLoad failed: %s\n", tex_path);
-        BrEnd(); return 4;
-    }
+    if (tex == NULL || tex->pixels == NULL) { state = SHELL_FAILED; goto teardown; }
     if (pal_path != NULL) {
         pal = BrPixelmapLoad((char *)pal_path);
-        if (pal == NULL || pal->pixels == NULL) {
-            fprintf(stderr, "palette load failed: %s\n", pal_path);
-            BrEnd(); return 5;
-        }
+        if (pal == NULL || pal->pixels == NULL) { state = SHELL_FAILED; goto teardown; }
         tex->map = pal;
     }
-
     model = BrModelLoad((char *)model_path);
-    if (model == NULL) { BrEnd(); return 6; }
-    nv = (int)model->nvertices; nf = (int)model->nfaces;
-    if (nv < 3 || nf < 1 || model->vertices == NULL || model->faces == NULL) {
-        BrEnd(); return 7;
+    if (model == NULL || model->nvertices < 3 || model->nfaces < 1
+        || model->vertices == NULL || model->faces == NULL) {
+        state = SHELL_FAILED; goto teardown;
     }
-
-    pm = BrPixelmapAllocate(BR_PMT_RGB_888, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
-    if (pm == NULL || pm->pixels == NULL) { BrEnd(); return 8; }
-    BrPixelmapFill(pm, COLOUR_BLACK);
-    for (i = 0; i < RENDER_H * RENDER_W; i++) g_zbuf[i] = 0.0f;
 
     world = BrActorAllocate(BR_ACTOR_NONE, NULL);
     camera_actor = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
     if (world == NULL || camera_actor == NULL || camera_actor->type_data == NULL) {
-        BrEnd(); return 9;
+        state = SHELL_FAILED; goto teardown;
     }
     camera = (br_camera *)camera_actor->type_data;
     camera->type = BR_CAMERA_PERSPECTIVE;
@@ -219,24 +205,38 @@ int main(int argc, char **argv)
     BrActorAdd(world, camera_actor);
 
     model_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
-    if (model_actor == NULL) { BrEnd(); return 10; }
+    if (model_actor == NULL) { state = SHELL_FAILED; goto teardown; }
     model_actor->model = model;
-    BrMatrix34RotateY(&mm, BR_ANGLE_DEG(35));
-    BrMatrix34PreRotateX(&mm, BR_ANGLE_DEG(25));
-    model_actor->t.type = BR_TRANSFORM_MATRIX34;
-    model_actor->t.t.mat = mm;
     BrActorAdd(world, model_actor);
 
-    BrActorToScreenMatrix4(&m2s, model_actor, camera_actor);
+    /* SHELL_RUN: deterministic orbit, one PPM per frame. */
+    state = SHELL_RUN;
+    for (frame = 0; frame < frames; frame++) {
+        int *sx, *sy; float *siw, *sw;
+        br_matrix34 mm;
+        int angle = 35 + frame * (360 / frames);
+        char path[512];
+        long sampled = 0;
+        int nv = (int)model->nvertices, nf = (int)model->nfaces;
 
-    /* Screen projection with 1/w; UVs come straight from the loaded model. */
-    {
-        int *sx = (int *)malloc(sizeof(int) * nv);
-        int *sy = (int *)malloc(sizeof(int) * nv);
-        float *siw = (float *)malloc(sizeof(float) * nv);
-        float *sw = (float *)malloc(sizeof(float) * nv);
-        float wx[3];
-        if (!sx || !sy || !siw || !sw) { free(sx); free(sy); free(siw); free(sw); BrEnd(); return 11; }
+        for (i = 0; i < RENDER_H * RENDER_W; i++) g_zbuf[i] = 0.0f;
+        BrPixelmapFill(pm, COLOUR_BLACK);
+
+        BrMatrix34RotateY(&mm, BR_ANGLE_DEG(angle));
+        BrMatrix34PreRotateX(&mm, BR_ANGLE_DEG(25));
+        model_actor->t.type = BR_TRANSFORM_MATRIX34;
+        model_actor->t.t.mat = mm;
+
+        BrActorToScreenMatrix4(&m2s, model_actor, camera_actor);
+
+        sx = (int *)malloc(sizeof(int) * nv);
+        sy = (int *)malloc(sizeof(int) * nv);
+        siw = (float *)malloc(sizeof(float) * nv);
+        sw = (float *)malloc(sizeof(float) * nv);
+        if (!sx || !sy || !siw || !sw) {
+            free(sx); free(sy); free(siw); free(sw);
+            state = SHELL_FAILED; goto teardown;
+        }
         for (i = 0; i < nv; i++) {
             br_vector4 clip;
             float w, ndc_x, ndc_y;
@@ -253,7 +253,6 @@ int main(int argc, char **argv)
                 sx[i] = -10000; sy[i] = -10000; siw[i] = -1.0f;
             }
         }
-
         for (i = 0; i < nf; i++) {
             int a = model->faces[i].vertices[0];
             int b = model->faces[i].vertices[1];
@@ -274,7 +273,6 @@ int main(int argc, char **argv)
             nx/=nl; ny/=nl; nz/=nl;
             d = nx*0.35f + ny*0.55f + nz*1.0f; if (d < 0.0f) d = -d;
             shade = 0.45f + 0.55f * d; if (shade > 1.0f) shade = 1.0f;
-
             va.x = sx[a]; va.y = sy[a]; va.iw = siw[a];
             va.uow = BrScalarToFloat(model->vertices[a].map.v[0]) * siw[a];
             va.vow = BrScalarToFloat(model->vertices[a].map.v[1]) * siw[a];
@@ -285,29 +283,48 @@ int main(int argc, char **argv)
             vc.uow = BrScalarToFloat(model->vertices[c].map.v[0]) * siw[c];
             vc.vow = BrScalarToFloat(model->vertices[c].map.v[1]) * siw[c];
             fill_triangle_tex(pm, tex, va, vb, vc, shade, &sampled);
-            drew++;
         }
         free(sx); free(sy); free(siw); free(sw);
+
+        {
+            size_t ol = strlen(outdir);
+            const char *sep = (ol > 0 && (outdir[ol-1] == '/' || outdir[ol-1] == '\\')) ? "" : "/";
+            if (snprintf(path, sizeof(path), "%s%sshell-frame-%02d.ppm", outdir, sep, frame) >= (int)sizeof(path)) {
+                state = SHELL_FAILED; goto teardown;
+            }
+        }
+        if (!dump_ppm(pm, path)) {
+            fprintf(stderr, "game shell: frame dump failed: %s\n", path);
+            state = SHELL_FAILED; goto teardown;
+        }
+        frames_written++;
+        total_sampled += sampled;
     }
 
-    count_frame(pm, &distinct, &any);
-
-    if (drew < 1 || sampled < 3000 || any < 3000 || distinct < 8) { BrEnd(); return 12; }
-    if (!dump_ppm(pm, out_path)) { BrEnd(); return 13; }
-
-    printf("{\"model\":\"%s\",\"texture\":\"%s\",\"palette\":\"%s\","
-        "\"texture_type\":%d,\"texture_width\":%d,\"texture_height\":%d,"
-        "\"faces_drawn\":%ld,\"pixels_sampled\":%ld,"
-        "\"lit_pixels\":%ld,\"distinct_colours\":%ld,\"valid\":true}\n",
-        model_path, tex_path, pal_path ? pal_path : "-",
-        (int)tex->type, (int)tex->width, (int)tex->height,
-        drew, sampled, any, distinct);
-
-    BrPixelmapFree(pm);
-    tex->map = NULL;
+teardown:
+    /* SHELL_TEARDOWN */
+    if (state == SHELL_FAILED && pm == NULL && tex == NULL && model == NULL) {
+        fprintf(stderr, "game shell failed before asset load\n");
+    }
+    if (model_actor != NULL) BrActorRemove(model_actor);
+    if (camera_actor != NULL) BrActorRemove(camera_actor);
+    if (world != NULL) BrActorFree(world);
+    if (model != NULL) BrModelFree(model);
+    if (tex != NULL && pal != NULL) tex->map = NULL;
     if (pal != NULL) BrPixelmapFree(pal);
-    BrPixelmapFree(tex);
-    if (BrEnd() != BRE_OK) return 14;
-    return 0;
+    if (tex != NULL) BrPixelmapFree(tex);
+    if (pm != NULL) BrPixelmapFree(pm);
+    if (BrEnd() != BRE_OK) return 20;
+
+    printf("{\"shell\":\"brender-core-game-shell\",\"state\":\"%s\","
+        "\"model\":\"%s\",\"texture\":\"%s\",\"palette\":\"%s\","
+        "\"frames_requested\":%d,\"frames_written\":%d,"
+        "\"pixels_sampled\":%ld,\"valid\":%s}\n",
+        (state == SHELL_FAILED) ? "FAILED" : "TEARDOWN",
+        model_path, tex_path, pal_path ? pal_path : "-",
+        frames, frames_written, total_sampled,
+        (state != SHELL_FAILED && frames_written == frames) ? "true" : "false");
+
+    return (state != SHELL_FAILED && frames_written == frames) ? 0 : 21;
 }
 """

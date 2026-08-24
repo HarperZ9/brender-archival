@@ -213,7 +213,6 @@ add_test(NAME brender_core_material_file_audit
   COMMAND brender_core_material_file_audit
     "${{BRENDER_SOURCE_DIR}}/dat/std.mat"
     "${{BRENDER_SOURCE_DIR}}/dat/winstd.mat")
-
 add_executable(brender_core_pixelmap_roundtrip smoke/brender-core-pixelmap-roundtrip.c)
 target_include_directories(brender_core_pixelmap_roundtrip PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
 target_compile_definitions(brender_core_pixelmap_roundtrip PRIVATE
@@ -233,7 +232,6 @@ target_link_libraries(brender_core_material_resolve PRIVATE brender_core_float)
 add_test(NAME brender_core_material_resolve
   COMMAND brender_core_material_resolve
     "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat"
-    "${{BRENDER_SOURCE_DIR}}/dat/std.mat"
     brender-core-material-resolve.ppm)
 
 add_executable(brender_core_texture_file_sample smoke/brender-core-texture-file-sample.c)
@@ -248,6 +246,29 @@ add_test(NAME brender_core_texture_file_sample
     "${{BRENDER_SOURCE_DIR}}/dat/earth.pix"
     "${{BRENDER_SOURCE_DIR}}/dat/std.pal"
     brender-core-texture-file-sample.ppm)
+
+add_executable(brender_core_game_shell smoke/brender-core-game-shell.c)
+target_include_directories(brender_core_game_shell PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_game_shell PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_game_shell PRIVATE brender_core_float)
+add_test(NAME brender_core_game_shell
+  COMMAND brender_core_game_shell
+    "${{BRENDER_SOURCE_DIR}}/dat/sph32.dat"
+    "${{BRENDER_SOURCE_DIR}}/dat/earth.pix"
+    "${{BRENDER_SOURCE_DIR}}/dat/std.pal"
+    8
+    "${{CMAKE_CURRENT_BINARY_DIR}}")
+
+add_executable(brender_core_host_semantic smoke/brender-core-host-semantic.c)
+target_include_directories(brender_core_host_semantic PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_host_semantic PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_host_semantic PRIVATE brender_core_float)
+add_test(NAME brender_core_host_semantic
+  COMMAND brender_core_host_semantic)
 """
 
 

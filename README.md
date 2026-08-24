@@ -13,9 +13,9 @@ From the public BRender v1.3.2 source (MIT, provenance via Foone Turing, release
 authorized by former Argonaut CEO Jez San), pinned at commit `d88d0ed4`, the
 materializer generates an out-of-tree CMake harness that builds the FLOAT core
 through BRender's own pure-C memory-pixelmap path, with no dependence on the
-period 386-assembly software renderer. It stands up a eighteen-target ladder of
+period 386-assembly software renderer. It stands up a twenty-target ladder of
 self-verifying rungs, all green under CTest on a Visual Studio Win32
-target:
+target (2026-08-22 transcript: 20/20 passed, captured in builds/):
 
 | Rung | What it proves |
 |---|---|
@@ -37,6 +37,7 @@ target:
 | Pixelmap round trip | native datafile write path: `BrPixelmapSave` then reload, type and geometry compared, temp file removed on every exit path |
 | Material resolve | a `BrMaterialLoad`-loaded material attached to every face of a loaded model, rendered through the rasterizer; attachment proven on the render path |
 | File-texture sampling | perspective-correct UV sampling of a `BrPixelmapLoad`-loaded period `.pix` (palette attached via `pm->map`), distinct-colour proof that real texture data drove the pixels |
+| Game shell | explicit INIT/LOAD/RUN/TEARDOWN state machine driving a deterministic orbit frame loop over loaded assets; one numbered PPM per frame, JSON manifest, no clock or RNG |
 
 The audit rungs are grounded in the pinned upstream tree at commit `d88d0ed4`:
 loader locations (`core/v1db/v1dbfile.c`, `core/pixelmap/pmfile.c`), struct
@@ -66,6 +67,18 @@ hidden-line pen-plotter drawing, emitted as ready-to-plot SVG
 See [docs/BRENDER-ARCHIVAL.md](docs/BRENDER-ARCHIVAL.md) for the full packet:
 provenance, reproduction, what a developer can do today, and the honestly
 deferred items (period softrend assembly, x64, material resolution, packaging).
+
+## Package a release
+
+```powershell
+python scripts/package_brender_release.py `
+  --source-root C:\path\to\BRender-v1.3.2 `
+  --output-root C:\path\to\release-stage
+```
+
+Stages the materialized harness, README, CTest transcripts, and a canonical
+SHA256 receipt into one distributable directory. No proprietary source or
+assets are copied.
 
 ## Reproduce the BRender build
 
