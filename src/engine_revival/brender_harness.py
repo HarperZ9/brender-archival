@@ -483,6 +483,7 @@ def _pentprim_cmake(sources: list[str]) -> str:
         "  EVAL=0",
         "  STATIC=static",
         "  ADD_RCS_ID=0",
+        "  PARTS=0x03FF",
         "  BrDrv1Begin=BrDrv1PentPrimBegin)",
         "target_link_libraries(brender_pentprim_float PRIVATE brender_core_float brender_softrend_float)",
         "",
