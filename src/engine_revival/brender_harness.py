@@ -9,6 +9,7 @@ from engine_revival.brender_asset_sources import (
     material_file_audit_source,
     pixelmap_roundtrip_source,
 )
+REPO_ROOT = Path(__file__).resolve().parents[1]
 from engine_revival.brender_compat_sources import (
     portable_core_stubs_source,
     startup_smoke_source,
@@ -27,6 +28,7 @@ from engine_revival.brender_material_resolve_sources import material_resolve_sou
 from engine_revival.brender_texture_sample_sources import texture_file_sample_source
 from engine_revival.brender_game_shell_sources import game_shell_source
 from engine_revival.brender_host_semantic_sources import host_semantic_source
+from engine_revival.brender_softrend_sources import softrend_render_source
 from engine_revival.brender_plotter_sources import plotter_smoke_source
 from engine_revival.brender_host_sources import portable_host_stubs_source
 from engine_revival.brender_harness_templates import cmake_project_source, readme_source
@@ -49,6 +51,8 @@ OUTPUT_FILES = (
     "CMakeLists.txt",
     "README.md",
     "cmake/brender-core-sources.cmake",
+    "cmake/brender-softrend.cmake",
+    "compat/brender-softrend-float-fallbacks.c",
     "compat/brender-portable-core-stubs.c",
     "compat/brender-portable-host-stubs.c",
     "smoke/brender-core-smoke.c",
@@ -71,6 +75,7 @@ OUTPUT_FILES = (
     "smoke/brender-core-texture-file-sample.c",
     "smoke/brender-core-game-shell.c",
     "smoke/brender-core-host-semantic.c",
+    "smoke/brender-core-softrend-render.c",
     "harness-manifest.json",
 )
 
@@ -85,10 +90,12 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
     _validate_source_tree(source)
     _validate_output_location(source, output)
     source_lists = _load_core_float_source_lists(source)
+    softrend_sources = _load_softrend_source_list(source)
     files = {
         "CMakeLists.txt": cmake_project_source(CORE_FLOAT_DEFINES),
         "README.md": readme_source(),
         "cmake/brender-core-sources.cmake": _source_manifest_cmake(source_lists),
+        "cmake/brender-softrend.cmake": _softrend_cmake(softrend_sources),
         "compat/brender-portable-core-stubs.c": portable_core_stubs_source(),
         "compat/brender-portable-host-stubs.c": portable_host_stubs_source(),
         "smoke/brender-core-smoke.c": vector_smoke_source(),
@@ -111,6 +118,8 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
     "smoke/brender-core-texture-file-sample.c": texture_file_sample_source(),
     "smoke/brender-core-game-shell.c": game_shell_source(),
     "smoke/brender-core-host-semantic.c": host_semantic_source(),
+    "smoke/brender-core-softrend-render.c": softrend_render_source(),
+    "compat/brender-softrend-float-fallbacks.c": (REPO_ROOT / ".." / "compat" / "brender-softrend-float-fallbacks.c").resolve().read_text(encoding="utf-8"),
     "harness-manifest.json": _manifest_json(source_lists),
     }
     written: list[Path] = []
@@ -163,6 +172,33 @@ def _load_core_float_source_lists(source: Path) -> dict[str, list[str]]:
             )
         source_lists[directory] = filenames
     return source_lists
+
+
+def _load_softrend_source_list(source: Path) -> list[str]:
+    """Parse the softrend makefile OBJS_C list into checkout-relative .c paths.
+
+    The optional 386 assembly overlays (OBJS_ASM) are deliberately excluded:
+    the period makefile treats them as a speed layer over these C objects.
+    """
+    module_dir = source / "drivers" / "softrend"
+    makefile = module_dir / "makefile"
+    object_names = _parse_objs_c(makefile.read_text(encoding="utf-8"))
+    if not object_names:
+        raise HarnessMaterializationError(
+            f"{makefile} does not define OBJS_C entries"
+        )
+    filenames = [f"{name}.c" for name in object_names]
+    missing = [
+        module_dir / filename
+        for filename in filenames
+        if not (module_dir / filename).exists()
+    ]
+    if missing:
+        names = ", ".join(str(path) for path in missing)
+        raise HarnessMaterializationError(
+            f"softrend makefile references missing C source: {names}"
+        )
+    return filenames
 
 
 def _parse_objs_c(text: str) -> list[str]:
@@ -262,7 +298,15 @@ def _manifest_json(source_lists: dict[str, list[str]]) -> str:
         "brender_core_texture_file_sample",
         "brender_core_game_shell",
         "brender_core_host_semantic",
+        "brender_core_softrend_render",
         ],
+        "softrend_lane": {
+            "library_target": "brender_softrend_float",
+            "source_list_var": "BRENDER_SOFTREND_FLOAT_SOURCES",
+            "asm_overlays_excluded": True,
+            "entry_point": "BrDrv1SoftRendBegin",
+            "note": "softrend OBJS_C only; the seven 386 assembly kernels are the period makefile's optional speed overlay over these C objects",
+        },
         "source_lists": source_lists,
         "source_policy": "out-of-tree; explicit period OBJS_C lists; no vendored BRender source",
     }
@@ -282,3 +326,70 @@ def _cmake_source_paths(directory: str, filenames: list[str]) -> list[str]:
 
 def _indented(items: tuple[str, ...] | list[str]) -> list[str]:
     return [f"  {item}" for item in items]
+
+
+def _softrend_cmake(sources: list[str]) -> str:
+    """CMake for the softrend lane: period OBJS_C only, no assembly overlays."""
+    source_paths = [
+        f'"${{BRENDER_SOURCE_DIR}}/drivers/softrend/{filename}"'
+        for filename in sources
+    ]
+    lines = [
+        "# Softrend driver lane generated from the period OBJS_C makefile rule.",
+        "# The seven 386 assembly kernels are excluded: they are the makefile's",
+        "# optional speed overlay over these C objects.",
+        "",
+        "set(BRENDER_SOFTREND_FLOAT_SOURCES",
+        *_indented(source_paths),
+        ")",
+        "",
+        "foreach(source_file IN LISTS BRENDER_SOFTREND_FLOAT_SOURCES)",
+        "  if(NOT EXISTS \"${source_file}\")",
+        "    message(FATAL_ERROR \"Missing softrend source: ${source_file}\")",
+        "  endif()",
+        "endforeach()",
+        "",
+        "add_library(brender_softrend_float STATIC ${BRENDER_SOFTREND_FLOAT_SOURCES} \"${CMAKE_CURRENT_LIST_DIR}/../compat/brender-softrend-float-fallbacks.c\")",
+        "target_include_directories(brender_softrend_float PRIVATE",
+        "  ${BRENDER_SOURCE_DIR}/drivers/softrend",
+        "  ${BRENDER_SOURCE_DIR}/inc",
+        "  ${BRENDER_SOURCE_DIR}/core/inc",
+        "  ${BRENDER_SOURCE_DIR}/ddi_inc)",
+        "target_compile_definitions(brender_softrend_float PRIVATE",
+        "  BASED_FLOAT=1",
+        "  BASED_FIXED=0",
+        "  INLINE_FIXED=0",
+        "  DEBUG=0",
+        "  PARANOID=0",
+        "  EVAL=0",
+        "  STATIC=static",
+        "  ADD_RCS_ID=0",
+        "  BrDrv1Begin=BrDrv1SoftRendBegin",
+        "  V1Face_CullOneSidedPerspective_P6=V1Face_CullOneSidedPerspective)",
+        "target_link_libraries(brender_softrend_float PRIVATE brender_core_float)",
+        "",
+        "add_executable(brender_core_softrend_render smoke/brender-core-softrend-render.c)",
+        "target_include_directories(brender_core_softrend_render PRIVATE",
+        "  ${BRENDER_SOURCE_DIR}/inc",
+        "  ${BRENDER_SOURCE_DIR}/core/inc",
+        "  ${BRENDER_SOURCE_DIR}/ddi_inc)",
+        "target_compile_definitions(brender_core_softrend_render PRIVATE",
+        "  BASED_FLOAT=1",
+        "  BASED_FIXED=0",
+        "  INLINE_FIXED=0",
+        "  __386__=1",
+        "  DEBUG=0",
+        "  PARANOID=0",
+        "  EVAL=0",
+        "  STATIC=static",
+        "  ADD_RCS_ID=0)",
+        "target_link_libraries(brender_core_softrend_render PRIVATE brender_core_float brender_softrend_float)",
+        "add_test(NAME brender_core_softrend_render",
+        "  COMMAND brender_core_softrend_render",
+        "    \"${BRENDER_SOURCE_DIR}/dat/sph32.dat\"",
+        "    \"${BRENDER_SOURCE_DIR}/dat/earth.pix\"",
+        "    \"${BRENDER_SOURCE_DIR}/dat/std.pal\"",
+        "    brender-core-softrend-render.ppm)",
+        "",
+    ]
+    return "\n".join(lines)

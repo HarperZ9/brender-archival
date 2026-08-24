@@ -16,6 +16,22 @@ def _write_source_fixture(root):
     (root / "inc").mkdir(parents=True)
     (root / "inc" / "brender.h").write_text("/* public header fixture */\n", encoding="utf-8")
     (root / "core" / "inc").mkdir(parents=True)
+    softrend_dir = root / "drivers" / "softrend"
+    softrend_dir.mkdir(parents=True)
+    (softrend_dir / "alpha.c").write_text("void sr_alpha(void) {}\n", encoding="utf-8")
+    (softrend_dir / "clip.c").write_text("void sr_clip(void) {}\n", encoding="utf-8")
+    (softrend_dir / "makefile").write_text(
+        "\n".join([
+            "OBJS_C=\\",
+            "    $(BLD_DIR)/alpha$(OBJ_EXT)\\",
+            "    $(BLD_DIR)/clip$(OBJ_EXT)\\",
+            "",
+            "OBJS_ASM=\\",
+            "    $(BLD_DIR)/cull$(OBJ_EXT)\\",
+            ""],
+        ),
+        encoding="utf-8",
+    )
     for name in CORE_DIRS:
         directory = root / "core" / name
         directory.mkdir(parents=True)
@@ -46,6 +62,8 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "CMakeLists.txt",
         output / "README.md",
         output / "cmake" / "brender-core-sources.cmake",
+        output / "cmake" / "brender-softrend.cmake",
+        output / "compat" / "brender-softrend-float-fallbacks.c",
         output / "compat" / "brender-portable-core-stubs.c",
         output / "compat" / "brender-portable-host-stubs.c",
         output / "smoke" / "brender-core-smoke.c",
@@ -68,6 +86,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "smoke" / "brender-core-texture-file-sample.c",
         output / "smoke" / "brender-core-game-shell.c",
         output / "smoke" / "brender-core-host-semantic.c",
+        output / "smoke" / "brender-core-softrend-render.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -314,6 +333,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "brender_core_texture_file_sample",
         "brender_core_game_shell",
         "brender_core_host_semantic",
+        "brender_core_softrend_render",
     ]
     assert manifest["portable_compat_source"] == "compat/brender-portable-core-stubs.c"
     assert manifest["portable_compat_sources"] == [
