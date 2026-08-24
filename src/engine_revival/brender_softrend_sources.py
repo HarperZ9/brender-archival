@@ -1,0 +1,193 @@
+from __future__ import annotations
+
+
+def softrend_render_source() -> str:
+    """C source for the BRender softrend engine-rendering rung.
+
+    The period-accuracy milestone: rendering goes through BRender's OWN
+    software renderer (softrend, compiled from the pinned checkout's C
+    objects with the optional 386 assembly overlays excluded exactly as the
+    period makefile structured them), driven through BrZbBegin /
+    BrZbSceneRender into an RGB_888 memory pixelmap. This replaces the
+    hand-written scanline rasterizer every earlier render rung used.
+    """
+    return r"""/*
+ * BRender v1.3.2 softrend engine-rendering rung.
+ *
+ *   BrBegin
+ *     -> device = BrDrv1SoftRendBegin(NULL)     (built-in softrend driver)
+ *     -> BrZbBegin(BR_PMT_RGB_888, BR_PMT_DEPTH_16)
+ *     -> model = BrModelLoad(sph32.dat), texture = BrPixelmapLoad(earth.pix)
+ *     -> world/camera/model actor tree
+ *     -> per frame: orbit transform, BrZbSceneRender(world,camera,pm)
+ *   BrEnd
+ *
+ * Proves engine-side rendering: pixels come from softrend's own pipeline,
+ * not from any hand-written rasterizer in this harness.
+ *
+ * Usage: brender_core_softrend_render <model.dat> <texture.pix> [palette.pal] [out.ppm]
+ */
+#define __BR_V1DB__ 1
+#include "brender.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "brddi.h"
+#if defined(_DEBUG)
+#include <crtdbg.h>
+#endif
+
+/* Driver entry point; renamed from BrDrv1Begin inside the softrend library. */
+void * BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
+
+#define RENDER_W 320
+#define RENDER_H 240
+#define COLOUR_BLACK BR_COLOUR_RGB(0, 0, 0)
+
+static int dump_ppm(br_pixelmap *pm, const char *path)
+{
+    FILE *f = fopen(path, "wb");
+    const unsigned char *base; int x, y;
+    if (f == NULL) return 0;
+    fprintf(f, "P6\n%d %d\n255\n", (int)pm->width, (int)pm->height);
+    base = (const unsigned char *)pm->pixels;
+    for (y = 0; y < (int)pm->height; y++) {
+        const unsigned char *row = base + (long)y * pm->row_bytes;
+        for (x = 0; x < (int)pm->width; x++) {
+            const unsigned char *px = row + (long)x * 3;
+            unsigned char rgb[3]; rgb[0]=px[2]; rgb[1]=px[1]; rgb[2]=px[0];
+            fwrite(rgb, 1, 3, f);
+        }
+    }
+    fclose(f);
+    return 1;
+}
+
+static long count_lit(br_pixelmap *pm)
+{
+    long t = 0; int x, y;
+    for (y = 0; y < (int)pm->height; y++)
+        for (x = 0; x < (int)pm->width; x++)
+            if (BrPixelmapPixelGet(pm, x, y) != COLOUR_BLACK) t++;
+    return t;
+}
+
+int main(int argc, char **argv)
+{
+    const char *model_path = (argc > 1) ? argv[1] : NULL;
+    const char *tex_path = (argc > 2) ? argv[2] : NULL;
+    const char *pal_path = (argc > 3 && argv[3][0] != 0) ? argv[3] : NULL;
+    const char *out_path = (argc > 4) ? argv[4] : "brender-core-softrend-render.ppm";
+    br_pixelmap *tex = NULL, *pal = NULL, *pm = NULL, *depth = NULL;
+    br_actor *world = NULL, *camera_actor = NULL, *model_actor = NULL, *light_actor = NULL;
+    br_camera *camera;
+    br_model *model = NULL;
+    br_material *material = NULL;
+    int frame;
+
+#if defined(_DEBUG)
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#endif
+    if (model_path == NULL || tex_path == NULL) {
+        fprintf(stderr, "usage: %s <model.dat> <texture.pix> [palette.pal] [out.ppm]\n", argv[0]);
+        return 2;
+    }
+
+    if (BrBegin() != BRE_OK) return 3;
+
+    if (BrDevAddStatic(NULL, (br_device_begin_fn *)BrDrv1SoftRendBegin, NULL) != BRE_OK) {
+        fprintf(stderr, "BrDevAddStatic(softrend) failed\n");
+        BrEnd(); return 4;
+    }
+    BrZbBegin(BR_PMT_RGB_888, BR_PMT_DEPTH_16);
+
+    tex = BrPixelmapLoad((char *)tex_path);
+    if (tex == NULL || tex->pixels == NULL) {
+        fprintf(stderr, "BrPixelmapLoad failed: %s\n", tex_path);
+        BrEnd(); return 6;
+    }
+    if (pal_path != NULL) {
+        pal = BrPixelmapLoad((char *)pal_path);
+        if (pal != NULL && pal->pixels != NULL) tex->map = pal;
+    }
+    material = BrMaterialAllocate("shell-texture");
+    if (material == NULL) { BrEnd(); return 7; }
+    material->colour_map = tex;
+    material->identifier = "shell-texture";
+
+    model = BrModelLoad((char *)model_path);
+    if (model == NULL || model->nvertices < 3 || model->nfaces < 1) {
+        BrEnd(); return 8;
+    }
+
+    world = BrActorAllocate(BR_ACTOR_NONE, NULL);
+    camera_actor = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
+    light_actor = BrActorAllocate(BR_ACTOR_LIGHT, NULL);
+    model_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
+    if (world == NULL || camera_actor == NULL || camera_actor->type_data == NULL
+        || light_actor == NULL || model_actor == NULL) {
+        BrEnd(); return 9;
+    }
+    camera = (br_camera *)camera_actor->type_data;
+    camera->type = BR_CAMERA_PERSPECTIVE;
+    camera->field_of_view = BR_ANGLE_DEG(55);
+    camera->hither_z = BrFloatToScalar(1.0f);
+    camera->yon_z = BrFloatToScalar(100.0f);
+    camera->aspect = BrFloatToScalar((float)RENDER_W / (float)RENDER_H);
+    BrMatrix34Translate(&camera_actor->t.t.mat,
+        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(4.0f));
+    BrActorAdd(world, camera_actor);
+    BrActorAdd(world, light_actor);
+    model_actor->model = model;
+    model_actor->material = material;
+    BrActorAdd(world, model_actor);
+
+    pm = BrPixelmapAllocate(BR_PMT_RGB_888, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
+    depth = BrPixelmapAllocate(BR_PMT_DEPTH_16, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
+    if (pm == NULL || depth == NULL || pm->pixels == NULL) { BrEnd(); return 10; }
+    pm->origin_x = (br_int_16)(RENDER_W / 2); pm->origin_y = (br_int_16)(RENDER_H / 2);
+    depth->origin_x = pm->origin_x; depth->origin_y = pm->origin_y;
+
+    for (frame = 0; frame < 4; frame++) {
+        int angle = 35 + frame * 30;
+        BrMatrix34RotateY(&model_actor->t.t.mat, BR_ANGLE_DEG(angle));
+        BrMatrix34PreRotateX(&model_actor->t.t.mat, BR_ANGLE_DEG(25));
+        model_actor->t.type = BR_TRANSFORM_MATRIX34;
+        BrZbSceneRender(world, camera_actor, pm, depth);
+        {
+            char path[512];
+            snprintf(path, sizeof(path), "%s.softrend-f%d.ppm", out_path, frame);
+            dump_ppm(pm, path);
+        }
+    }
+
+    {
+        long lit = count_lit(pm);
+        int ok = (lit > 500);
+        printf("{\"rung\":\"brender_core_softrend_render\",\"renderer\":\"softrend-float\","
+            "\"model\":\"%s\",\"frames\":4,\"final_frame_lit\":%ld,\"valid\":%s}\n",
+            model_path, lit, ok ? "true" : "false");
+
+        if (!ok || dump_ppm(pm, out_path) != 1) ok = 0;
+
+        BrPixelmapFree(depth);
+        BrPixelmapFree(pm);
+        BrActorRemove(model_actor); BrActorFree(model_actor);
+        BrActorRemove(light_actor); BrActorFree(light_actor);
+        BrActorRemove(camera_actor); BrActorFree(camera_actor);
+        BrActorRemove(world); BrActorFree(world);
+        BrModelFree(model);
+        material->colour_map = NULL;
+        BrMaterialFree(material);
+        tex->map = NULL;
+        if (pal != NULL) BrPixelmapFree(pal);
+        BrPixelmapFree(tex);
+        BrZbEnd();
+        if (BrEnd() != BRE_OK) return 12;
+        return ok ? 0 : 11;
+    }
+}
+"""

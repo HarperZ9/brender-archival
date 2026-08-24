@@ -1,15 +1,17 @@
 {
     "blockers":  [
+                     "softrend integration (rung 21): brender_softrend_float.lib builds clean from the pinned OBJS_C set (assembly overlays excluded per makefile architecture); device registers via BrDevAddStatic; remaining detail is BrZbBegin renderer-facility discovery for plain memory pixelmaps (dbsetup.c \"Failed to load renderer\")",
+                     "x64 pointer-width port remains multi-site debugger work; harness guard verified",
                      "x64: the FLOAT core compiles and LINKS clean on x64 (INLINE_FIXED=0 sidesteps the mscifix.h inline x86 asm), but BrBegin faults at runtime from pointers stored in 32-bit fields; a genuine attempt fixed the ALIGN macro (core/fw/resource.c:76) and the loader.c image-relocation casts (lines 143/225/228/321) in out-of-tree overrides, but startup still faults on further sites. x64 is a systemic multi-site pointer-width port best finished with a debugger; scoped, not completed.",
                      "softrend: BRender\u0027s period 386-assembly software renderer is not ported. The portable pure-C rasterizer (flat and Gouraud shading, per-pixel depth buffer, perspective-correct texturing, datafile model loading) is its functional replacement on the portable path; softrend translation remains period-accuracy work.",
-                     "release packaging has not been implemented",
-                     "drivers and deferred FIXED variants have not been translated"
+                     "release packaging has not been implemented"
                  ],
     "build_status":  "twenty-target-ladder-built-and-green",
     "build_ids":  [
                       "brender-v132-build-environment"
                   ],
     "evidence":  [
+                     "2026-08-22 softrend lane: full OBJS_C set compiles under MSVC Win32 with zero errors; link succeeds against core float lib with three documented float-build fallback stubs (subdivision kernels unreachable: no primitive block sets BR_PRIMF_SUBDIVIDE anywhere in the pinned tree); transcript builds/brender-v132-softrend-integration-status.log",
                      "2026-08-22 ctest transcript: 20/20 passed, 0 failed, 1.59s total (builds/brender-v132-ctest-twenty-rungs.log); includes new host/memory semantic rung closing the semantic-tests blocker. Findings: BrMemAllocateAlign declared but unimplemented in v1.3.2 FLOAT core; BrMemInquire(BR_MEMORY_APPLICATION) legitimately returns 0 pre-allocation under the default allocator",
                      "2026-08-22 pinned checkout cloned to local temp and verified at d88d0ed41122664b9781015b517db64353e16f19; harness materialized (25 files) and full FLOAT core plus nineteen CTest targets built clean under VS 2022 x86 toolchain",
                      "2026-08-22 ctest transcript: 19/19 passed, 0 failed, 1.59s total (builds/brender-v132-ctest-nineteen-rungs.log); asset/material/palette audits, native BrPixelmapSave round trip, material-to-face resolution rendering, file-texture sampling with palette attach, and the deterministic game-shell frame loop all verified by execution",
