@@ -52,7 +52,9 @@ OUTPUT_FILES = (
     "README.md",
     "cmake/brender-core-sources.cmake",
     "cmake/brender-softrend.cmake",
+    "cmake/brender-pentprim.cmake",
     "compat/brender-softrend-float-fallbacks.c",
+    "compat/brender-pentprim-c-port.c",
     "compat/brender-portable-core-stubs.c",
     "compat/brender-portable-host-stubs.c",
     "smoke/brender-core-smoke.c",
@@ -91,11 +93,14 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
     _validate_output_location(source, output)
     source_lists = _load_core_float_source_lists(source)
     softrend_sources = _load_softrend_source_list(source)
+    pentprim_sources = _load_pentprim_source_lists(source)
     files = {
         "CMakeLists.txt": cmake_project_source(CORE_FLOAT_DEFINES),
         "README.md": readme_source(),
         "cmake/brender-core-sources.cmake": _source_manifest_cmake(source_lists),
         "cmake/brender-softrend.cmake": _softrend_cmake(softrend_sources),
+        "cmake/brender-pentprim.cmake": _pentprim_cmake(pentprim_sources),
+    "compat/brender-pentprim-c-port.c": (REPO_ROOT / ".." / "compat" / "brender-pentprim-c-port.c").resolve().read_text(encoding="utf-8"),
         "compat/brender-portable-core-stubs.c": portable_core_stubs_source(),
         "compat/brender-portable-host-stubs.c": portable_host_stubs_source(),
         "smoke/brender-core-smoke.c": vector_smoke_source(),
@@ -201,6 +206,44 @@ def _load_softrend_source_list(source: Path) -> list[str]:
     return filenames
 
 
+
+def _load_pentprim_source_lists(source):
+    """Parse pentprim makefile OBJS_C + XOBJS_C into checkout-relative .c paths.
+
+    XOBJS_C is the period makefile's own generic-C primitive path; the
+    XOBJS_ASM overlays are excluded exactly as with softrend.
+    """
+    module_dir = source / "drivers" / "pentprim"
+    makefile = module_dir / "makefile"
+    text = makefile.read_text(encoding="utf-8")
+    def parse(block_name):
+        names = []
+        in_block = False
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not in_block and not line.startswith(block_name):
+                continue
+            if not in_block:
+                in_block = True
+                line = line.split("=", 1)[1] if "=" in line else ""
+            if not line or line.startswith("#"):
+                if in_block and not raw_line.rstrip().endswith("\\"):
+                    break
+                continue
+            name = _extract_object_name(line)
+            if name:
+                names.append(name)
+            if not raw_line.rstrip().endswith("\\"):
+                break
+        return names
+    filenames = [f"{n}.c" for n in parse("OBJS_C") + parse("XOBJS_C")]
+    missing = [module_dir / f for f in filenames if not (module_dir / f).exists()]
+    if missing:
+        raise HarnessMaterializationError(
+            "pentprim makefile references missing C source: "
+            + ", ".join(str(p) for p in missing)
+        )
+    return filenames
 def _parse_objs_c(text: str) -> list[str]:
     object_names: list[str] = []
     in_block = False
@@ -399,6 +442,51 @@ def _softrend_cmake(sources: list[str]) -> str:
         "# paired softrend with a display driver's device pixelmaps, so headless",
         "# ZB rendering needs that glue (or a null pixelmap device) before this",
         "# test can pass. WILL_FAIL keeps the gap visible without breaking CI.",
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def _pentprim_cmake(sources: list[str]) -> str:
+    """CMake for the pentprim lane: period OBJS_C + XOBJS_C, no asm overlays."""
+    source_paths = [
+        f'"${{BRENDER_SOURCE_DIR}}/drivers/pentprim/{filename}"'
+        for filename in sources
+    ]
+    lines = [
+        "# Pentprim primitive-library lane generated from period OBJS_C + XOBJS_C.",
+        "# XOBJS_C is the makefile's own generic-C primitive path; XOBJS_ASM",
+        "# overlays (the pentium rasterizer kernels) are excluded.",
+        "",
+        "set(BRENDER_PENTPRIM_FLOAT_SOURCES",
+        *_indented(source_paths),
+        "  \"${CMAKE_CURRENT_LIST_DIR}/../compat/brender-pentprim-c-port.c\")",
+        "",
+        "foreach(source_file IN LISTS BRENDER_PENTPRIM_FLOAT_SOURCES)",
+        "  if(NOT EXISTS \"${source_file}\")",
+        "    message(FATAL_ERROR \"Missing pentprim source: ${source_file}\")",
+        "  endif()",
+        "endforeach()",
+        "",
+        "add_library(brender_pentprim_float STATIC ${BRENDER_PENTPRIM_FLOAT_SOURCES})",
+        "target_include_directories(brender_pentprim_float PRIVATE",
+        "  ${BRENDER_SOURCE_DIR}/drivers/pentprim",
+        "  ${BRENDER_SOURCE_DIR}/inc",
+        "  ${BRENDER_SOURCE_DIR}/core/inc",
+        "  ${BRENDER_SOURCE_DIR}/ddi_inc)",
+        "target_compile_definitions(brender_pentprim_float PRIVATE",
+        "  BASED_FLOAT=1",
+        "  BASED_FIXED=0",
+        "  INLINE_FIXED=0",
+        "  DEBUG=0",
+        "  PARANOID=0",
+        "  EVAL=0",
+        "  STATIC=static",
+        "  ADD_RCS_ID=0",
+        "  BrDrv1Begin=BrDrv1PentPrimBegin)",
+        "target_link_libraries(brender_pentprim_float PRIVATE brender_core_float brender_softrend_float)",
+        "",
+        "target_link_libraries(brender_core_softrend_render PRIVATE brender_pentprim_float)",
         "",
     ]
     return "\n".join(lines)

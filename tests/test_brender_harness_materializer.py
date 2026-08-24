@@ -32,6 +32,25 @@ def _write_source_fixture(root):
         ),
         encoding="utf-8",
     )
+
+    pentprim_dir = root / "drivers" / "pentprim"
+    pentprim_dir.mkdir(parents=True)
+    (pentprim_dir / "driver.c").write_text("void pp_driver(void) {}\n", encoding="utf-8")
+    (pentprim_dir / "l_pi.c").write_text("void pp_lpi(void) {}\n", encoding="utf-8")
+    (pentprim_dir / "makefile").write_text(
+        "\n".join([
+            "OBJS_C=\\",
+            "    $(BLD_DIR)/driver$(OBJ_EXT)\\",
+            "",
+            "XOBJS_C=\\",
+            "    $(BLD_DIR)/l_pi$(OBJ_EXT)\\",
+            "",
+            "XOBJS_ASM=\\",
+            "    $(BLD_DIR)/zb8$(OBJ_EXT)\\",
+            ""],
+        ),
+        encoding="utf-8",
+    )
     for name in CORE_DIRS:
         directory = root / "core" / name
         directory.mkdir(parents=True)
@@ -61,32 +80,34 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert written == [
         output / "CMakeLists.txt",
         output / "README.md",
-        output / "cmake" / "brender-core-sources.cmake",
-        output / "cmake" / "brender-softrend.cmake",
-        output / "compat" / "brender-softrend-float-fallbacks.c",
-        output / "compat" / "brender-portable-core-stubs.c",
-        output / "compat" / "brender-portable-host-stubs.c",
-        output / "smoke" / "brender-core-smoke.c",
-        output / "smoke" / "brender-core-startup-smoke.c",
-        output / "smoke" / "brender-core-render-smoke.c",
-        output / "smoke" / "brender-core-scene-smoke.c",
-        output / "smoke" / "brender-core-fill-smoke.c",
-        output / "smoke" / "brender-core-depth-smoke.c",
-        output / "smoke" / "brender-core-texture-smoke.c",
-        output / "smoke" / "brender-core-model-smoke.c",
-        output / "smoke" / "brender-core-material-smoke.c",
-        output / "smoke" / "brender-core-multimodel-smoke.c",
-        output / "smoke" / "brender-core-gouraud-smoke.c",
-        output / "smoke" / "brender-core-plotter-smoke.c",
-        output / "smoke" / "brender-core-asset-audit.c",
-        output / "smoke" / "brender-core-material-audit.c",
-        output / "smoke" / "brender-core-material-file-audit.c",
-        output / "smoke" / "brender-core-pixelmap-roundtrip.c",
-        output / "smoke" / "brender-core-material-resolve.c",
-        output / "smoke" / "brender-core-texture-file-sample.c",
-        output / "smoke" / "brender-core-game-shell.c",
-        output / "smoke" / "brender-core-host-semantic.c",
-        output / "smoke" / "brender-core-softrend-render.c",
+        output / "cmake/brender-core-sources.cmake",
+        output / "cmake/brender-softrend.cmake",
+        output / "cmake/brender-pentprim.cmake",
+        output / "compat/brender-softrend-float-fallbacks.c",
+        output / "compat/brender-pentprim-c-port.c",
+        output / "compat/brender-portable-core-stubs.c",
+        output / "compat/brender-portable-host-stubs.c",
+        output / "smoke/brender-core-smoke.c",
+        output / "smoke/brender-core-startup-smoke.c",
+        output / "smoke/brender-core-render-smoke.c",
+        output / "smoke/brender-core-scene-smoke.c",
+        output / "smoke/brender-core-fill-smoke.c",
+        output / "smoke/brender-core-depth-smoke.c",
+        output / "smoke/brender-core-texture-smoke.c",
+        output / "smoke/brender-core-model-smoke.c",
+        output / "smoke/brender-core-material-smoke.c",
+        output / "smoke/brender-core-multimodel-smoke.c",
+        output / "smoke/brender-core-gouraud-smoke.c",
+        output / "smoke/brender-core-plotter-smoke.c",
+        output / "smoke/brender-core-asset-audit.c",
+        output / "smoke/brender-core-material-audit.c",
+        output / "smoke/brender-core-material-file-audit.c",
+        output / "smoke/brender-core-pixelmap-roundtrip.c",
+        output / "smoke/brender-core-material-resolve.c",
+        output / "smoke/brender-core-texture-file-sample.c",
+        output / "smoke/brender-core-game-shell.c",
+        output / "smoke/brender-core-host-semantic.c",
+        output / "smoke/brender-core-softrend-render.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")

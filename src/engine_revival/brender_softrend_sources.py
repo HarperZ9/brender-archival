@@ -40,6 +40,7 @@ def softrend_render_source() -> str:
 
 /* Driver entry point; renamed from BrDrv1Begin inside the softrend library. */
 void * BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
+void * BR_EXPORT BrDrv1PentPrimBegin(char *arguments);
 br_error BR_PUBLIC_ENTRY BrV1dbRendererBegin(struct br_device_pixelmap *destination, struct br_renderer *renderer);
 
 #define RENDER_W 320
@@ -101,6 +102,10 @@ int main(int argc, char **argv)
 
     if (BrDevAddStatic(NULL, (br_device_begin_fn *)BrDrv1SoftRendBegin, NULL) != BRE_OK) {
         fprintf(stderr, "BrDevAddStatic(softrend) failed\n");
+        BrEnd(); return 4;
+    }
+    if (BrDevAddStatic(NULL, (br_device_begin_fn *)BrDrv1PentPrimBegin, NULL) != BRE_OK) {
+        fprintf(stderr, "BrDevAddStatic(pentprim) failed\n");
         BrEnd(); return 4;
     }
     /*
