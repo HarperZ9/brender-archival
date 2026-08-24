@@ -260,6 +260,15 @@ add_test(NAME brender_core_game_shell
     "${{BRENDER_SOURCE_DIR}}/dat/std.pal"
     8
     "${{CMAKE_CURRENT_BINARY_DIR}}")
+
+add_executable(brender_core_host_semantic smoke/brender-core-host-semantic.c)
+target_include_directories(brender_core_host_semantic PRIVATE ${{BRENDER_CORE_INCLUDE_DIRS}})
+target_compile_definitions(brender_core_host_semantic PRIVATE
+{compile_definitions}
+)
+target_link_libraries(brender_core_host_semantic PRIVATE brender_core_float)
+add_test(NAME brender_core_host_semantic
+  COMMAND brender_core_host_semantic)
 """
 
 

@@ -67,6 +67,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "smoke" / "brender-core-material-resolve.c",
         output / "smoke" / "brender-core-texture-file-sample.c",
         output / "smoke" / "brender-core-game-shell.c",
+        output / "smoke" / "brender-core-host-semantic.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -123,6 +124,9 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "add_test(NAME brender_core_texture_file_sample" in cmake
     assert "add_executable(brender_core_game_shell" in cmake
     assert "add_test(NAME brender_core_game_shell" in cmake
+    assert "add_executable(brender_core_host_semantic" in cmake
+    assert "target_link_libraries(brender_core_host_semantic PRIVATE brender_core_float)" in cmake
+    assert "add_test(NAME brender_core_host_semantic" in cmake
     assert "compat/brender-portable-core-stubs.c" in cmake
     assert "compat/brender-portable-host-stubs.c" in cmake
     assert "CMAKE_SIZEOF_VOID_P" in cmake
@@ -309,6 +313,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "brender_core_material_resolve",
         "brender_core_texture_file_sample",
         "brender_core_game_shell",
+        "brender_core_host_semantic",
     ]
     assert manifest["portable_compat_source"] == "compat/brender-portable-core-stubs.c"
     assert manifest["portable_compat_sources"] == [

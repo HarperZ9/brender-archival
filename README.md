@@ -13,9 +13,9 @@ From the public BRender v1.3.2 source (MIT, provenance via Foone Turing, release
 authorized by former Argonaut CEO Jez San), pinned at commit `d88d0ed4`, the
 materializer generates an out-of-tree CMake harness that builds the FLOAT core
 through BRender's own pure-C memory-pixelmap path, with no dependence on the
-period 386-assembly software renderer. It stands up a nineteen-target ladder of
+period 386-assembly software renderer. It stands up a twenty-target ladder of
 self-verifying rungs, all green under CTest on a Visual Studio Win32
-target (2026-08-22 transcript: 19/19 passed, captured in builds/):
+target (2026-08-22 transcript: 20/20 passed, captured in builds/):
 
 | Rung | What it proves |
 |---|---|
