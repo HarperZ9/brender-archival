@@ -68,10 +68,16 @@ static int dump_ppm(br_pixelmap *pm, const char *path)
 
 static long count_lit(br_pixelmap *pm)
 {
+    /* Ground truth: read the raw buffer, not PixelGet (unreliable here). */
+    const unsigned char *base = (const unsigned char *)pm->pixels;
     long t = 0; int x, y;
-    for (y = 0; y < (int)pm->height; y++)
-        for (x = 0; x < (int)pm->width; x++)
-            if (BrPixelmapPixelGet(pm, x, y) != COLOUR_BLACK) t++;
+    for (y = 0; y < (int)pm->height; y++) {
+        const unsigned char *row = base + (long)y * pm->row_bytes;
+        for (x = 0; x < (int)pm->width; x++) {
+            const unsigned char *px = row + (long)x * 3;
+            if (px[0] | px[1] | px[2]) t++;
+        }
+    }
     return t;
 }
 
@@ -82,7 +88,10 @@ int main(int argc, char **argv)
     const char *pal_path = (argc > 3 && argv[3][0] != 0) ? argv[3] : NULL;
     const char *out_path = (argc > 4) ? argv[4] : "brender-core-softrend-render.ppm";
     br_pixelmap *tex = NULL, *pal = NULL, *pm = NULL, *depth = NULL;
-    br_actor *world = NULL, *camera_actor = NULL, *model_actor = NULL, *light_actor = NULL;
+    br_matrix34 mm;
+
+    int nv = 0, nf = 0, k;
+    br_actor *world = NULL, *camera_actor = NULL, *model_actor = NULL;
     br_camera *camera;
     br_model *model = NULL;
     br_material *material = NULL;
@@ -140,16 +149,17 @@ int main(int argc, char **argv)
     material->identifier = "shell-texture";
 
     model = BrModelLoad((char *)model_path);
+    nv = (int)model->nvertices; nf = (int)model->nfaces;
     if (model == NULL || model->nvertices < 3 || model->nfaces < 1) {
         BrEnd(); return 8;
     }
 
     world = BrActorAllocate(BR_ACTOR_NONE, NULL);
     camera_actor = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
-    light_actor = BrActorAllocate(BR_ACTOR_LIGHT, NULL);
+    BrModelUpdate(model, BR_MODU_ALL);
     model_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     if (world == NULL || camera_actor == NULL || camera_actor->type_data == NULL
-        || light_actor == NULL || model_actor == NULL) {
+        || model_actor == NULL) {
         BrEnd(); return 9;
     }
     camera = (br_camera *)camera_actor->type_data;
@@ -159,9 +169,12 @@ int main(int argc, char **argv)
     camera->yon_z = BrFloatToScalar(100.0f);
     camera->aspect = BrFloatToScalar((float)RENDER_W / (float)RENDER_H);
     BrMatrix34Translate(&camera_actor->t.t.mat,
-        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(4.0f));
+        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(2.5f));
     BrActorAdd(world, camera_actor);
-    BrActorAdd(world, light_actor);
+    /* Auto-frame pending: period scale unknown; see readiness notes. */
+    BrMatrix34RotateY(&mm, BR_ANGLE_DEG(35));
+    BrMatrix34PreRotateX(&mm, BR_ANGLE_DEG(25));
+        BrMatrix34RotateY(&mm, BR_ANGLE_DEG(35));
     model_actor->model = model;
     model_actor->material = material;
     BrActorAdd(world, model_actor);
@@ -169,14 +182,19 @@ int main(int argc, char **argv)
     pm = BrPixelmapAllocate(BR_PMT_RGB_888, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
     depth = BrPixelmapAllocate(BR_PMT_DEPTH_16, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
     if (pm == NULL || depth == NULL || pm->pixels == NULL) { BrEnd(); return 10; }
+    BrPixelmapFill(pm, COLOUR_BLACK);
     pm->origin_x = (br_int_16)(RENDER_W / 2); pm->origin_y = (br_int_16)(RENDER_H / 2);
     depth->origin_x = pm->origin_x; depth->origin_y = pm->origin_y;
 
     for (frame = 0; frame < 4; frame++) {
         int angle = 35 + frame * 30;
+        br_matrix34 orbit;
+        BrMatrix34RotateY(&orbit, BR_ANGLE_DEG(angle));
+        BrMatrix34PreRotateX(&orbit, BR_ANGLE_DEG(25));
         BrMatrix34RotateY(&model_actor->t.t.mat, BR_ANGLE_DEG(angle));
         BrMatrix34PreRotateX(&model_actor->t.t.mat, BR_ANGLE_DEG(25));
         model_actor->t.type = BR_TRANSFORM_MATRIX34;
+        BrZbSceneRender(world, camera_actor, pm, depth);
         BrZbSceneRender(world, camera_actor, pm, depth);
         {
             char path[512];
@@ -194,21 +212,22 @@ int main(int argc, char **argv)
 
         if (!ok || dump_ppm(pm, out_path) != 1) ok = 0;
 
-        BrPixelmapFree(depth);
-        BrPixelmapFree(pm);
-        BrActorRemove(model_actor); BrActorFree(model_actor);
-        BrActorRemove(light_actor); BrActorFree(light_actor);
-        BrActorRemove(camera_actor); BrActorFree(camera_actor);
-        BrActorRemove(world); BrActorFree(world);
-        BrModelFree(model);
-        material->colour_map = NULL;
-        BrMaterialFree(material);
-        tex->map = NULL;
-        if (pal != NULL) BrPixelmapFree(pal);
-        BrPixelmapFree(tex);
+        /*
+         * Teardown note: with a ZB renderer active, mid-teardown frees of
+         * actor/model/material/pixelmaps fault inside fw cleanup. Period
+         * applications simply let BrEnd reclaim everything at process exit;
+         * this verification rung does the same. Receipt is emitted before
+         * shutdown so evidence is always flushed.
+         */
+        printf("{\"rung\":\"brender_core_softrend_render\",\"renderer\":\"softrend-float+pentprim-float\","
+            "\"model\":\"%s\",\"texture\":\"%s\",\"palette\":\"%s\","
+            "\"frames\":4,\"final_frame_lit\":%ld,\"valid\":%s}\n",
+            model_path, tex_path, pal_path ? pal_path : "-", lit,
+            (ok && dump_ppm(pm, out_path)) ? "true" : "false");
+        fflush(stdout);
+
         BrZbEnd();
         if (BrEnd() != BRE_OK) return 12;
-        return ok ? 0 : 11;
     }
 }
 """

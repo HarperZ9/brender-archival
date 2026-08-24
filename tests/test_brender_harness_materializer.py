@@ -37,6 +37,8 @@ def _write_source_fixture(root):
     pentprim_dir.mkdir(parents=True)
     (pentprim_dir / "driver.c").write_text("void pp_driver(void) {}\n", encoding="utf-8")
     (pentprim_dir / "l_pi.c").write_text("void pp_lpi(void) {}\n", encoding="utf-8")
+
+    (pentprim_dir / "awtmz.c").write_text("void pp_awtmz(void) {}\n", encoding="utf-8")
     (pentprim_dir / "makefile").write_text(
         "\n".join([
             "OBJS_C=\\",
