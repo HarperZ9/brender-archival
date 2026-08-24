@@ -68,6 +68,18 @@ See [docs/BRENDER-ARCHIVAL.md](docs/BRENDER-ARCHIVAL.md) for the full packet:
 provenance, reproduction, what a developer can do today, and the honestly
 deferred items (period softrend assembly, x64, material resolution, packaging).
 
+## Package a release
+
+```powershell
+python scripts/package_brender_release.py `
+  --source-root C:\path\to\BRender-v1.3.2 `
+  --output-root C:\path\to\release-stage
+```
+
+Stages the materialized harness, README, CTest transcripts, and a canonical
+SHA256 receipt into one distributable directory. No proprietary source or
+assets are copied.
+
 ## Reproduce the BRender build
 
 ```powershell
