@@ -40,6 +40,7 @@ def softrend_render_source() -> str:
 
 /* Driver entry point; renamed from BrDrv1Begin inside the softrend library. */
 void * BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
+br_error BR_PUBLIC_ENTRY BrV1dbRendererBegin(struct br_device_pixelmap *destination, struct br_renderer *renderer);
 
 #define RENDER_W 320
 #define RENDER_H 240
@@ -102,7 +103,22 @@ int main(int argc, char **argv)
         fprintf(stderr, "BrDevAddStatic(softrend) failed\n");
         BrEnd(); return 4;
     }
-    BrZbBegin(BR_PMT_RGB_888, BR_PMT_DEPTH_16);
+    /*
+     * Headless route: find the softrend facility explicitly and begin the
+     * v1db renderer without a device pixelmap destination (BrZbBegin is a
+     * 1.1-compat shim that insists on BrDevLastBeginQuery()).
+     */
+    {
+        br_renderer_facility *facility = NULL;
+        if (BrRendererFacilityFind(&facility, NULL, BRT_FLOAT) != BRE_OK || facility == NULL) {
+            fprintf(stderr, "renderer facility find failed\n");
+            BrEnd(); return 5;
+        }
+        if (BrV1dbRendererBegin(NULL, NULL) != BRE_OK) {
+            fprintf(stderr, "BrV1dbRendererBegin failed\n");
+            BrEnd(); return 5;
+        }
+    }
 
     tex = BrPixelmapLoad((char *)tex_path);
     if (tex == NULL || tex->pixels == NULL) {
