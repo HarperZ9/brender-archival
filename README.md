@@ -13,8 +13,8 @@ From the public BRender v1.3.2 source (MIT, provenance via Foone Turing, release
 authorized by former Argonaut CEO Jez San), pinned at commit `d88d0ed4`, the
 materializer generates an out-of-tree CMake harness that builds the FLOAT core
 through BRender's own pure-C memory-pixelmap path, with no dependence on the
-period 386-assembly software renderer. It stands up a twelve-rung ladder of
-self-verifying render smokes, all green under CTest on a Visual Studio Win32
+period 386-assembly software renderer. It stands up a eighteen-target ladder of
+self-verifying rungs, all green under CTest on a Visual Studio Win32
 target:
 
 | Rung | What it proves |
@@ -31,6 +31,18 @@ target:
 | Multi-part assembly | `BrModelLoadMany` composites the 12-part coupe |
 | Gouraud shading | per-vertex normals, smooth gradients (194 grey levels) |
 | Plotter lane | hidden-line-removed SVG polylines, pen-plotter ready |
+| Asset audit | `BrModelLoad` geometry validation: finite vertices, face index ranges, degenerate faces, face-material attachment; one JSON summary per model |
+| Pixelmap audit | `BrPixelmapLoad` decode probe over period `.pix` and `.pal` files (palettes are pixelmap datafiles), reporting type, geometry, and whether pixels decoded |
+| Material audit | `BrMaterialLoad` over `std.mat`/`winstd.mat`: identifier, flags, index_base, colour-map attachment |
+| Pixelmap round trip | native datafile write path: `BrPixelmapSave` then reload, type and geometry compared, temp file removed on every exit path |
+| Material resolve | a `BrMaterialLoad`-loaded material attached to every face of a loaded model, rendered through the rasterizer; attachment proven on the render path |
+| File-texture sampling | perspective-correct UV sampling of a `BrPixelmapLoad`-loaded period `.pix` (palette attached via `pm->map`), distinct-colour proof that real texture data drove the pixels |
+
+The audit rungs are grounded in the pinned upstream tree at commit `d88d0ed4`:
+loader locations (`core/v1db/v1dbfile.c`, `core/pixelmap/pmfile.c`), struct
+fields (`br_face.material`, `br_material.identifier/flags/index_base/
+colour_map`), and the 68-file `dat/` inventory were all verified from that tree
+before the rungs were written.
 
 ### Gallery
 

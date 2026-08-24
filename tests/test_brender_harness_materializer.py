@@ -60,6 +60,12 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "smoke" / "brender-core-multimodel-smoke.c",
         output / "smoke" / "brender-core-gouraud-smoke.c",
         output / "smoke" / "brender-core-plotter-smoke.c",
+        output / "smoke" / "brender-core-asset-audit.c",
+        output / "smoke" / "brender-core-material-audit.c",
+        output / "smoke" / "brender-core-material-file-audit.c",
+        output / "smoke" / "brender-core-pixelmap-roundtrip.c",
+        output / "smoke" / "brender-core-material-resolve.c",
+        output / "smoke" / "brender-core-texture-file-sample.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -98,6 +104,23 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "add_executable(brender_core_gouraud_smoke" in cmake
     assert "add_executable(brender_core_plotter_smoke" in cmake
     assert "${BRENDER_SOURCE_DIR}/dat/teapot.dat" in cmake
+    assert "add_executable(brender_core_asset_audit" in cmake
+    assert "target_link_libraries(brender_core_asset_audit PRIVATE brender_core_float)" in cmake
+    assert "add_test(NAME brender_core_asset_audit" in cmake
+    assert "add_executable(brender_core_material_audit" in cmake
+    assert "target_link_libraries(brender_core_material_audit PRIVATE brender_core_float)" in cmake
+    assert "add_test(NAME brender_core_material_audit" in cmake
+    assert "add_executable(brender_core_material_file_audit" in cmake
+    assert "${BRENDER_SOURCE_DIR}/dat/std.mat" in cmake
+    assert "add_test(NAME brender_core_material_file_audit" in cmake
+    assert "${BRENDER_SOURCE_DIR}/dat/std.pal" in cmake
+    assert "add_executable(brender_core_pixelmap_roundtrip" in cmake
+    assert "add_test(NAME brender_core_pixelmap_roundtrip" in cmake
+    assert "add_executable(brender_core_material_resolve" in cmake
+    assert "add_test(NAME brender_core_material_resolve" in cmake
+    assert "add_executable(brender_core_texture_file_sample" in cmake
+    assert "${BRENDER_SOURCE_DIR}/dat/std.pal" in cmake
+    assert "add_test(NAME brender_core_texture_file_sample" in cmake
     assert "compat/brender-portable-core-stubs.c" in cmake
     assert "compat/brender-portable-host-stubs.c" in cmake
     assert "CMAKE_SIZEOF_VOID_P" in cmake
@@ -191,6 +214,46 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     plotter_smoke = (output / "smoke" / "brender-core-plotter-smoke.c").read_text(encoding="utf-8")
     assert "raster_depth(" in plotter_smoke
     assert "<svg xmlns=" in plotter_smoke
+    asset_audit = (output / "smoke" / "brender-core-asset-audit.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrModelLoad(" in asset_audit
+    assert "nonfinite_vertices" in asset_audit
+    assert "out_of_range_faces" in asset_audit
+    assert "degenerate_faces" in asset_audit
+    assert "BrModelFree(model)" in asset_audit
+    material_audit = (output / "smoke" / "brender-core-material-audit.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrPixelmapLoad(" in material_audit
+    assert "pixels_decoded" in material_audit
+    assert "BrPixelmapFree(pm)" in material_audit
+    material_file = (output / "smoke" / "brender-core-material-file-audit.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrMaterialLoad(" in material_file
+    assert "has_colour_map" in material_file
+    assert "BrMaterialFree(mat)" in material_file
+    assert "faces_with_material" in asset_audit
+    roundtrip = (output / "smoke" / "brender-core-pixelmap-roundtrip.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrPixelmapSave(" in roundtrip
+    assert 'remove(work_path)' in roundtrip
+    assert '"match":%s' in roundtrip or 'match' in roundtrip
+    resolve = (output / "smoke" / "brender-core-material-resolve.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrMaterialLoad(" in resolve
+    assert ".material = mat;" in resolve
+    assert "faces_attached" in resolve
+    texfile = (output / "smoke" / "brender-core-texture-file-sample.c").read_text(
+        encoding="utf-8"
+    )
+    assert "BrPixelmapLoad(" in texfile
+    assert "BrPixelmapPixelGet(tex, tu, tv)" in texfile
+    assert ".map.v[0]" in texfile
+    assert "distinct_colours" in texfile
     compat = (output / "compat" / "brender-portable-core-stubs.c").read_text(
         encoding="utf-8"
     )
@@ -229,6 +292,12 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "brender_core_multimodel_smoke",
         "brender_core_gouraud_smoke",
         "brender_core_plotter_smoke",
+        "brender_core_asset_audit",
+        "brender_core_material_audit",
+        "brender_core_material_file_audit",
+        "brender_core_pixelmap_roundtrip",
+        "brender_core_material_resolve",
+        "brender_core_texture_file_sample",
     ]
     assert manifest["portable_compat_source"] == "compat/brender-portable-core-stubs.c"
     assert manifest["portable_compat_sources"] == [

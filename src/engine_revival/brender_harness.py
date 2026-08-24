@@ -3,6 +3,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from engine_revival.brender_asset_sources import (
+    asset_audit_source,
+    material_audit_source,
+    material_file_audit_source,
+    pixelmap_roundtrip_source,
+)
 from engine_revival.brender_compat_sources import (
     portable_core_stubs_source,
     startup_smoke_source,
@@ -17,6 +23,8 @@ from engine_revival.brender_model_sources import model_smoke_source
 from engine_revival.brender_material_sources import material_smoke_source
 from engine_revival.brender_multimodel_sources import multimodel_smoke_source
 from engine_revival.brender_gouraud_sources import gouraud_smoke_source
+from engine_revival.brender_material_resolve_sources import material_resolve_source
+from engine_revival.brender_texture_sample_sources import texture_file_sample_source
 from engine_revival.brender_plotter_sources import plotter_smoke_source
 from engine_revival.brender_host_sources import portable_host_stubs_source
 from engine_revival.brender_harness_templates import cmake_project_source, readme_source
@@ -53,6 +61,12 @@ OUTPUT_FILES = (
     "smoke/brender-core-multimodel-smoke.c",
     "smoke/brender-core-gouraud-smoke.c",
     "smoke/brender-core-plotter-smoke.c",
+    "smoke/brender-core-asset-audit.c",
+    "smoke/brender-core-material-audit.c",
+    "smoke/brender-core-material-file-audit.c",
+    "smoke/brender-core-pixelmap-roundtrip.c",
+    "smoke/brender-core-material-resolve.c",
+    "smoke/brender-core-texture-file-sample.c",
     "harness-manifest.json",
 )
 
@@ -85,7 +99,13 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
         "smoke/brender-core-multimodel-smoke.c": multimodel_smoke_source(),
         "smoke/brender-core-gouraud-smoke.c": gouraud_smoke_source(),
         "smoke/brender-core-plotter-smoke.c": plotter_smoke_source(),
-        "harness-manifest.json": _manifest_json(source_lists),
+    "smoke/brender-core-asset-audit.c": asset_audit_source(),
+    "smoke/brender-core-material-audit.c": material_audit_source(),
+    "smoke/brender-core-material-file-audit.c": material_file_audit_source(),
+    "smoke/brender-core-pixelmap-roundtrip.c": pixelmap_roundtrip_source(),
+    "smoke/brender-core-material-resolve.c": material_resolve_source(),
+    "smoke/brender-core-texture-file-sample.c": texture_file_sample_source(),
+    "harness-manifest.json": _manifest_json(source_lists),
     }
     written: list[Path] = []
     for relative_name in OUTPUT_FILES:
@@ -228,6 +248,12 @@ def _manifest_json(source_lists: dict[str, list[str]]) -> str:
             "brender_core_multimodel_smoke",
             "brender_core_gouraud_smoke",
             "brender_core_plotter_smoke",
+        "brender_core_asset_audit",
+        "brender_core_material_audit",
+        "brender_core_material_file_audit",
+        "brender_core_pixelmap_roundtrip",
+        "brender_core_material_resolve",
+        "brender_core_texture_file_sample",
         ],
         "source_lists": source_lists,
         "source_policy": "out-of-tree; explicit period OBJS_C lists; no vendored BRender source",

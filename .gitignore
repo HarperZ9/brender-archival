@@ -6,3 +6,13 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+
+# Local-only Claude instructions (global standard: never commit)
+CLAUDE.local.md
+
+# The committed template must survive the .env.* rule above (global standard)
+!.env.example
+
+# direnv environment files (can hold exported secrets)
+.envrc
+.envrc.local
