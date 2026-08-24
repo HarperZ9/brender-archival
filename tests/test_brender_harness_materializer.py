@@ -66,6 +66,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         output / "smoke" / "brender-core-pixelmap-roundtrip.c",
         output / "smoke" / "brender-core-material-resolve.c",
         output / "smoke" / "brender-core-texture-file-sample.c",
+        output / "smoke" / "brender-core-game-shell.c",
         output / "harness-manifest.json",
     ]
     cmake = (output / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -121,6 +122,8 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "add_executable(brender_core_texture_file_sample" in cmake
     assert "${BRENDER_SOURCE_DIR}/dat/std.pal" in cmake
     assert "add_test(NAME brender_core_texture_file_sample" in cmake
+    assert "add_executable(brender_core_game_shell" in cmake
+    assert "add_test(NAME brender_core_game_shell" in cmake
     assert "compat/brender-portable-core-stubs.c" in cmake
     assert "compat/brender-portable-host-stubs.c" in cmake
     assert "CMAKE_SIZEOF_VOID_P" in cmake
@@ -254,6 +257,14 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
     assert "BrPixelmapPixelGet(tex, tu, tv)" in texfile
     assert ".map.v[0]" in texfile
     assert "distinct_colours" in texfile
+    shell = (output / "smoke" / "brender-core-game-shell.c").read_text(
+        encoding="utf-8"
+    )
+    assert "SHELL_INIT" in shell
+    assert "SHELL_LOAD" in shell
+    assert "SHELL_RUN" in shell
+    assert "SHELL_TEARDOWN" in shell
+    assert "shell-frame-%02d.ppm" in shell
     compat = (output / "compat" / "brender-portable-core-stubs.c").read_text(
         encoding="utf-8"
     )
@@ -298,6 +309,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "brender_core_pixelmap_roundtrip",
         "brender_core_material_resolve",
         "brender_core_texture_file_sample",
+        "brender_core_game_shell",
     ]
     assert manifest["portable_compat_source"] == "compat/brender-portable-core-stubs.c"
     assert manifest["portable_compat_sources"] == [

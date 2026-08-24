@@ -25,6 +25,7 @@ from engine_revival.brender_multimodel_sources import multimodel_smoke_source
 from engine_revival.brender_gouraud_sources import gouraud_smoke_source
 from engine_revival.brender_material_resolve_sources import material_resolve_source
 from engine_revival.brender_texture_sample_sources import texture_file_sample_source
+from engine_revival.brender_game_shell_sources import game_shell_source
 from engine_revival.brender_plotter_sources import plotter_smoke_source
 from engine_revival.brender_host_sources import portable_host_stubs_source
 from engine_revival.brender_harness_templates import cmake_project_source, readme_source
@@ -67,6 +68,7 @@ OUTPUT_FILES = (
     "smoke/brender-core-pixelmap-roundtrip.c",
     "smoke/brender-core-material-resolve.c",
     "smoke/brender-core-texture-file-sample.c",
+    "smoke/brender-core-game-shell.c",
     "harness-manifest.json",
 )
 
@@ -105,6 +107,7 @@ def materialize_brender_core_harness(source_root: Path, output_root: Path) -> li
     "smoke/brender-core-pixelmap-roundtrip.c": pixelmap_roundtrip_source(),
     "smoke/brender-core-material-resolve.c": material_resolve_source(),
     "smoke/brender-core-texture-file-sample.c": texture_file_sample_source(),
+    "smoke/brender-core-game-shell.c": game_shell_source(),
     "harness-manifest.json": _manifest_json(source_lists),
     }
     written: list[Path] = []
@@ -254,6 +257,7 @@ def _manifest_json(source_lists: dict[str, list[str]]) -> str:
         "brender_core_pixelmap_roundtrip",
         "brender_core_material_resolve",
         "brender_core_texture_file_sample",
+        "brender_core_game_shell",
         ],
         "source_lists": source_lists,
         "source_policy": "out-of-tree; explicit period OBJS_C lists; no vendored BRender source",
