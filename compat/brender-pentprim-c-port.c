@@ -196,6 +196,10 @@ void BR_ASM_CALL TriangleRenderPIZ2I_RGB_888(struct brp_block *block, union brp_
     int cstride = work.colour.stride_b;
     int zstride = work.depth.stride_b;
 
+    /* Measured convention (2026-08-24): DEPTH_16 clears to 0 and, after
+     * softrend's perspective divide, NEARER geometry carries LARGER SZ
+     * (scale -32767 flips the sign of the negative-w screen z). Saturate
+     * the 16.16 component into [0,65535] and keep the larger value. */
     for (int yy = miny; yy < maxy; yy++) {
         for (int xx = minx; xx < maxx; xx++) {
             float px = (float)xx + 0.5f, py = (float)yy + 0.5f;
@@ -204,15 +208,21 @@ void BR_ASM_CALL TriangleRenderPIZ2I_RGB_888(struct brp_block *block, union brp_
             float w2 = 1.0f - w0 - w1;
             if (w0 < 0.0f || w1 < 0.0f || w2 < 0.0f) continue;
 
+            long zz = (w0 * z0 + w1 * z1 + w2 * z2) > 0.0f
+                    ? (long)((w0 * z0 + w1 * z1 + w2 * z2) / 65536.0f)
+                    : 0;
+            if (zz > 65535) zz = 65535;
+
             unsigned short *zptr = (unsigned short *)(zbase + yy * zstride + xx * 2);
-            unsigned short zval = (unsigned short)(((long)(w0 * z0 + w1 * z1 + w2 * z2) >> 16) & 0xFFFF);
-            long ii = (long)(w0 * i0 + w1 * i1 + w2 * i2);
-            int v = (int)(ii >> 8);
-            if (v < 0) v = 0;
-            if (v > 255) v = 255;
-            char *cp = cbase + yy * cstride + xx * 3;
-            cp[0] = (char)v; cp[1] = (char)v; cp[2] = (char)v;
-            *zptr = zval;
+            if (*zptr == 0 || zz >= (long)*zptr) {
+                long ii = (long)(w0 * i0 + w1 * i1 + w2 * i2);
+                int v = (int)(ii >> 8);
+                if (v < 0) v = 0;
+                if (v > 255) v = 255;
+                char *cp = cbase + yy * cstride + xx * 3;
+                cp[0] = (char)v; cp[1] = (char)v; cp[2] = (char)v;
+                *zptr = (unsigned short)zz;
+            }
         }
     }
 }
@@ -1497,44 +1507,85 @@ void sar16(void)
     
 }
 
-/* Real TrapezoidRenderPIZ2TIA_RGB_888: flat-colour Z-buffered fill.
- * Reads work.awsl.edge for scanline extents set up by awtmi.h FNAME.
- */
-void BR_ASM_CALL TrapezoidRenderPIZ2TIA_RGB_888(void)
+/* ------------------------------------------------------------------ */
+/* Real TriangleRenderPIZ2TIA_RGB_888: Z-buffered, iterated-intensity, */
+/* affine-UV textured triangle into an RGB_888 target. Faithful to the */
+/* period PIZ2TIA family (affine texture stepping, LIGHT=1), with the  */
+/* measured DEPTH_16 convention: buffer clears to 0 and NEARER wins.   */
+void BR_ASM_CALL TriangleRenderPIZ2TIA_RGB_888(struct brp_block *block, union brp_vertex *a, union brp_vertex *b, union brp_vertex *c)
 {
-    {
-        struct scan_edge *e = work.awsl.edge;
-        int y = e->start;
-        int count = e->count;
-        char *cbase = (char *)work.colour.base;
-        char *zbase = (char *)work.depth.base;
-        br_int_32 stride = work.colour.stride_b;
-        br_int_32 zstride = work.depth.stride_b;
-        br_int_32 xint = e->i;
-        br_fixed_ls xf = e->f;
-        br_fixed_ls d_i = e->d_i;
-        br_fixed_ls d_f = e->d_f;
-        int w = (int)work.colour.width_p;
-        int h = (int)work.colour.height;
-        unsigned char r8 = 255, g8 = 0, b8 = 255;
+    float x0 = (float)a->comp_x[C_SX] * (1.0f/65536.0f), y0 = (float)a->comp_x[C_SY] * (1.0f/65536.0f);
+    float x1 = (float)b->comp_x[C_SX] * (1.0f/65536.0f), y1 = (float)b->comp_x[C_SY] * (1.0f/65536.0f);
+    float x2 = (float)c->comp_x[C_SX] * (1.0f/65536.0f), y2 = (float)c->comp_x[C_SY] * (1.0f/65536.0f);
+    long  z0 = a->comp_x[C_SZ], z1 = b->comp_x[C_SZ], z2 = c->comp_x[C_SZ];
+    long  i0 = a->comp_x[C_I],  i1 = b->comp_x[C_I],  i2 = c->comp_x[C_I];
+    long  u0 = a->comp_x[C_U],  u1 = b->comp_x[C_U],  u2 = c->comp_x[C_U];
+    long  v0 = a->comp_x[C_V],  v1 = b->comp_x[C_V],  v2 = c->comp_x[C_V];
 
-        while (count-- > 0) {
-            if (y >= 0 && y < h) {
-                int x = xint + ((xf >> 16) & 0xFFFF ? 1 : 0);
-                if (x < 0) x = 0;
-                for (; x < w; x++) {
-                    char *zptr = zbase + y * zstride + x * 4;
-                    br_uint_32 zval = *(br_uint_32 *)zptr;
-                    /* depth always passes for proof-of-life fill */
-                    char *cptr = cbase + y * stride + x * 3;
-                    cptr[0] = b8; cptr[1] = g8; cptr[2] = r8;
-                    *(br_uint_32 *)zptr = zval;
-                }
-            }
-            y++;
-            xint += d_i;
-            xf += d_f;
-            if (xf & 0x10000) { xint++; xf &= 0xFFFF; xf |= (br_fixed_ls)(~0xFFFF); } else { xf &= 0xFFFF; }
+    int minx = (int)(x0 < x1 ? (x0 < x2 ? x0 : x2) : (x1 < x2 ? x1 : x2));
+    int maxx = (int)(x0 > x1 ? (x0 > x2 ? x0 : x2) : (x1 > x2 ? x1 : x2)) + 1;
+    int miny = (int)(y0 < y1 ? (y0 < y2 ? y0 : y2) : (y1 < y2 ? y1 : y2));
+    int maxy = (int)(y0 > y1 ? (y0 > y2 ? y0 : y2) : (y1 > y2 ? y1 : y2)) + 1;
+
+    if (minx < 0) minx = 0;
+    if (miny < 0) miny = 0;
+    if (maxx > (int)work.colour.width_p) maxx = (int)work.colour.width_p;
+    if (maxy > (int)work.colour.height)  maxy = (int)work.colour.height;
+    if (minx >= maxx || miny >= maxy) return;
+
+    float d = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2);
+    if (d == 0.0f) return;
+
+    int twm = (int)work.texture.width_p - 1;
+    int thm = (int)work.texture.height - 1;
+    char *tbase = (char *)work.texture.base;
+    int tstride = work.texture.stride_b;
+    br_uint_32 *pal = (br_uint_32 *)work.texture.palette;
+    { static int dp=0; if(dp<1){ dp++; fprintf(stderr,"TIA tw=%d th=%d tbase=%p pal=%p u0=%ld v0=%ld\n", (int)work.texture.width_p,(int)work.texture.height,(void*)tbase,(void*)pal,u0,v0); if(pal){fprintf(stderr,"pal[0]=%08x pal[1]=%08x pal[255]=%08x\n",(unsigned)pal[0],(unsigned)pal[1],(unsigned)pal[255]);} fflush(stderr);} }
+
+    char *cbase = (char *)work.colour.base;
+    char *zbase = (char *)work.depth.base;
+    int cstride = work.colour.stride_b;
+    int zstride = work.depth.stride_b;
+
+    for (int yy = miny; yy < maxy; yy++) {
+        for (int xx = minx; xx < maxx; xx++) {
+            float px = (float)xx + 0.5f, py = (float)yy + 0.5f;
+            float w0 = ((y1 - y2) * (px - x2) + (x2 - x1) * (py - y2)) / d;
+            float w1 = ((y2 - y0) * (px - x2) + (x0 - x2) * (py - y2)) / d;
+            float w2 = 1.0f - w0 - w1;
+            if (w0 < 0.0f || w1 < 0.0f || w2 < 0.0f) continue;
+
+            long zz = (w0 * z0 + w1 * z1 + w2 * z2) > 0.0f
+                    ? (long)((w0 * z0 + w1 * z1 + w2 * z2) / 65536.0f)
+                    : 0;
+            if (zz > 65535) zz = 65535;
+
+            unsigned short *zptr = (unsigned short *)(zbase + yy * zstride + xx * 2);
+            if (*zptr != 0 && zz < (long)*zptr) continue;
+
+            int uu = (int)((w0 * u0 + w1 * u1 + w2 * u2) / 65536.0f) & twm;
+            int vv = (int)((w0 * v0 + w1 * v1 + w2 * v2) / 65536.0f) & thm;
+
+            unsigned char texel = *(unsigned char *)(tbase + vv * tstride + uu);
+            br_uint_32 rgb = pal[texel];
+
+            long ii = (long)(w0 * i0 + w1 * i1 + w2 * i2);
+            int shade = (int)(ii >> 8);
+            if (shade < 0) shade = 0;
+            if (shade > 255) shade = 255;
+
+            char *cp = cbase + yy * cstride + xx * 3;
+            cp[0] = (char)((((rgb >> 16) & 0xFF) * shade) >> 8);
+            cp[1] = (char)((((rgb >> 8) & 0xFF) * shade) >> 8);
+            cp[2] = (char)(((rgb & 0xFF) * shade) >> 8);
+            *zptr = (unsigned short)zz;
         }
     }
 }
+
+/* awtmz.c triangle wrappers excluded from this lane; unreachable for the
+ * RGB_888 ZB configuration and superseded by template kernels later. */
+void BR_ASM_CALL TriangleRenderPIZ2TA24(struct brp_block *b, union brp_vertex *a, union brp_vertex *c, union brp_vertex *d) { (void)b;(void)a;(void)c;(void)d; }
+void BR_ASM_CALL TriangleRenderPIZ2TA15(struct brp_block *b, union brp_vertex *a, union brp_vertex *c, union brp_vertex *d) { (void)b;(void)a;(void)c;(void)d; }
+void BR_ASM_CALL TriangleRenderPIZ2TIA_RGB_555(struct brp_block *b, union brp_vertex *a, union brp_vertex *c, union brp_vertex *d) { (void)b;(void)a;(void)c;(void)d; }

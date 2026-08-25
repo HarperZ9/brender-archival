@@ -237,11 +237,11 @@ def _load_pentprim_source_lists(source):
                 break
         return names
     filenames = [f"{n}.c" for n in parse("OBJS_C") + parse("XOBJS_C")]
-    # The period makefile omitted the alternative-build C implementations
-    # (awtmz.c generates every TrapezoidRenderPIZ2T* variant via awtmi.h);
-    # include them explicitly.
-    filenames += ["awtmz.c"]
     missing = [module_dir / f for f in filenames if not (module_dir / f).exists()]
+    # awtmz.c pairs its triangle wrappers with the excluded assembly
+    # scanline kernels; the compat port supersedes those wrappers, so the
+    # wrapper half is dropped from the float-lane sources.
+    filenames = [f for f in filenames if f != "awtmz.c"]
     if missing:
         raise HarnessMaterializationError(
             "pentprim makefile references missing C source: "
@@ -439,10 +439,9 @@ def _softrend_cmake(sources: list[str]) -> str:
         "    brender-core-softrend-render.ppm)",
         "set_tests_properties(brender_core_softrend_render PROPERTIES",
         "  TIMEOUT 120)",
-        "# Integration note: awtmz.c now supplies real C kernels for every",
-        "# TrapezoidRenderPIZ2T* variant (via awtmi.h), so the rung renders",
-        "# through BRender's own primitive library. See readiness evidence.",
-        "",
+        "# Integration note: the compat port supplies real C kernels for the",
+        "# Z-buffered triangle families, so the rung renders through BRender's",
+        "# own primitive library. See readiness evidence.",
     ]
     return "\n".join(lines)
 
