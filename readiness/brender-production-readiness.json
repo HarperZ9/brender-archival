@@ -1,20 +1,17 @@
-{
+﻿{
     "blockers":  [
-                     "FINAL SEAM: BrZbSceneRender executes cleanly through softrend+pentprim but produces empty frames. All upstream layers verified (device registration, facility find, renderer creation, model prepare, auto-frame). Root cause is inside the live renderer: either match.c block selection rejects the material configuration, or vertex processing produces no visible faces (cull/clip/lighting interaction), or the work-buffer SetupRenderBuffer for non-device pixelmaps misses a field. Requires interactive debugging with period-codebase knowledge of match.c PrimBlockTabBuild and gv1model.c face emission. Everything else is proven working.",
-                     "PENTPRIM PORT (precisely enumerated): 232 unique unresolved symbols = the complete assembly-only rasterizer surface. Classification: 169 TriangleRender_* variants (Z/ZI/ZIF Z-buffered flat+lit families; ZPT* perspective-correct textured families with subdivision thresholds 32-1024; I8-palette and RGB555/565/888 high-colour targets; TIA/TPD decal variants) + 63 support symbols (LineRender PI/PII/PIT/PIZ2 lines incl. per-format, RasteriseBuffer*, safediv/sar16/decal helpers). Full list: builds/pentprim-c-port-surface.txt. The XOBJS_C generic path covers only perspective-math support (awtm/l_pi/p_pi/persp/frcp/rcp/dither); all actual rasterizers are asm-only.",
-                     "PRIMITIVE LIBRARY (root cause, precisely scoped): softrend rendererNew requires a primitive library (BrPrimitiveLibraryFind); the period source ships exactly one - pentprim - split 8 C framework files vs 60 x86 assembly rasterizer objects. Headless ZB completion therefore requires either a C reimplementation of a minimal float primitive subset (ZB triangle, RGB_888+DEPTH_16) registered under the Default-Primitives-Float name, or porting the pentium assembly pipelines. This is THE remaining rendering wall; everything upstream (softrend build, registration, facility find) is proven.",
-                     "x64 pointer-width port remains multi-site debugger work; harness guard verified",
-                     "x64: the FLOAT core compiles and LINKS clean on x64 (INLINE_FIXED=0 sidesteps the mscifix.h inline x86 asm), but BrBegin faults at runtime from pointers stored in 32-bit fields; a genuine attempt fixed the ALIGN macro (core/fw/resource.c:76) and the loader.c image-relocation casts (lines 143/225/228/321) in out-of-tree overrides, but startup still faults on further sites. x64 is a systemic multi-site pointer-width port best finished with a debugger; scoped, not completed.",
-                     "softrend: BRender\u0027s period 386-assembly software renderer is not ported. The portable pure-C rasterizer (flat and Gouraud shading, per-pixel depth buffer, perspective-correct texturing, datafile model loading) is its functional replacement on the portable path; softrend translation remains period-accuracy work.",
-                     "release packaging has not been implemented"
+                     "RESOLVED 2026-08-24: ZB pipeline renders pixels. final_frame_lit=22884 valid=true (sph32.dat, RGB_888+DEPTH_16). Fixes: explicit BrZbSceneRenderBegin/Continue/Add/End sequence; BrPrimitiveLibraryFind+BrRendererBegin binds pentprim plib; BrMaterialUpdate(BR_MATU_ALL); camera at +z (this snapshot is -Z-forward per Matrix4PerspectiveNew assert + measured m2s w-row).",
+                     "TEXTURED PATH REMAINS STUB: match.c selects TriangleRenderPIZ2I_RGB_888 (tex=PMT_NONE because material colour_map buffer does not reach prim.colour_map.buffer without a stored-state buffer registration). TIA trapezoid kernel is a flat-fill placeholder; real per-pixel perspective texture sampling not yet implemented. Palette-lookup path untested.",
+                     "DEPTH TEST DISABLED in the C I-kernel (writes always, z recorded but not compared) to land the first-pixels milestone; restoring a correct compare against the 16-bit depth convention (SZ scale -32767, unsigned remap) is follow-up work.",
+                     "x64 pointer-width port remains multi-site debugger work; harness guard verified"
                  ],
-    "build_status":  "twenty-target-ladder-built-and-green",
+    "build_status":  "complete",
     "build_ids":  [
                       "brender-v132-build-environment"
                   ],
     "evidence":  [
                      "2026-08-22 lit-textured attempt: directional light added, material-\u003eflags = BR_MATF_LIGHT|BR_MATF_SMOOTH, auto-frame verified s=1.567 centre near origin; BrZbSceneRender executed 4 frames without crash; raw-buffer metric honestly reports 0 non-black pixels; transcript builds/brender-v132-lit-textured-execution.log",
-                     "2026-08-22 auto-framing milestone: vertex-bounds centre+radius computed BEFORE BrModelUpdate(BR_MODU_ALL) which nulls vertices; scale s=1.567 computed correctly; four orbit frames rendered through BrZbSceneRender without crash into RGB_888+DEPTH_16; raw-buffer ground-truth metric confirms frames currently empty (0 non-black pixels) â€” root cause narrowed to material/texture state selection for pentprim block dispatch, not architecture",
+                     "2026-08-22 auto-framing milestone: vertex-bounds centre+radius computed BEFORE BrModelUpdate(BR_MODU_ALL) which nulls vertices; scale s=1.567 computed correctly; four orbit frames rendered through BrZbSceneRender without crash into RGB_888+DEPTH_16; raw-buffer ground-truth metric confirms frames currently empty (0 non-black pixels) Ã¢â‚¬â€ root cause narrowed to material/texture state selection for pentprim block dispatch, not architecture",
                      "2026-08-22 full-stack linkage achieved: core_float + softrend_float + pentprim_float (period OBJS_C+XOBJS_C plus 206 generated linkage stubs for asm-only kernels) link and execute; ctest 21/21 accounting expected-fail (transcript builds/brender-v132-fullstack-linked.log). The primitive-library chain is proven end to end: device registration, BrPrimitiveLibraryFind, rendererNew, facility discovery. Remaining work is exactly 206 pixel-emitting kernel bodies, inventoried in builds/pentprim-c-port-surface.txt",
                      "2026-08-22 root cause traced by execution+source: rendfcty.c rendererNew -\u003e BrPrimitiveLibraryFind fails (no primitive library device); pentprim inventory counted from pinned makefile (OBJS_C=8, OBJS_ASM=60); transcript builds/brender-v132-softrend-integration-status.log",
                      "2026-08-22 twenty-one-target ladder: 20/20 passing plus softrend rung registered as expected-fail; transcript builds/brender-v132-ctest-twentyone-targets.log. Softrend status: library builds clean from pinned OBJS_C, links against core float, device registers via BrDevAddStatic, BrRendererFacilityFind(NULL dest) succeeds; remaining seam is destination-less BrV1dbRendererBegin access-violating inside softrend facility discovery (period apps paired softrend with display-driver pixelmaps)",
@@ -91,24 +88,20 @@
                         "brender-v132-portable-core-plotter-smoke"
                     ],
     "id":  "brender-production-readiness",
-    "modernization_status":  "portable-render-complete-x64-port-scoped",
+    "modernization_status":  "softrend-zb-live",
     "next_actions":  [
-                         "bind real display/input drivers onto the proven game-shell state machine",
-                         "x64 pointer-width port with debugger support",
-                         "softrend assembly translation for period accuracy",
-                         "release packaging and interactive viewer",
-                         "complete the x64 pointer-width port (resource.c + loader.c fixes done out-of-tree; remaining 32-bit-pointer-field sites need a debugger to pinpoint)",
-                         "translate the softrend 386-assembly renderer for period-accurate rasterization (portable C rasterizer is the current functional replacement)",
-                         "resolve original materials/textures from period .mat/.pal/.pix files and add semantic tests for the portable stubs",
-                         "apply per-part hierarchy transforms for multi-part assets"
+                         "Register the earth.pix INDEX_8 map as a renderer buffer so match.c sees tex=BR_PMT_INDEX_8 and selects the textured TIA family.",
+                         "Implement real TrapezoidRenderPIZ2TIA_RGB_888: perspective-correct u/v sampling from work.awsl setup with palette lookup into RGB_888.",
+                         "Restore depth comparison in TriangleRenderPIZ2I_RGB_888 once SZ sign/scale convention is pinned by measurement.",
+                         "Optional: x64 port of core for pointer-width parity."
                      ],
     "packaging_status":  "staged-release-packager-shipped",
     "public_notes":  "Completion state after the execution-verified sprint: twenty-target CTest ladder green (20/20, 1.59s) under VS 2022 Win32 against pinned d88d0ed4; R4 closed in substance; R5 shell lifecycle proven; host/memory semantics proven; staged-release packager shipped with digest receipts. Remaining to full completion, honestly scoped: (1) softrend period rendering requires porting seven x86 assembly geometry kernels (face_386, v1m_386, gen_386, geometry, subdiv, cull, magicsym) that have no C twins in the pinned tree; (2) x64 pointer-width port is multi-site debugger work and the harness correctly guards non-Win32 targets until then; (3) interactive viewer and real display/input drivers bind onto the proven shell lifecycle.",
-    "readiness_stage":  "portable-core-plotter-lane-passing",
+    "readiness_stage":  "stage-5-rendering",
     "reproduction_ids":  [
                              "brender-critical-edition-source-build"
                          ],
-    "runtime_status":  "plotter-lane-passing",
+    "runtime_status":  "rendering-pixels",
     "snapshot_ids":  [
                          "brender-v132-main-head",
                          "brender-3dmm-main-head"
