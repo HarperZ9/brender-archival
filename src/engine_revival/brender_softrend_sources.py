@@ -132,7 +132,7 @@ int main(int argc, char **argv)
         if (BrV1dbRendererBegin(NULL, NULL) != BRE_OK) {
             fprintf(stderr, "BrV1dbRendererBegin failed\n");
             BrEnd(); return 5;
-        }
+        }    /* Activate ZB mode: sets v1db.zb_active = TRUE so BrZbSceneRender dispatches faces.     * Re-invokes BrV1dbRendererBegin(NULL, NULL) harmlessly since renderer already exists. */    BrZbBegin(BR_PMT_RGB_888, BR_PMT_DEPTH_16);
     }
 
     tex = BrPixelmapLoad((char *)tex_path);
