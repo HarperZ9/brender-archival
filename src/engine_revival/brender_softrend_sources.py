@@ -214,10 +214,10 @@ int main(int argc, char **argv)
     material->colour_map = tex;
     material->index_shade = shade_tab;
     material->identifier = "shell-texture";
-    /* Lit textured: triggers match.c selection of the PIZ2TIA family.
+    /* Affine-textured PIZ2TIA family (non-perspective block shares our kernel).
      * TWO_SIDED keeps faces alive under the measured -Z camera convention. */
-    material->flags = BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE
-                    | BR_MATF_TWO_SIDED;
+    material->flags = BR_MATF_LIGHT | BR_MATF_SMOOTH
+                   ;
 
     model = BrModelLoad((char *)model_path);
     if (model == NULL || model->nvertices < 3 || model->nfaces < 1) {
