@@ -189,13 +189,13 @@ int main(int argc, char **argv)
         BrEnd(); return 9;
     }
     camera = (br_camera *)camera_actor->type_data;
-    camera->type = BR_CAMERA_PERSPECTIVE;
+    camera->type = BR_CAMERA_PERSPECTIVE_FOV;
     camera->field_of_view = BR_ANGLE_DEG(55);
     camera->hither_z = BrFloatToScalar(1.0f);
     camera->yon_z = BrFloatToScalar(100.0f);
     camera->aspect = BrFloatToScalar((float)RENDER_W / (float)RENDER_H);
     BrMatrix34Translate(&camera_actor->t.t.mat,
-        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(2.5f));
+        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(-2.5f));
     BrActorAdd(world, camera_actor);
 
     /* Directional light for the lit-textured path (TriangleRenderPIZ2TIA_RGB_888) */
