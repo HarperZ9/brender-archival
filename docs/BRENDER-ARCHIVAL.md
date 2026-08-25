@@ -18,25 +18,30 @@ renders, reproduced from public material with nothing proprietary vendored in.
 ## What the revival delivers
 
 A materializer turns the period makefile topology into an out-of-tree CMake
-harness. It builds the FLOAT core library through BRender's own pure-C
-memory-pixelmap path, with no dependence on the period 386-assembly software
-renderer, and stands up a ladder of eight self-verifying render smokes:
+harness. It builds the FLOAT core through BRender's own pure-C memory-pixelmap
+path, and since 2026-08-24 it also builds and runs the **period softrend scene
+graph and pentprim primitive library as live libraries** - not re-implemented,
+compiled from the pinned upstream tree itself.
 
-1. Vector math smoke (`BrVector3`, `BrScalar`).
-2. Framework startup smoke (`BrBegin` / `BrEnd`).
-3. Wireframe render: a projected cube via `BrMatrix4Perspective` into a memory
-   pixelmap.
-4. Scene-graph render: a model out of the v1db scene database, projected by the
-   engine's own `BrActorToScreenMatrix4`.
-5. Solid flat-shaded render: a portable C scanline rasterizer with per-face
-   lighting.
-6. Per-pixel depth buffer: correct occlusion for arbitrary multi-object scenes.
-7. Perspective-correct texture mapping.
-8. Real datafile models: `BrModelLoad` reads native binary `.dat` models
-   (duck, teapot, skull, torus) and renders them solid and depth-buffered.
+Two rendering paths exist today:
 
-Every stage passes under CTest on a Visual Studio Win32 target. The render
-captures are generated as a public-safe release artifact.
+1. Portable lane: a ladder of self-verifying smokes through BRender's own
+   pixelmap/rasterizer core (vector math through datafile models, plotter SVG,
+   game shell), all green under CTest on Visual Studio Win32.
+2. Period-pipeline lane (`brender_core_softrend_render`): BrBegin ->
+   BrRendererBegin bound to pentprim's `Default-Primitives-Float` ->
+   BrZbSceneRenderBegin/Continue/Add/End over a loaded `.dat` model. Face
+   dispatch reaches match.c block selection, which selects
+   `TriangleRenderPIZ2I_RGB_888`, implemented in C in `compat/
+   brender-pentprim-c-port.c` (fixed 16.16 vertices, barycentric fill).
+   Evidence: ctest 21/21; the rung emits `final_frame_lit=22884 valid=true`;
+   the frame PPM is archived at `builds/brender-v132-sphere-frame4.ppm`.
+
+Three integration facts about this snapshot are load-bearing and were
+established by measurement, not guesswork: the one-shot `BrZbSceneRender`
+never installs camera matrices (drive Begin -> Continue -> Add -> End);
+the renderer requires an explicitly bound primitive library; and cameras face
+down -Z (`Matrix4PerspectiveNew` asserts it).
 
 ## Reproduce it
 
@@ -66,10 +71,18 @@ a PPM, so it doubles as a minimal model viewer for the period asset library.
 
 These are documented, not claimed, so the revival is not oversold:
 
-- BRender's period 386-assembly `softrend` renderer (the hard portability item).
+- The textured path: match.c currently selects the non-textured
+  `PIZ2I` family because the material colour map does not reach
+  `prim.colour_map.buffer`; the TIA trapezoid kernel is a flat-fill
+  placeholder, so no per-pixel texture sampling through pentprim yet.
+- Depth comparison in the C `TriangleRenderPIZ2I_RGB_888` kernel is disabled
+  (z is recorded, not tested); the SZ sign/scale convention needs pinning by
+  measurement before a compare is honest.
+- The remaining ~200 assembly-only rasterizer kernels (lines, perspective-
+  correct textured families, palette targets) stay as linkage stubs in
+  `compat/brender-pentprim-c-port.c`; inventory in
+  `builds/pentprim-c-port-surface.txt`.
 - x64 pointer-width portability (the unreworked period code is 32-bit bound).
-- Original material and texture resolution for loaded models.
-- Multi-part datafile assembly (`BrModelLoadMany`).
 - Release packaging and a full interactive viewer.
 
 ## Records

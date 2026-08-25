@@ -12,10 +12,13 @@ BRender is the completed flagship. The rest of the roster is in progress.
 From the public BRender v1.3.2 source (MIT, provenance via Foone Turing, release
 authorized by former Argonaut CEO Jez San), pinned at commit `d88d0ed4`, the
 materializer generates an out-of-tree CMake harness that builds the FLOAT core
-through BRender's own pure-C memory-pixelmap path, with no dependence on the
-period 386-assembly software renderer. It stands up a twenty-target ladder of
-self-verifying rungs, all green under CTest on a Visual Studio Win32
-target (2026-08-22 transcript: 20/20 passed, captured in builds/):
+through BRender's own pure-C memory-pixelmap path. It stands up a twenty-target
+ladder of self-verifying rungs, all green under CTest on a Visual Studio Win32
+target, plus the period-pipeline rung: **softrend and pentprim compiled from
+the upstream tree itself**, bound into one live process, rendering a loaded
+`.dat` model through BRender's own ZB face-dispatch path (2026-08-24
+transcript: 21/21 passed, `final_frame_lit=22884 valid=true`, captured in
+builds/).
 
 | Rung | What it proves |
 |---|---|
@@ -44,6 +47,17 @@ loader locations (`core/v1db/v1dbfile.c`, `core/pixelmap/pmfile.c`), struct
 fields (`br_face.material`, `br_material.identifier/flags/index_base/
 colour_map`), and the 68-file `dat/` inventory were all verified from that tree
 before the rungs were written.
+
+Rung 21, `brender_core_softrend_render`, is the period-pipeline lane: it
+compiles softrend and pentprim from the upstream tree, binds pentprim's
+primitive library into the renderer with `BrPrimitiveLibraryFind` +
+`BrRendererBegin`, drives `BrZbSceneRenderBegin/Continue/Add/End` over a
+loaded `.dat` model, and rasterizes through a C port of one period kernel
+(`TriangleRenderPIZ2I_RGB_888`) in `compat/brender-pentprim-c-port.c`.
+Honest seams that remain on this lane: the textured TIA family is a
+flat-fill placeholder, depth comparison in the C kernel is disabled pending
+convention pinning, and ~200 assembly-only kernels stay as linkage stubs
+(inventory: `builds/pentprim-c-port-surface.txt`).
 
 ### Gallery
 
