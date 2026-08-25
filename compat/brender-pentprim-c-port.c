@@ -343,6 +343,22 @@ void BR_ASM_CALL TriangleRenderPIZ2_RGB_888(
     float z1 = BrScalarToFloat(v[1]->comp[C_SZ]);
     float z2 = BrScalarToFloat(v[2]->comp[C_SZ]);
 
+    {
+        fprintf(stderr, "VERT sx=(%f,%f,%f) sy=(%f,%f,%f) sz=(%f,%f,%f) rgb=(%d,%d,%d)\n",
+            BrScalarToFloat(pv0->comp[C_SX]), BrScalarToFloat(pv1->comp[C_SX]), BrScalarToFloat(pv2->comp[C_SX]),
+            BrScalarToFloat(pv0->comp[C_SY]), BrScalarToFloat(pv1->comp[C_SY]), BrScalarToFloat(pv2->comp[C_SY]),
+            BrScalarToFloat(pv0->comp[C_SZ]), BrScalarToFloat(pv1->comp[C_SZ]), BrScalarToFloat(pv2->comp[C_SZ]),
+            cr, cg, cb);
+        fflush(stderr);
+    }
+    {
+        fprintf(stderr, "VERT sx=(%f,%f,%f) sy=(%f,%f,%f) sz=(%f,%f,%f) rgb=(%d,%d,%d)\n",
+            BrScalarToFloat(pv0->comp[C_SX]), BrScalarToFloat(pv1->comp[C_SX]), BrScalarToFloat(pv2->comp[C_SX]),
+            BrScalarToFloat(pv0->comp[C_SY]), BrScalarToFloat(pv1->comp[C_SY]), BrScalarToFloat(pv2->comp[C_SY]),
+            BrScalarToFloat(pv0->comp[C_SZ]), BrScalarToFloat(pv1->comp[C_SZ]), BrScalarToFloat(pv2->comp[C_SZ]),
+            cr, cg, cb);
+        fflush(stderr);
+    }
     int iy0 = (int)(y0 + 0.5f);
     int iy1 = (int)(y1 + 0.5f);
     int iy2 = (int)(y2 + 0.5f);

@@ -149,7 +149,7 @@ int main(int argc, char **argv)
     material->colour_map = tex;
     material->identifier = "shell-texture";
     /* Lit textured: triggers match.c to select TriangleRenderPIZ2TIA_RGB_888 */
-    material->flags = BR_MATF_LIGHT | BR_MATF_SMOOTH;
+    material->flags = BR_MATF_SMOOTH;
 
     model = BrModelLoad((char *)model_path);
     if (model == NULL || model->nvertices < 3 || model->nfaces < 1) {
@@ -197,20 +197,6 @@ int main(int argc, char **argv)
     BrMatrix34Translate(&camera_actor->t.t.mat,
         BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(-2.5f));
     BrActorAdd(world, camera_actor);
-
-    /* Directional light for the lit-textured path (TriangleRenderPIZ2TIA_RGB_888) */
-    {
-        br_actor *light_actor = BrActorAllocate(BR_ACTOR_LIGHT, NULL);
-        if (light_actor != NULL) {
-            br_light *ldata = (br_light *)light_actor->type_data;
-            if (ldata != NULL) {
-                ldata->type = BR_LIGHT_DIRECT;
-                ldata->colour = BR_COLOUR_RGB(255, 255, 255);
-            }
-            BrMatrix34RotateX(&light_actor->t.t.mat, BR_ANGLE_DEG(-45));
-            BrActorAdd(world, light_actor);
-        }
-    }
     /* Auto-frame: compose scale/translate from pre-computed params */
     {
         float cx = af_cx, cy = af_cy, cz = af_cz, s = af_s;
@@ -296,3 +282,4 @@ int main(int argc, char **argv)
     }
 }
 """
+
