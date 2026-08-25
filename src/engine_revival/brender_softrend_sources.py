@@ -43,6 +43,8 @@ void * BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
 void * BR_EXPORT BrDrv1PentPrimBegin(char *arguments);
 br_error BR_PUBLIC_ENTRY BrV1dbRendererBegin(struct br_device_pixelmap *destination, struct br_renderer *renderer);
 void BR_PUBLIC_ENTRY BrMapUpdate(br_pixelmap *map, br_uint_16 flags);
+extern void BR_ASM_CALL TriangleRenderPIZ2TIA_RGB_888(struct brp_block *, union brp_vertex *, union brp_vertex *, union brp_vertex *);
+#pragma comment(linker, "/include:_TriangleRenderPIZ2TIA_RGB_888")
 void BR_PUBLIC_ENTRY BrTableUpdate(br_pixelmap *table, br_uint_16 flags);
 
 #define RENDER_W 320
