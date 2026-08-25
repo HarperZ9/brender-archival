@@ -437,7 +437,7 @@ def _softrend_cmake(sources: list[str]) -> str:
         "    \"${BRENDER_SOURCE_DIR}/dat/earth.pix\"",
         "    \"${BRENDER_SOURCE_DIR}/dat/std.pal\"",
         "    brender-core-softrend-render.ppm)",
-        "set_tests_properties(brender_core_softrend_render PROPERTIES WILL_FAIL TRUE) -- empty frame pending auto-frame"
+        "# set_tests_properties(brender_core_softrend_render PROPERTIES WILL_FAIL TRUE) empty frame pending auto-frame",
         "set_tests_properties(brender_core_softrend_render PROPERTIES",
         "  TIMEOUT 120)",
         "# Integration note: awtmz.c now supplies real C kernels for every",

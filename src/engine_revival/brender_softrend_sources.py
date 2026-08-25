@@ -89,6 +89,7 @@ int main(int argc, char **argv)
     const char *out_path = (argc > 4) ? argv[4] : "brender-core-softrend-render.ppm";
     br_pixelmap *tex = NULL, *pal = NULL, *pm = NULL, *depth = NULL;
     br_matrix34 mm;
+    float af_s = 1.0f, af_cx = 0.0f, af_cy = 0.0f, af_cz = 0.0f;
 
     int nv = 0, nf = 0, k;
     br_actor *world = NULL, *camera_actor = NULL, *model_actor = NULL;
@@ -149,9 +150,32 @@ int main(int argc, char **argv)
     material->identifier = "shell-texture";
 
     model = BrModelLoad((char *)model_path);
-    nv = (int)model->nvertices; nf = (int)model->nfaces;
     if (model == NULL || model->nvertices < 3 || model->nfaces < 1) {
         BrEnd(); return 8;
+    }
+    nv = (int)model->nvertices; nf = (int)model->nfaces;
+
+    /* Auto-frame: compute centre/radius BEFORE BrModelUpdate clears vertices */
+    {
+        float cx = 0.0f, cy = 0.0f, cz = 0.0f, radius = 0.0f;
+        int k;
+        for (k = 0; k < nv; k++) {
+            cx += BrScalarToFloat(model->vertices[k].p.v[0]);
+            cy += BrScalarToFloat(model->vertices[k].p.v[1]);
+            cz += BrScalarToFloat(model->vertices[k].p.v[2]);
+        }
+        cx /= nv; cy /= nv; cz /= nv;
+        for (k = 0; k < nv; k++) {
+            float dx = BrScalarToFloat(model->vertices[k].p.v[0]) - cx;
+            float dy = BrScalarToFloat(model->vertices[k].p.v[1]) - cy;
+            float dz = BrScalarToFloat(model->vertices[k].p.v[2]) - cz;
+            float rr = (float)sqrt(dx*dx + dy*dy + dz*dz);
+            if (rr > radius) radius = rr;
+        }
+        af_s = (radius > 0.0f) ? (1.6f / radius) : 1.0f;
+        af_cx = cx; af_cy = cy; af_cz = cz;
+        fprintf(stderr, "MARK af-precomputed s=%f c=(%f,%f,%f)\n", af_s, af_cx, af_cy, af_cz);
+        fflush(stderr);
     }
 
     world = BrActorAllocate(BR_ACTOR_NONE, NULL);
@@ -171,10 +195,35 @@ int main(int argc, char **argv)
     BrMatrix34Translate(&camera_actor->t.t.mat,
         BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(2.5f));
     BrActorAdd(world, camera_actor);
-    /* Auto-frame pending: period scale unknown; see readiness notes. */
-    BrMatrix34RotateY(&mm, BR_ANGLE_DEG(35));
-    BrMatrix34PreRotateX(&mm, BR_ANGLE_DEG(25));
+    /* Auto-frame: compose scale/translate from pre-computed params */
+    {
+        float cx = af_cx, cy = af_cy, cz = af_cz, s = af_s;
+        int r, cc;
+
+        /* Build rotation */
         BrMatrix34RotateY(&mm, BR_ANGLE_DEG(35));
+        BrMatrix34PreRotateX(&mm, BR_ANGLE_DEG(25));
+
+        /* Compose: linear = s * rot, translation = -rot * centre * s
+         * This maps centre to origin and scales to fill the view,
+         * with the rotation applied in world space for viewing angle.
+         */
+        {
+            float lin[3][3], t0, t1, t2;
+            for (r = 0; r < 3; r++)
+                for (cc = 0; cc < 3; cc++)
+                    lin[r][cc] = BrScalarToFloat(mm.m[r][cc]) * s;
+            t0 = -(cx * lin[0][0] + cy * lin[1][0] + cz * lin[2][0]);
+            t1 = -(cx * lin[0][1] + cy * lin[1][1] + cz * lin[2][1]);
+            t2 = -(cx * lin[0][2] + cy * lin[1][2] + cz * lin[2][2]);
+            for (r = 0; r < 3; r++)
+                for (cc = 0; cc < 3; cc++)
+                    mm.m[r][cc] = BrFloatToScalar(lin[r][cc]);
+            mm.m[3][0] = BrFloatToScalar(t0);
+            mm.m[3][1] = BrFloatToScalar(t1);
+            mm.m[3][2] = BrFloatToScalar(t2);
+        }
+    }
     model_actor->model = model;
     model_actor->material = material;
     BrActorAdd(world, model_actor);
