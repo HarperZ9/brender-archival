@@ -101,6 +101,7 @@ int main(int argc, char **argv)
     const char *pal_path = (argc > 3 && argv[3][0] != 0) ? argv[3] : NULL;
     const char *out_path = (argc > 4) ? argv[4] : "brender-core-softrend-render.ppm";
     br_pixelmap *tex = NULL, *pal = NULL, *shade_tab = NULL, *pm = NULL, *depth = NULL;
+    br_actor *light_actor = NULL;
     br_matrix34 mm;
     float af_s = 1.0f, af_cx = 0.0f, af_cy = 0.0f, af_cz = 0.0f;
 
@@ -297,6 +298,17 @@ int main(int argc, char **argv)
     model_actor->model = model;
     model_actor->material = material;
     BrActorAdd(world, model_actor);
+
+    /* Directional light shining down the camera axis so the lit-textured
+     * path carries non-zero intensity; without it PIZ2TIA shades to black. */
+    light_actor = BrActorAllocate(BR_ACTOR_LIGHT, NULL);
+    if (light_actor == NULL || light_actor->type_data == NULL) { BrEnd(); return 16; }
+    ((br_light *)light_actor->type_data)->type = BR_LIGHT_DIRECT;
+    ((br_light *)light_actor->type_data)->attenuation_c = BR_SCALAR(1.0);
+    BrMatrix34Translate(&light_actor->t.t.mat,
+        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(2.5f));
+    BrActorAdd(world, light_actor);
+    BrLightEnable(light_actor);
 
     pm = BrPixelmapAllocate(BR_PMT_RGB_888, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
     depth = BrPixelmapAllocate(BR_PMT_DEPTH_16, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
