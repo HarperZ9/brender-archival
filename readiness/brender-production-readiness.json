@@ -1,4 +1,4 @@
-﻿{
+{
     "blockers":  [
                      "RESOLVED 2026-08-24: ZB pipeline renders pixels. final_frame_lit=22884 valid=true (sph32.dat, RGB_888+DEPTH_16). Fixes: explicit BrZbSceneRenderBegin/Continue/Add/End sequence; BrPrimitiveLibraryFind+BrRendererBegin binds pentprim plib; BrMaterialUpdate(BR_MATU_ALL); camera at +z (this snapshot is -Z-forward per Matrix4PerspectiveNew assert + measured m2s w-row).",
                      "TEXTURED PATH REMAINS STUB: match.c selects TriangleRenderPIZ2I_RGB_888 (tex=PMT_NONE because material colour_map buffer does not reach prim.colour_map.buffer without a stored-state buffer registration). TIA trapezoid kernel is a flat-fill placeholder; real per-pixel perspective texture sampling not yet implemented. Palette-lookup path untested.",
