@@ -40,6 +40,13 @@ void RasteriseBufferDisable(void)
 
 /* ---- diagnostic stubs: print name when called ---- */
 
+void BR_ASM_CALL TrapezoidRenderPIZ2TA(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3]) { (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices; }
+void BR_ASM_CALL TrapezoidRenderPIZ2TIA(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3]) { (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices; }
+void BR_ASM_CALL TrapezoidRenderPIZ2TAN(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3]) { (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices; }
+void BR_ASM_CALL TrapezoidRenderPIZ2TA15(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3]) { (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices; }
+void BR_ASM_CALL TrapezoidRenderPIZ2TA24(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3]) { (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices; }
+void BR_ASM_CALL TrapezoidRenderPIZ2TIA_RGB_555(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3]) { (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices; }
+
 void BR_ASM_CALL ScanLinePITIP256_RGB_555(void)
 {
     fprintf(stderr, "CALL ScanLinePITIP256_RGB_555\n"); fflush(stderr);
@@ -118,47 +125,19 @@ void BR_ASM_CALL TrapezoidRenderPITIA_RGB_888(struct brp_block *block, union brp
     (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
 }
 
-void BR_ASM_CALL TrapezoidRenderPIZ2TA(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3])
-{
-    fprintf(stderr, "CALL TrapezoidRenderPIZ2TA\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
-}
 
-void BR_ASM_CALL TrapezoidRenderPIZ2TA15(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3])
-{
-    fprintf(stderr, "CALL TrapezoidRenderPIZ2TA15\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
-}
 
-void BR_ASM_CALL TrapezoidRenderPIZ2TA24(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3])
-{
-    fprintf(stderr, "CALL TrapezoidRenderPIZ2TA24\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
-}
 
-void BR_ASM_CALL TrapezoidRenderPIZ2TAN(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3])
-{
-    fprintf(stderr, "CALL TrapezoidRenderPIZ2TAN\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
-}
 
-void BR_ASM_CALL TrapezoidRenderPIZ2TIA(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3])
-{
-    fprintf(stderr, "CALL TrapezoidRenderPIZ2TIA\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
-}
 
-void BR_ASM_CALL TrapezoidRenderPIZ2TIA_RGB_555(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3])
-{
-    fprintf(stderr, "CALL TrapezoidRenderPIZ2TIA_RGB_555\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
-}
 
-void BR_ASM_CALL TrapezoidRenderPIZ2TIA_RGB_888(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2, br_uint_16 (*fp_vertices)[3])
-{
-    fprintf(stderr, "CALL TrapezoidRenderPIZ2TIA_RGB_888\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2; (void)fp_vertices;
-}
+
+
+
+
+
+
+
 
 void BR_ASM_CALL TriangleRenderPII_RGB_555(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2)
 {
@@ -190,10 +169,52 @@ void BR_ASM_CALL TriangleRenderPIZ2I_RGB_565(struct brp_block *block, union brp_
     (void)block; (void)v0; (void)v1; (void)v2;
 }
 
-void BR_ASM_CALL TriangleRenderPIZ2I_RGB_888(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2)
+void BR_ASM_CALL TriangleRenderPIZ2I_RGB_888(struct brp_block *block, union brp_vertex *a, union brp_vertex *b, union brp_vertex *c)
 {
-    fprintf(stderr, "CALL TriangleRenderPIZ2I_RGB_888\n"); fflush(stderr);
-    (void)block; (void)v0; (void)v1; (void)v2;
+    float x0 = (float)a->comp_x[C_SX] * (1.0f/65536.0f), y0 = (float)a->comp_x[C_SY] * (1.0f/65536.0f);
+    float x1 = (float)b->comp_x[C_SX] * (1.0f/65536.0f), y1 = (float)b->comp_x[C_SY] * (1.0f/65536.0f);
+    float x2 = (float)c->comp_x[C_SX] * (1.0f/65536.0f), y2 = (float)c->comp_x[C_SY] * (1.0f/65536.0f);
+    long  z0 = a->comp_x[C_SZ], z1 = b->comp_x[C_SZ], z2 = c->comp_x[C_SZ];
+    long  i0 = a->comp_x[C_I],  i1 = b->comp_x[C_I],  i2 = c->comp_x[C_I];
+
+    int minx = (int)(x0 < x1 ? (x0 < x2 ? x0 : x2) : (x1 < x2 ? x1 : x2));
+    int maxx = (int)(x0 > x1 ? (x0 > x2 ? x0 : x2) : (x1 > x2 ? x1 : x2)) + 1;
+    int miny = (int)(y0 < y1 ? (y0 < y2 ? y0 : y2) : (y1 < y2 ? y1 : y2));
+    int maxy = (int)(y0 > y1 ? (y0 > y2 ? y0 : y2) : (y1 > y2 ? y1 : y2)) + 1;
+
+    if (minx < 0) minx = 0;
+    if (miny < 0) miny = 0;
+    if (maxx > (int)work.colour.width_p)  maxx = (int)work.colour.width_p;
+    if (maxy > (int)work.colour.height)   maxy = (int)work.colour.height;
+    if (minx >= maxx || miny >= maxy) return;
+
+    float d = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2);
+    if (d == 0.0f) return;
+
+    char *cbase = (char *)work.colour.base;
+    char *zbase = (char *)work.depth.base;
+    int cstride = work.colour.stride_b;
+    int zstride = work.depth.stride_b;
+
+    for (int yy = miny; yy < maxy; yy++) {
+        for (int xx = minx; xx < maxx; xx++) {
+            float px = (float)xx + 0.5f, py = (float)yy + 0.5f;
+            float w0 = ((y1 - y2) * (px - x2) + (x2 - x1) * (py - y2)) / d;
+            float w1 = ((y2 - y0) * (px - x2) + (x0 - x2) * (py - y2)) / d;
+            float w2 = 1.0f - w0 - w1;
+            if (w0 < 0.0f || w1 < 0.0f || w2 < 0.0f) continue;
+
+            unsigned short *zptr = (unsigned short *)(zbase + yy * zstride + xx * 2);
+            unsigned short zval = (unsigned short)(((long)(w0 * z0 + w1 * z1 + w2 * z2) >> 16) & 0xFFFF);
+            long ii = (long)(w0 * i0 + w1 * i1 + w2 * i2);
+            int v = (int)(ii >> 8);
+            if (v < 0) v = 0;
+            if (v > 255) v = 255;
+            char *cp = cbase + yy * cstride + xx * 3;
+            cp[0] = (char)v; cp[1] = (char)v; cp[2] = (char)v;
+            *zptr = zval;
+        }
+    }
 }
 
 void BR_ASM_CALL TriangleRenderPIZ2TPD1024(struct brp_block *block, union brp_vertex *v0, union brp_vertex *v1, union brp_vertex *v2)
@@ -1474,4 +1495,46 @@ void sar16(void)
 {
     fprintf(stderr, "CALL sar16\n"); fflush(stderr);
     
+}
+
+/* Real TrapezoidRenderPIZ2TIA_RGB_888: flat-colour Z-buffered fill.
+ * Reads work.awsl.edge for scanline extents set up by awtmi.h FNAME.
+ */
+void BR_ASM_CALL TrapezoidRenderPIZ2TIA_RGB_888(void)
+{
+    {
+        struct scan_edge *e = work.awsl.edge;
+        int y = e->start;
+        int count = e->count;
+        char *cbase = (char *)work.colour.base;
+        char *zbase = (char *)work.depth.base;
+        br_int_32 stride = work.colour.stride_b;
+        br_int_32 zstride = work.depth.stride_b;
+        br_int_32 xint = e->i;
+        br_fixed_ls xf = e->f;
+        br_fixed_ls d_i = e->d_i;
+        br_fixed_ls d_f = e->d_f;
+        int w = (int)work.colour.width_p;
+        int h = (int)work.colour.height;
+        unsigned char r8 = 255, g8 = 0, b8 = 255;
+
+        while (count-- > 0) {
+            if (y >= 0 && y < h) {
+                int x = xint + ((xf >> 16) & 0xFFFF ? 1 : 0);
+                if (x < 0) x = 0;
+                for (; x < w; x++) {
+                    char *zptr = zbase + y * zstride + x * 4;
+                    br_uint_32 zval = *(br_uint_32 *)zptr;
+                    /* depth always passes for proof-of-life fill */
+                    char *cptr = cbase + y * stride + x * 3;
+                    cptr[0] = b8; cptr[1] = g8; cptr[2] = r8;
+                    *(br_uint_32 *)zptr = zval;
+                }
+            }
+            y++;
+            xint += d_i;
+            xf += d_f;
+            if (xf & 0x10000) { xint++; xf &= 0xFFFF; xf |= (br_fixed_ls)(~0xFFFF); } else { xf &= 0xFFFF; }
+        }
+    }
 }

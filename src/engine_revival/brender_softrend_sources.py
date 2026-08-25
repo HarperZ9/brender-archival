@@ -132,7 +132,26 @@ int main(int argc, char **argv)
         if (BrV1dbRendererBegin(NULL, NULL) != BRE_OK) {
             fprintf(stderr, "BrV1dbRendererBegin failed\n");
             BrEnd(); return 5;
-        }    /* Activate ZB mode: sets v1db.zb_active = TRUE so BrZbSceneRender dispatches faces.     * Re-invokes BrV1dbRendererBegin(NULL, NULL) harmlessly since renderer already exists. */    BrZbBegin(BR_PMT_RGB_888, BR_PMT_DEPTH_16);
+        }    /* Bind pentprim's primitive library to the renderer so face dispatch
+     * reaches match.c block selection and the primitive kernels.
+     */
+    {
+        struct br_primitive_library *plib = NULL;
+        void *prim_heap = BrMemAllocate(512*1024, BR_MEMORY_APPLICATION);
+        if (prim_heap == NULL) { BrEnd(); return 10; }
+        {
+            br_primitive_library *plist[8]; br_int_32 npl = 0, qi;
+            if (BrPrimitiveLibraryListFind(plist, &npl, 8, (struct br_device_pixelmap *)pm, BR_SCALAR_TOKEN) == BRE_OK) {
+                for (qi = 0; qi < npl; qi++) fprintf(stderr, "PLIB[%d] = %s\n", qi, ObjectIdentifier((br_object *)plist[qi]) ? ObjectIdentifier((br_object *)plist[qi]) : "?");
+            } else { fprintf(stderr, "PLIB list find failed r=%d\n", (int)0); }
+            fflush(stderr);
+        }
+        if (BrPrimitiveLibraryFind(&plib, (struct br_device_pixelmap *)pm, BR_SCALAR_TOKEN) != BRE_OK || plib == NULL) {
+            fprintf(stderr, "PRIMLIB find failed\n"); fflush(stderr);
+            BrEnd(); return 12;
+        }
+        BrRendererBegin(pm, NULL, plib, prim_heap, 512*1024);
+    }
     }
 
     tex = BrPixelmapLoad((char *)tex_path);
@@ -183,6 +202,9 @@ int main(int argc, char **argv)
     world = BrActorAllocate(BR_ACTOR_NONE, NULL);
     camera_actor = BrActorAllocate(BR_ACTOR_CAMERA, NULL);
     BrModelUpdate(model, BR_MODU_ALL);
+    /* Store the material with the renderer so material->stored is non-NULL;
+     * renderFaces() skips models whose material was never stored. */
+    BrMaterialUpdate(material, BR_MATU_ALL);
     model_actor = BrActorAllocate(BR_ACTOR_MODEL, NULL);
     if (world == NULL || camera_actor == NULL || camera_actor->type_data == NULL
         || model_actor == NULL) {
@@ -195,7 +217,7 @@ int main(int argc, char **argv)
     camera->yon_z = BrFloatToScalar(100.0f);
     camera->aspect = BrFloatToScalar((float)RENDER_W / (float)RENDER_H);
     BrMatrix34Translate(&camera_actor->t.t.mat,
-        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(-2.5f));
+        BrFloatToScalar(0.0f), BrFloatToScalar(0.0f), BrFloatToScalar(2.5f));
     BrActorAdd(world, camera_actor);
     /* Auto-frame: compose scale/translate from pre-computed params */
     {
@@ -245,8 +267,11 @@ int main(int argc, char **argv)
         BrMatrix34RotateY(&model_actor->t.t.mat, BR_ANGLE_DEG(angle));
         BrMatrix34PreRotateX(&model_actor->t.t.mat, BR_ANGLE_DEG(25));
         model_actor->t.type = BR_TRANSFORM_MATRIX34;
-        BrZbSceneRender(world, camera_actor, pm, depth);
-        BrZbSceneRender(world, camera_actor, pm, depth);
+        fprintf(stderr, "STATECHK prepared=%p stored=%p\n", (void*)model->prepared, (void*)material->stored); fflush(stderr);
+    BrZbSceneRenderBegin(world, camera_actor, pm, depth);
+        BrZbSceneRenderContinue(world, camera_actor, pm, depth);
+        BrZbSceneRenderAdd(world);
+        BrZbSceneRenderEnd();
         {
             char path[512];
             snprintf(path, sizeof(path), "%s.softrend-f%d.ppm", out_path, frame);
