@@ -42,10 +42,23 @@ def softrend_render_source() -> str:
 void * BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
 void * BR_EXPORT BrDrv1PentPrimBegin(char *arguments);
 br_error BR_PUBLIC_ENTRY BrV1dbRendererBegin(struct br_device_pixelmap *destination, struct br_renderer *renderer);
+void BR_PUBLIC_ENTRY BrMapUpdate(br_pixelmap *map, br_uint_16 flags);
+void BR_PUBLIC_ENTRY BrTableUpdate(br_pixelmap *table, br_uint_16 flags);
 
 #define RENDER_W 320
 #define RENDER_H 240
 #define COLOUR_BLACK BR_COLOUR_RGB(0, 0, 0)
+
+static char shade_tab_path_buf[520];
+
+static const char *shade_tab_path(const char *pal_path)
+{
+    int slen = 0;
+    while (pal_path[slen] && slen < 500) { shade_tab_path_buf[slen] = pal_path[slen]; slen++; }
+    while (slen > 0 && shade_tab_path_buf[slen-1] != '\\' && shade_tab_path_buf[slen-1] != '/') slen--;
+    memcpy(shade_tab_path_buf + slen, "winsh16.tab", 11);
+    return shade_tab_path_buf;
+}
 
 static int dump_ppm(br_pixelmap *pm, const char *path)
 {
@@ -87,7 +100,7 @@ int main(int argc, char **argv)
     const char *tex_path = (argc > 2) ? argv[2] : NULL;
     const char *pal_path = (argc > 3 && argv[3][0] != 0) ? argv[3] : NULL;
     const char *out_path = (argc > 4) ? argv[4] : "brender-core-softrend-render.ppm";
-    br_pixelmap *tex = NULL, *pal = NULL, *pm = NULL, *depth = NULL;
+    br_pixelmap *tex = NULL, *pal = NULL, *shade_tab = NULL, *pm = NULL, *depth = NULL;
     br_matrix34 mm;
     float af_s = 1.0f, af_cx = 0.0f, af_cy = 0.0f, af_cz = 0.0f;
 
@@ -165,10 +178,43 @@ int main(int argc, char **argv)
     }
     material = BrMaterialAllocate("shell-texture");
     if (material == NULL) { BrEnd(); return 7; }
+    /* Register the colour map with the live renderer so its stored buffer
+     * reaches prim.colour_map.buffer and match.c sees an INDEX_8 texture. */
+    BrMapUpdate(tex, BR_MAPU_ALL);
+
+    {
+        br_pixelmap *src_tab = BrPixelmapLoad(shade_tab_path(pal_path));
+        if (src_tab == NULL || src_tab->pixels == NULL) { BrEnd(); return 14; }
+        /* Lit-textured PIZ2TIA blocks gate on an RGB_888-typed shade table;
+         * the period tree only ships 8-bit-index and 555/565 tables, so the
+         * authentic winsh16 values are expanded into an RGB_888 map here. */
+        shade_tab = BrPixelmapAllocate(BR_PMT_RGB_888,
+            (br_int_32)src_tab->width, (br_int_32)src_tab->height, NULL, 0);
+        if (shade_tab == NULL) { BrEnd(); return 15; }
+        {
+            int sx, sy;
+            unsigned short *sp = (unsigned short *)src_tab->pixels;
+            char *dp = (char *)shade_tab->pixels;
+            for (sy = 0; sy < (int)src_tab->height; sy++) {
+                for (sx = 0; sx < (int)src_tab->width; sx++) {
+                    unsigned short px = sp[sy * ((int)src_tab->row_bytes / 2) + sx];
+                    char *o = dp + sy * shade_tab->row_bytes + sx * 3;
+                    o[0] = (char)(((px >> 0) & 0x1F) << 3);
+                    o[1] = (char)(((px >> 5) & 0x3F) << 2);
+                    o[2] = (char)(((px >> 11) & 0x1F) << 3);
+                }
+            }
+        }
+        BrTableUpdate(shade_tab, BR_TABU_ALL);
+    }
+
     material->colour_map = tex;
+    material->index_shade = shade_tab;
     material->identifier = "shell-texture";
-    /* Lit textured: triggers match.c to select TriangleRenderPIZ2TIA_RGB_888 */
-    material->flags = BR_MATF_SMOOTH;
+    /* Lit textured: triggers match.c selection of the PIZ2TIA family.
+     * TWO_SIDED keeps faces alive under the measured -Z camera convention. */
+    material->flags = BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE
+                    | BR_MATF_TWO_SIDED;
 
     model = BrModelLoad((char *)model_path);
     if (model == NULL || model->nvertices < 3 || model->nfaces < 1) {
