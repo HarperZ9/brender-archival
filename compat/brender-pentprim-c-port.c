@@ -1527,6 +1527,10 @@ void BR_ASM_CALL TriangleRenderPIZ2TIA_RGB_888(struct brp_block *block, union br
     long  i0 = a->comp_x[C_I],  i1 = b->comp_x[C_I],  i2 = c->comp_x[C_I];
     long  u0 = a->comp_x[C_U],  u1 = b->comp_x[C_U],  u2 = c->comp_x[C_U];
     long  v0 = a->comp_x[C_V],  v1 = b->comp_x[C_V],  v2 = c->comp_x[C_V];
+    { static int tq9=0; if(tq9<4){tq9++;
+        fprintf(stderr,"TIADBG xy=(%.1f,%.1f)(%.1f,%.1f)(%.1f,%.1f) z=%ld i=%ld u=%ld",
+            x0,y0,x1,y1,x2,y2,z0,i0,u0);
+        fflush(stderr);} }
     int minx = (int)(x0 < x1 ? (x0 < x2 ? x0 : x2) : (x1 < x2 ? x1 : x2));
     int maxx = (int)(x0 > x1 ? (x0 > x2 ? x0 : x2) : (x1 > x2 ? x1 : x2)) + 1;
     int miny = (int)(y0 < y1 ? (y0 < y2 ? y0 : y2) : (y1 < y2 ? y1 : y2));
