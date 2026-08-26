@@ -1517,16 +1517,16 @@ void sar16(void)
 /* measured DEPTH_16 convention: buffer clears to 0 and NEARER wins.   */
 void BR_ASM_CALL TriangleRenderPIZ2TIA_RGB_888(struct brp_block *block, union brp_vertex *a, union brp_vertex *b, union brp_vertex *c)
 {
-    /* Measured on this block (2026-08-25): every component arrives as a
-     * float in comp_f - including SX/SY/SZ (sx_x held float bits). */
-    float x0 = a->comp_f[C_SX], y0 = a->comp_f[C_SY];
-    float x1 = b->comp_f[C_SX], y1 = b->comp_f[C_SY];
-    float x2 = c->comp_f[C_SX], y2 = c->comp_f[C_SY];
-    float z0 = a->comp_f[C_SZ], z1 = b->comp_f[C_SZ], z2 = c->comp_f[C_SZ];
-    float i0 = a->comp_f[C_I], i1 = b->comp_f[C_I], i2 = c->comp_f[C_I];
-    float u0 = a->comp_f[C_U], u1 = b->comp_f[C_U], u2 = c->comp_f[C_U];
-    float v0 = a->comp_f[C_V], v1 = b->comp_f[C_V], v2 = c->comp_f[C_V];
-
+    /* Textured blocks declare FIXED component slots; softrend's
+     * RenderConvert3 lands everything in comp_x as 16.16. (Reading comp_f
+     * here was the black-frame bug: garbage bbox, zero draws.) */
+    float x0 = (float)a->comp_x[C_SX] * (1.0f/65536.0f), y0 = (float)a->comp_x[C_SY] * (1.0f/65536.0f);
+    float x1 = (float)b->comp_x[C_SX] * (1.0f/65536.0f), y1 = (float)b->comp_x[C_SY] * (1.0f/65536.0f);
+    float x2 = (float)c->comp_x[C_SX] * (1.0f/65536.0f), y2 = (float)c->comp_x[C_SY] * (1.0f/65536.0f);
+    long  z0 = a->comp_x[C_SZ], z1 = b->comp_x[C_SZ], z2 = c->comp_x[C_SZ];
+    long  i0 = a->comp_x[C_I],  i1 = b->comp_x[C_I],  i2 = c->comp_x[C_I];
+    long  u0 = a->comp_x[C_U],  u1 = b->comp_x[C_U],  u2 = c->comp_x[C_U];
+    long  v0 = a->comp_x[C_V],  v1 = b->comp_x[C_V],  v2 = c->comp_x[C_V];
     int minx = (int)(x0 < x1 ? (x0 < x2 ? x0 : x2) : (x1 < x2 ? x1 : x2));
     int maxx = (int)(x0 > x1 ? (x0 > x2 ? x0 : x2) : (x1 > x2 ? x1 : x2)) + 1;
     int miny = (int)(y0 < y1 ? (y0 < y2 ? y0 : y2) : (y1 < y2 ? y1 : y2));
@@ -1571,15 +1571,15 @@ void BR_ASM_CALL TriangleRenderPIZ2TIA_RGB_888(struct brp_block *block, union br
             unsigned short *zptr = (unsigned short *)(zbase + yy * zstride + xx * 2);
             if (*zptr != 0 && zz < (long)*zptr) continue;
 
-            int uu = (int)(w0 * u0 + w1 * u1 + w2 * u2) & twm;
-            int vv = (int)(w0 * v0 + w1 * v1 + w2 * v2) & thm;
+            int uu = (int)((w0 * u0 + w1 * u1 + w2 * u2) / 65536.0f) & twm;
+            int vv = (int)((w0 * v0 + w1 * v1 + w2 * v2) / 65536.0f) & thm;
 
             unsigned char texel = *(unsigned char *)(tbase + vv * tstride + uu);
             br_uint_32 rgb = pal[texel];
 
-            float iiF = w0 * i0 + w1 * i1 + w2 * i2;
-            int shade = (int)(iiF * 4.0f);   /* I range 0..63 (scaleI=63) */
-            if (shade < 0) shade = 0;
+            /* I is 16.16 over the 64-row shade scale (scaleI=63): map to 0..255 */
+            long iiL = (long)(w0 * i0 + w1 * i1 + w2 * i2);
+            int shade = (int)((iiL >> 8) * 4);
             if (shade > 255) shade = 255;
 
             char *cp = cbase + yy * cstride + xx * 3;
