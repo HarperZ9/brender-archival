@@ -14,7 +14,7 @@
 
 ## Summary
 
-Open BRender source releases and historical SDK references are now tracked as the first critical-edition revival lane.
+Open BRender source releases and historical SDK references anchor the first critical-edition revival lane, now verified through a Win32 21-target harness and bounded period-pipeline pixel output.
 
 ## Artifacts
 
@@ -36,13 +36,13 @@ Open BRender source releases and historical SDK references are now tracked as th
 
 | Readiness | Stage | Build | Score | Next Actions |
 |---|---|---|---:|---|
-| brender-production-readiness | portable-core-plotter-lane-passing | portable-core-library-and-solid-shaded-smoke-built | 86 | complete the x64 pointer-width port (resource.c + loader.c fixes done out-of-tree; remaining 32-bit-pointer-field sites need a debugger to pinpoint); translate the softrend 386-assembly renderer for period-accurate rasterization (portable C rasterizer is the current functional replacement); resolve original materials/textures from period .mat/.pal/.pix files and add semantic tests for the portable stubs; apply per-part hierarchy transforms for multi-part assets |
+| brender-production-readiness | stage-5-rendering-release-evidence | complete | 88 | Resolve the measured TIA vertex-layout/state mismatch before making any completed textured-period-render claim.; Audit and reduce the remaining MSVC warning set, especially compatibility redefinitions at the pentprim boundary.; Continue replacing assembly-only linkage stubs with measured C ports only where a test reaches the exact kernel.; Optional: x64 pointer-width port after the Win32 release boundary is preserved. |
 
 ## Tasks
 
 | Task | Type | Status | Notes |
 |---|---|---|---|
-| brender-critical-edition-packet | build-archive-packet | portable-render-lane-complete-publish-pending | The BRender critical-edition revival is complete for the portable pure-C render lane and is publish-ready as the standalone brender-archival deliverable. From the pinned public v1.3.2 snapshot (commit d88d0ed4, MIT, provenance via Foone Turing with release authorized by former Argonaut CEO Jez San), the engine-revival materializer generates an out-of-tree CMake harness that builds the FLOAT core library and eight verifying render smokes forming a full ladder: vector math, BrBegin/BrEnd framework startup, hand-rolled wireframe, v1db scene-graph render via the engine's own BrActorToScreenMatrix4, solid flat-shaded fill, per-pixel depth buffer, perspective-correct texture mapping, and loading and rendering real period models (duck, teapot, skull, torus) straight from their native binary .dat datafiles with BrModelLoad. Everything runs through BRender's own pure-C memory-pixelmap path with no assembly softrend driver, under Visual Studio Win32 with CTest 8/8 green; readiness flagship_score 78. Deliberately deferred (documented, not claimed): BRender's period 386-assembly softrend renderer, x64 pointer-width portability, original material/texture resolution, multi-part model assembly, and release packaging. Publishing the standalone brender-archival repository is an outward-facing step gated on operator approval. |
+| brender-critical-edition-packet | build-archive-packet | win32-period-pipeline-release-ready | The BRender critical-edition packet is publishable as a public-safe archival release once the operator approves publication. The current verified boundary is 2026-08-27: from the public MIT BRender v1.3.2 snapshot pinned at d88d0ed41122664b9781015b517db64353e16f19, the materializer generates an out-of-tree Visual Studio Win32 CMake harness. Native CTest passes 21/21, including portable render rungs, asset/material/pixelmap/host semantic audits, material resolution, file texture sampling with INDEX_8 palette resolution, deterministic game shell, and the period softrend plus pentprim pipeline. The period rung renders sph32.dat as an eight-frame nonblack orbit and reports final_frame_lit=19284 valid=true for the release media source run. Native repeat executions on the Win32 Debug port can vary by a few edge pixels, so release media pins exact verified PPM source hashes. The packet does not vendor upstream source/assets and does not claim completed textured TIA rendering, x64 readiness, production readiness, or endorsement. |
 | brender-triage | triage-public-record | seeded | Create public-safe sources and artifact records for Argonaut BRender. |
 
 ## Milestones
@@ -55,7 +55,7 @@ Open BRender source releases and historical SDK references are now tracked as th
 
 | Reproduction | Type | Status | Notes |
 |---|---|---|---|
-| brender-critical-edition-source-build | source-build | planned | First public reproduction recipe for turning BRender from archived source records into a repeatable critical-edition build track. |
+| brender-critical-edition-source-build | source-build | verified-win32-release-boundary | The BRender source-build reproduction is verified for the public v1.3.2 Win32 harness boundary. It materializes the harness from the pinned MIT snapshot, builds under Visual Studio Win32, passes native CTest 21/21, and produces current public media from nonblack period-pipeline output. The reproduction does not vendor source/assets and does not claim completed textured TIA rendering, x64 readiness, production readiness, or endorsement. |
 
 ## Build Environments
 
@@ -67,7 +67,7 @@ Open BRender source releases and historical SDK references are now tracked as th
 
 | Harness | Status | Type | Build |
 |---|---|---|---|
-| brender-v132-portable-core-plan | portable-core-plotter-lane-passing | portable-build-plan | brender-v132-build-environment |
+| brender-v132-portable-core-plan | win32-period-pipeline-release-evidence-passing | portable-build-plan | brender-v132-build-environment |
 
 ## Attempts
 

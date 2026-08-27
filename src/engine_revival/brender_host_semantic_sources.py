@@ -64,43 +64,62 @@ static int mem_checks(br_size_t inquire_before)
     return 1;
 }
 
+static int path_exists(const char *path)
+{
+    FILE *probe = fopen(path, "rb");
+    if (probe == NULL) return 0;
+    fclose(probe);
+    return 1;
+}
+
 static int file_roundtrip(const char *work_path)
 {
     static unsigned char payload[256];
     unsigned char buf[256];
     void *f;
-    int i, written, read_back, ok = 1;
+    int i, written, read_back, ok = 0;
+    int created_workfile = 0;
 
     for (i = 0; i < 256; i++) payload[i] = (unsigned char)(i ^ 0x5A);
+
+    if (path_exists(work_path)) {
+        fprintf(stderr, "host-semantic: workfile already exists: %s\n", work_path);
+        printf("{\"check\":\"file-roundtrip\",\"bytes\":256,"
+            "\"workfile_exists\":true,\"match\":false}\n");
+        return 0;
+    }
 
     f = BrFileOpenWrite((char *)work_path, 0);
     if (f == NULL) {
         fprintf(stderr, "host-semantic: open-write failed\n");
         return 0;
     }
+    created_workfile = 1;
     written = BrFileWrite((void *)payload, 1, 256, f);
     BrFileClose(f);
     if (written != 256) {
         fprintf(stderr, "host-semantic: write count %d\n", written);
-        return 0;
+        goto out;
     }
 
     f = BrFileOpenRead((char *)work_path, 0, NULL, NULL);
     if (f == NULL) {
         fprintf(stderr, "host-semantic: open-read failed\n");
-        return 0;
+        goto out;
     }
     read_back = BrFileRead(buf, 1, 256, f);
     BrFileClose(f);
     if (read_back != 256) {
         fprintf(stderr, "host-semantic: read count %d\n", read_back);
-        return 0;
+        goto out;
     }
+    ok = 1;
     for (i = 0; i < 256; i++) {
         if (buf[i] != payload[i]) { ok = 0; break; }
     }
 
-    remove(work_path);
+out:
+    if (created_workfile) remove(work_path);
     printf("{\"check\":\"file-roundtrip\",\"bytes\":256,\"match\":%s}\n",
         ok ? "true" : "false");
     return ok ? 1 : 0;

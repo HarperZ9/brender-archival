@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from engine_revival.brender_json_receipt import json_receipt_helpers_source
+from engine_revival.brender_texture_c_helpers import texture_colour_helpers_source
+
 
 def texture_file_sample_source() -> str:
     """C source for the BRender portable-core file-texture sampling rung.
@@ -37,6 +40,7 @@ def texture_file_sample_source() -> str:
 #if defined(_DEBUG)
 #include <crtdbg.h>
 #endif
+""" + json_receipt_helpers_source() + texture_colour_helpers_source() + r"""
 
 #define RENDER_W 320
 #define RENDER_H 240
@@ -101,7 +105,7 @@ static void fill_triangle_tex(br_pixelmap *pm, br_pixelmap *tex,
                 tv = (int)(vv * th); tv &= (th - 1);
                 if (tu < 0) tu += tw;
                 if (tv < 0) tv += th;
-                texel = BrPixelmapPixelGet(tex, tu, tv);
+                texel = resolve_texel_colour(tex, tu, tv);
                 r  = (int)(((texel >> 16) & 0xff) * shade);
                 g  = (int)(((texel >> 8) & 0xff) * shade);
                 bl = (int)((texel & 0xff) * shade);
@@ -295,11 +299,15 @@ int main(int argc, char **argv)
     if (drew < 1 || sampled < 3000 || any < 3000 || distinct < 8) { BrEnd(); return 12; }
     if (!dump_ppm(pm, out_path)) { BrEnd(); return 13; }
 
-    printf("{\"model\":\"%s\",\"texture\":\"%s\",\"palette\":\"%s\","
-        "\"texture_type\":%d,\"texture_width\":%d,\"texture_height\":%d,"
+    fputs("{\"model\":", stdout);
+    json_write_string(stdout, model_path);
+    fputs(",\"texture\":", stdout);
+    json_write_string(stdout, tex_path);
+    fputs(",\"palette\":", stdout);
+    json_write_string(stdout, pal_path ? pal_path : "-");
+    printf(",\"texture_type\":%d,\"texture_width\":%d,\"texture_height\":%d,"
         "\"faces_drawn\":%ld,\"pixels_sampled\":%ld,"
         "\"lit_pixels\":%ld,\"distinct_colours\":%ld,\"valid\":true}\n",
-        model_path, tex_path, pal_path ? pal_path : "-",
         (int)tex->type, (int)tex->width, (int)tex->height,
         drew, sampled, any, distinct);
 

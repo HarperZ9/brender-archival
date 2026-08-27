@@ -1541,7 +1541,6 @@ void BR_ASM_CALL TriangleRenderPIZ2TIA_RGB_888(struct brp_block *block, union br
     char *tbase = (char *)work.texture.base;
     int tstride = work.texture.stride_b;
     br_uint_32 *pal = (br_uint_32 *)work.texture.palette;
-    { static int dp=0; if(dp<1){ dp++; fprintf(stderr,"TIA tw=%d th=%d tbase=%p pal=%p u0=%ld v0=%ld\n", (int)work.texture.width_p,(int)work.texture.height,(void*)tbase,(void*)pal,u0,v0); if(pal){fprintf(stderr,"pal[0]=%08x pal[1]=%08x pal[255]=%08x\n",(unsigned)pal[0],(unsigned)pal[1],(unsigned)pal[255]);} fflush(stderr);} }
 
     char *cbase = (char *)work.colour.base;
     char *zbase = (char *)work.depth.base;

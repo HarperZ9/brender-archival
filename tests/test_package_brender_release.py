@@ -11,6 +11,8 @@ import pytest
 
 from scripts.package_brender_release import package_release
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_brender_harness_materializer import _write_source_fixture
 
@@ -26,6 +28,11 @@ def test_package_stages_harness_docs_evidence_and_receipt(tmp_path):
     assert (output / "harness" / "CMakeLists.txt").is_file()
     assert (output / "README.md").is_file()
     assert (output / "evidence" / "ctest-twenty-rungs.log").is_file()
+    assert (output / "evidence" / "ctest-twentyone-targets.log").is_file()
+    assert (output / "media" / "period-pipeline-still.png").is_file()
+    assert (output / "media" / "period-pipeline-orbit-contact-sheet.png").is_file()
+    assert (output / "media" / "social-card-1200x630.png").is_file()
+    assert (output / "media" / "provenance-manifest.json").is_file()
     assert (output / "SHA256SUMS.txt").is_file()
     assert (output / "package-receipt.json").is_file()
     assert (output / "package-receipt.json") in written
@@ -43,6 +50,16 @@ def test_package_stages_harness_docs_evidence_and_receipt(tmp_path):
     }
     assert sums["README.md"] == receipt["sha256"]["README.md"]
     assert "harness/CMakeLists.txt" in sums
+    assert "media/provenance-manifest.json" in sums
+
+    source_manifest = json.loads(
+        (REPO_ROOT / "gallery" / "release-20260827" / "provenance-manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    for media_output in source_manifest["outputs"]:
+        staged_media_path = f"media/{Path(media_output['path']).name}"
+        assert staged_media_path in sums
 
 
 def test_package_replaces_previous_staging(tmp_path):

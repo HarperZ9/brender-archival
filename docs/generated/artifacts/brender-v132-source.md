@@ -35,7 +35,7 @@ Public source release suitable for critical-edition work. Date is approximate as
 
 | Reproduction | Type | Status | Notes |
 |---|---|---|---|
-| [brender-critical-edition-source-build](../reproductions/brender-critical-edition-source-build.md) | source-build | planned | First public reproduction recipe for turning BRender from archived source records into a repeatable critical-edition build track. |
+| [brender-critical-edition-source-build](../reproductions/brender-critical-edition-source-build.md) | source-build | verified-win32-release-boundary | The BRender source-build reproduction is verified for the public v1.3.2 Win32 harness boundary. It materializes the harness from the pinned MIT snapshot, builds under Visual Studio Win32, passes native CTest 21/21, and produces current public media from nonblack period-pipeline output. The reproduction does not vendor source/assets and does not claim completed textured TIA rendering, x64 readiness, production readiness, or endorsement. |
 
 ## Evidence Sources
 

@@ -1,9 +1,9 @@
 """Package a distributable BRender revival-release staging directory.
 
-Stages the materialized harness, README, captured CTest transcripts, and the
-harness manifest into one directory, then writes a canonical SHA256SUMS file
-and a packaging receipt. No proprietary source or assets are copied: the
-staged harness references the public checkout by path only.
+Stages the materialized harness, README, captured CTest transcripts, current
+release media, and provenance into one directory, then writes a canonical
+SHA256SUMS file and a packaging receipt. No proprietary source or assets are
+copied: the staged harness references the public checkout by path only.
 """
 
 from __future__ import annotations
@@ -22,6 +22,26 @@ STAGED_FILES = (
     ("README.md", "README.md"),
     ("builds/brender-v132-ctest-nineteen-rungs.log", "evidence/ctest-nineteen-rungs.log"),
     ("builds/brender-v132-ctest-twenty-rungs.log", "evidence/ctest-twenty-rungs.log"),
+    ("builds/brender-v132-ctest-twentyone-targets.log", "evidence/ctest-twentyone-targets.log"),
+    ("gallery/release-20260827/period-pipeline-orbit-00.png", "media/period-pipeline-orbit-00.png"),
+    ("gallery/release-20260827/period-pipeline-orbit-01.png", "media/period-pipeline-orbit-01.png"),
+    ("gallery/release-20260827/period-pipeline-orbit-02.png", "media/period-pipeline-orbit-02.png"),
+    ("gallery/release-20260827/period-pipeline-orbit-03.png", "media/period-pipeline-orbit-03.png"),
+    ("gallery/release-20260827/period-pipeline-orbit-04.png", "media/period-pipeline-orbit-04.png"),
+    ("gallery/release-20260827/period-pipeline-orbit-05.png", "media/period-pipeline-orbit-05.png"),
+    ("gallery/release-20260827/period-pipeline-orbit-06.png", "media/period-pipeline-orbit-06.png"),
+    ("gallery/release-20260827/period-pipeline-orbit-07.png", "media/period-pipeline-orbit-07.png"),
+    ("gallery/release-20260827/period-pipeline-still.png", "media/period-pipeline-still.png"),
+    (
+        "gallery/release-20260827/period-pipeline-orbit-contact-sheet.png",
+        "media/period-pipeline-orbit-contact-sheet.png",
+    ),
+    ("gallery/release-20260827/period-pipeline-poster.png", "media/period-pipeline-poster.png"),
+    ("gallery/release-20260827/progress-sequence.png", "media/progress-sequence.png"),
+    ("gallery/release-20260827/pipeline-diagram.png", "media/pipeline-diagram.png"),
+    ("gallery/release-20260827/evidence-card.png", "media/evidence-card.png"),
+    ("gallery/release-20260827/social-card-1200x630.png", "media/social-card-1200x630.png"),
+    ("gallery/release-20260827/provenance-manifest.json", "media/provenance-manifest.json"),
 )
 
 

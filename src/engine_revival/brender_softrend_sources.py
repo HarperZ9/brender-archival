@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from engine_revival.brender_json_receipt import json_receipt_helpers_source
+
 
 def softrend_render_source() -> str:
     """C source for the BRender softrend engine-rendering rung.
@@ -33,10 +35,12 @@ def softrend_render_source() -> str:
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "brddi.h"
 #if defined(_DEBUG)
 #include <crtdbg.h>
 #endif
+""" + json_receipt_helpers_source() + r"""
 
 /* Driver entry point; renamed from BrDrv1Begin inside the softrend library. */
 void * BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
@@ -79,6 +83,12 @@ static long count_lit(br_pixelmap *pm)
         }
     }
     return t;
+}
+
+static void clear_pixelmap_storage(br_pixelmap *pm)
+{
+    if (pm == NULL || pm->pixels == NULL || pm->row_bytes <= 0 || pm->height <= 0) return;
+    memset(pm->pixels, 0, (size_t)pm->row_bytes * (size_t)pm->height);
 }
 
 int main(int argc, char **argv)
@@ -139,13 +149,6 @@ int main(int argc, char **argv)
         struct br_primitive_library *plib = NULL;
         void *prim_heap = BrMemAllocate(512*1024, BR_MEMORY_APPLICATION);
         if (prim_heap == NULL) { BrEnd(); return 10; }
-        {
-            br_primitive_library *plist[8]; br_int_32 npl = 0, qi;
-            if (BrPrimitiveLibraryListFind(plist, &npl, 8, (struct br_device_pixelmap *)pm, BR_SCALAR_TOKEN) == BRE_OK) {
-                for (qi = 0; qi < npl; qi++) fprintf(stderr, "PLIB[%d] = %s\n", qi, ObjectIdentifier((br_object *)plist[qi]) ? ObjectIdentifier((br_object *)plist[qi]) : "?");
-            } else { fprintf(stderr, "PLIB list find failed r=%d\n", (int)0); }
-            fflush(stderr);
-        }
         if (BrPrimitiveLibraryFind(&plib, (struct br_device_pixelmap *)pm, BR_SCALAR_TOKEN) != BRE_OK || plib == NULL) {
             fprintf(stderr, "PRIMLIB find failed\n"); fflush(stderr);
             BrEnd(); return 12;
@@ -195,8 +198,6 @@ int main(int argc, char **argv)
         }
         af_s = (radius > 0.0f) ? (1.6f / radius) : 1.0f;
         af_cx = cx; af_cy = cy; af_cz = cz;
-        fprintf(stderr, "MARK af-precomputed s=%f c=(%f,%f,%f)\n", af_s, af_cx, af_cy, af_cz);
-        fflush(stderr);
     }
 
     world = BrActorAllocate(BR_ACTOR_NONE, NULL);
@@ -256,22 +257,21 @@ int main(int argc, char **argv)
     depth = BrPixelmapAllocate(BR_PMT_DEPTH_16, RENDER_W, RENDER_H, NULL, BR_PMAF_NORMAL);
     if (pm == NULL || depth == NULL || pm->pixels == NULL) { BrEnd(); return 10; }
     BrPixelmapFill(pm, COLOUR_BLACK);
+    BrPixelmapFill(depth, 0);
     pm->origin_x = (br_int_16)(RENDER_W / 2); pm->origin_y = (br_int_16)(RENDER_H / 2);
     depth->origin_x = pm->origin_x; depth->origin_y = pm->origin_y;
 
-    for (frame = 0; frame < 4; frame++) {
-        int angle = 35 + frame * 30;
+    for (frame = 0; frame < 8; frame++) {
+        int angle = 35 + frame * 45;
         br_matrix34 orbit;
         BrMatrix34RotateY(&orbit, BR_ANGLE_DEG(angle));
         BrMatrix34PreRotateX(&orbit, BR_ANGLE_DEG(25));
         BrMatrix34RotateY(&model_actor->t.t.mat, BR_ANGLE_DEG(angle));
         BrMatrix34PreRotateX(&model_actor->t.t.mat, BR_ANGLE_DEG(25));
         model_actor->t.type = BR_TRANSFORM_MATRIX34;
-        fprintf(stderr, "STATECHK prepared=%p stored=%p\n", (void*)model->prepared, (void*)material->stored); fflush(stderr);
-    BrZbSceneRenderBegin(world, camera_actor, pm, depth);
-        BrZbSceneRenderContinue(world, camera_actor, pm, depth);
-        BrZbSceneRenderAdd(world);
-        BrZbSceneRenderEnd();
+        clear_pixelmap_storage(pm);
+        BrPixelmapFill(depth, 0);
+        BrZbSceneRender(world, camera_actor, pm, depth);
         {
             char path[512];
             snprintf(path, sizeof(path), "%s.softrend-f%d.ppm", out_path, frame);
@@ -282,9 +282,11 @@ int main(int argc, char **argv)
     {
         long lit = count_lit(pm);
         int ok = (lit > 500);
-        printf("{\"rung\":\"brender_core_softrend_render\",\"renderer\":\"softrend-float\","
-            "\"model\":\"%s\",\"frames\":4,\"final_frame_lit\":%ld,\"valid\":%s}\n",
-            model_path, lit, ok ? "true" : "false");
+        fputs("{\"rung\":\"brender_core_softrend_render\",\"renderer\":\"softrend-float\","
+            "\"model\":", stdout);
+        json_write_string(stdout, model_path);
+        printf(",\"frames\":8,\"final_frame_lit\":%ld,\"valid\":%s}\n",
+            lit, ok ? "true" : "false");
 
         if (!ok || dump_ppm(pm, out_path) != 1) ok = 0;
 
@@ -295,10 +297,16 @@ int main(int argc, char **argv)
          * this verification rung does the same. Receipt is emitted before
          * shutdown so evidence is always flushed.
          */
-        printf("{\"rung\":\"brender_core_softrend_render\",\"renderer\":\"softrend-float+pentprim-float\","
-            "\"model\":\"%s\",\"texture\":\"%s\",\"palette\":\"%s\","
-            "\"frames\":4,\"final_frame_lit\":%ld,\"valid\":%s}\n",
-            model_path, tex_path, pal_path ? pal_path : "-", lit,
+        fputs("{\"rung\":\"brender_core_softrend_render\",\"renderer\":\"softrend-float+pentprim-float\","
+            "\"model\":", stdout);
+        json_write_string(stdout, model_path);
+        fputs(",\"texture\":", stdout);
+        json_write_string(stdout, tex_path);
+        fputs(",\"palette\":", stdout);
+        json_write_string(stdout, pal_path ? pal_path : "-");
+        printf(","
+            "\"frames\":8,\"final_frame_lit\":%ld,\"valid\":%s}\n",
+            lit,
             (ok && dump_ppm(pm, out_path)) ? "true" : "false");
         fflush(stdout);
 

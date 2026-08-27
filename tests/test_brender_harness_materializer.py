@@ -68,8 +68,24 @@ def _write_source_fixture(root):
                 "OBJS_ASM=\\",
                 "",
             ]),
-            encoding="utf-8",
-        )
+        encoding="utf-8",
+    )
+
+
+def _materialized_smoke_sources(tmp_path):
+    source = tmp_path / "source"
+    output = tmp_path / "harness"
+    _write_source_fixture(source)
+    materialize_brender_core_harness(source, output)
+    return output / "smoke"
+
+
+def _materialized_harness(tmp_path):
+    source = tmp_path / "source"
+    output = tmp_path / "harness"
+    _write_source_fixture(source)
+    materialize_brender_core_harness(source, output)
+    return output
 
 
 def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
@@ -299,7 +315,7 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         encoding="utf-8"
     )
     assert "BrPixelmapLoad(" in texfile
-    assert "BrPixelmapPixelGet(tex, tu, tv)" in texfile
+    assert "resolve_texel_colour(tex, tu, tv)" in texfile
     assert ".map.v[0]" in texfile
     assert "distinct_colours" in texfile
     shell = (output / "smoke" / "brender-core-game-shell.c").read_text(
@@ -375,6 +391,170 @@ def test_materialize_brender_core_harness_writes_out_of_tree_files(tmp_path):
         "STATIC=static",
         "ADD_RCS_ID=0",
     ]
+
+
+def test_material_resolve_scanline_edge_initializes_third_edge_w2(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    resolve = (smoke / "brender-core-material-resolve.c").read_text(encoding="utf-8")
+
+    assert "ex[2][0]=x2; ey[2][0]=y2; ew[2][0]=w2;" in resolve
+    assert "ex[2][0]=x2; ey[2][0]=y2; ew[2][1]=w2;" not in resolve
+
+
+def test_pixelmap_roundtrip_rejects_existing_workfile_and_cleans_only_owned_path(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    roundtrip = (smoke / "brender-core-pixelmap-roundtrip.c").read_text(
+        encoding="utf-8"
+    )
+
+    assert "path_exists(work_path)" in roundtrip
+    assert '"workfile-exists"' in roundtrip
+    assert "created_workfile = 1;" in roundtrip
+    assert "if (created_workfile) remove(work_path);" in roundtrip
+    assert (
+        roundtrip.replace("if (created_workfile) remove(work_path);", "").find(
+            "remove(work_path);"
+        )
+        == -1
+    )
+
+
+def test_material_file_audit_cleans_only_owned_default_workfile(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    material_file = (smoke / "brender-core-material-file-audit.c").read_text(
+        encoding="utf-8"
+    )
+
+    assert "path_exists(work_path)" in material_file
+    assert '\\"workfile_exists\\":true' in material_file
+    assert "created_workfile = 1;" in material_file
+    assert "if (created_workfile) remove(work_path);" in material_file
+    assert (
+        material_file.replace("if (created_workfile) remove(work_path);", "").find(
+            "remove(work_path);"
+        )
+        == -1
+    )
+
+
+def test_generated_receipts_escape_json_string_values(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+    generated_sources = [
+        smoke / "brender-core-asset-audit.c",
+        smoke / "brender-core-material-audit.c",
+        smoke / "brender-core-material-file-audit.c",
+        smoke / "brender-core-pixelmap-roundtrip.c",
+        smoke / "brender-core-material-resolve.c",
+        smoke / "brender-core-texture-file-sample.c",
+        smoke / "brender-core-game-shell.c",
+        smoke / "brender-core-softrend-render.c",
+    ]
+    unsafe_receipt_formats = [
+        '{"model":"%s"',
+        '{"file":"%s"',
+        '{"asset":"%s"',
+        ',"id":"%s"',
+        ',"roundtrip":"%s"',
+        ',"material":"%s"',
+        ',"material_id":"%s"',
+        ',"texture":"%s"',
+        ',"palette":"%s"',
+    ]
+
+    for path in generated_sources:
+        source = path.read_text(encoding="utf-8")
+        assert "static void json_write_string" in source
+        assert "case '\"':" in source
+        assert "case '\\\\':" in source
+        assert "ch < 0x20" in source
+        assert "\\\\u%04x" in source
+        for unsafe_format in unsafe_receipt_formats:
+            assert unsafe_format not in source
+
+
+def test_texture_rungs_resolve_indexed_texels_through_loaded_palette(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+    texture_sources = [
+        smoke / "brender-core-texture-file-sample.c",
+        smoke / "brender-core-game-shell.c",
+    ]
+
+    for path in texture_sources:
+        source = path.read_text(encoding="utf-8")
+        assert "resolve_texel_colour(tex, tu, tv)" in source
+        assert "case BR_PMT_INDEX_8:" in source
+        assert "if (tex->map != NULL)" in source
+        assert "BrPixelmapPixelGet(tex->map, 0, texel)" in source
+        assert (
+            "texel = BrPixelmapPixelGet(tex, tu, tv);\n"
+            "                r  = (int)(((texel >> 16) & 0xff) * shade);"
+        ) not in source
+
+
+def test_host_semantic_rejects_existing_workfile_and_cleans_only_owned_path(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+
+    host = (smoke / "brender-core-host-semantic.c").read_text(encoding="utf-8")
+
+    assert "path_exists(work_path)" in host
+    assert '\\"workfile_exists\\":true' in host
+    assert "created_workfile = 1;" in host
+    assert "if (created_workfile) remove(work_path);" in host
+    assert (
+        host.replace("if (created_workfile) remove(work_path);", "").find(
+            "remove(work_path);"
+        )
+        == -1
+    )
+
+
+def test_softrend_and_tia_sources_omit_investigation_diagnostics(tmp_path):
+    harness = _materialized_harness(tmp_path)
+
+    softrend = (harness / "smoke" / "brender-core-softrend-render.c").read_text(
+        encoding="utf-8"
+    )
+    pentprim = (harness / "compat" / "brender-pentprim-c-port.c").read_text(
+        encoding="utf-8"
+    )
+
+    for diagnostic in ["PLIB[", "MARK af-precomputed", "STATECHK"]:
+        assert diagnostic not in softrend
+    for diagnostic in ["TIA tw=", "pal[0]=", "TIADBG"]:
+        assert diagnostic not in pentprim
+
+
+def test_softrend_period_pipeline_emits_eight_orbit_frames(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+    softrend = (smoke / "brender-core-softrend-render.c").read_text(
+        encoding="utf-8"
+    )
+
+    assert "for (frame = 0; frame < 8; frame++)" in softrend
+    assert '\\"frames\\":8' in softrend
+    assert 'frame * 45' in softrend
+
+
+def test_softrend_period_pipeline_clears_colour_and_depth_each_orbit_frame(tmp_path):
+    smoke = _materialized_smoke_sources(tmp_path)
+    softrend = (smoke / "brender-core-softrend-render.c").read_text(
+        encoding="utf-8"
+    )
+    render_loop = softrend.split("for (frame = 0; frame < 8; frame++)", 1)[1]
+
+    assert "static void clear_pixelmap_storage" in softrend
+    assert "clear_pixelmap_storage(pm);" in render_loop
+    assert "BrPixelmapFill(depth, 0);" in render_loop
+    assert render_loop.index("clear_pixelmap_storage(pm);") < render_loop.index(
+        "BrZbSceneRender(world, camera_actor, pm, depth);"
+    )
+    assert render_loop.index("BrPixelmapFill(depth, 0);") < render_loop.index(
+        "BrZbSceneRender(world, camera_actor, pm, depth);"
+    )
+    assert "BrZbSceneRenderContinue(" not in render_loop
 
 
 def test_materializer_refuses_output_inside_source_checkout(tmp_path):

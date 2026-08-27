@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from engine_revival.brender_json_receipt import json_receipt_helpers_source
+from engine_revival.brender_texture_c_helpers import texture_colour_helpers_source
+
 
 def game_shell_source() -> str:
     """C source for the BRender portable-core game-shell rung.
@@ -37,6 +40,7 @@ def game_shell_source() -> str:
 #include <crtdbg.h>
 #endif
 #include <string.h>
+""" + json_receipt_helpers_source() + texture_colour_helpers_source() + r"""
 
 #define RENDER_W 320
 #define RENDER_H 240
@@ -110,7 +114,7 @@ static void fill_triangle_tex(br_pixelmap *pm, br_pixelmap *tex,
                 tv = (int)(vv * th); tv &= (th - 1);
                 if (tu < 0) tu += tw;
                 if (tv < 0) tv += th;
-                texel = BrPixelmapPixelGet(tex, tu, tv);
+                texel = resolve_texel_colour(tex, tu, tv);
                 r  = (int)(((texel >> 16) & 0xff) * shade);
                 g  = (int)(((texel >> 8) & 0xff) * shade);
                 bl = (int)((texel & 0xff) * shade);
@@ -316,12 +320,17 @@ teardown:
     if (pm != NULL) BrPixelmapFree(pm);
     if (BrEnd() != BRE_OK) return 20;
 
-    printf("{\"shell\":\"brender-core-game-shell\",\"state\":\"%s\","
-        "\"model\":\"%s\",\"texture\":\"%s\",\"palette\":\"%s\","
+    printf("{\"shell\":\"brender-core-game-shell\",\"state\":\"%s\",",
+        (state == SHELL_FAILED) ? "FAILED" : "TEARDOWN");
+    fputs("\"model\":", stdout);
+    json_write_string(stdout, model_path);
+    fputs(",\"texture\":", stdout);
+    json_write_string(stdout, tex_path);
+    fputs(",\"palette\":", stdout);
+    json_write_string(stdout, pal_path ? pal_path : "-");
+    printf(","
         "\"frames_requested\":%d,\"frames_written\":%d,"
         "\"pixels_sampled\":%ld,\"valid\":%s}\n",
-        (state == SHELL_FAILED) ? "FAILED" : "TEARDOWN",
-        model_path, tex_path, pal_path ? pal_path : "-",
         frames, frames_written, total_sampled,
         (state != SHELL_FAILED && frames_written == frames) ? "true" : "false");
 
