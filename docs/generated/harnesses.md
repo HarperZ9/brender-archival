@@ -4,4 +4,4 @@
 
 | Target | Harness | Status | Type | Build |
 |---|---|---|---|---|
-| brender | [brender-v132-portable-core-plan](harnesses/brender-v132-portable-core-plan.md) | portable-core-plotter-lane-passing | portable-build-plan | brender-v132-build-environment |
+| brender | [brender-v132-portable-core-plan](harnesses/brender-v132-portable-core-plan.md) | win32-period-pipeline-release-evidence-passing | portable-build-plan | brender-v132-build-environment |

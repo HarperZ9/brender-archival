@@ -1,0 +1,220 @@
+{
+  "archival_repo_base_sha": "323c679a70417bd00414f646891d734e664966bb",
+  "commands": [
+    "engine-revival materialize-brender-harness --source-root <BRender-v1.3.2 checkout at d88d0ed41122664b9781015b517db64353e16f19> --output-root <out-of-tree harness>",
+    "cmake -S <harness> -B <build> -A Win32 -DBRENDER_SOURCE_DIR=<BRender-v1.3.2 checkout>",
+    "cmake --build <build> --config Debug",
+    "ctest --test-dir <build> -C Debug --output-on-failure",
+    "brender_core_softrend_render.exe <dat/sph32.dat> <dat/earth.pix> <dat/std.pal> brender-core-softrend-render.ppm",
+    "python scripts/generate_brender_release_media.py --ppm-dir <verified PPM output directory> --output-dir gallery/release-20260827 --final-frame-lit <receipt metric>"
+  ],
+  "generated_date": "2026-08-27",
+  "inputs": [
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-00",
+      "nonblack_pixels": 21215,
+      "sha256": "520c41e25ea07d5558cb3ffd186e658094a0be3be85ecc269c4fe865b3e1ea33",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f0.ppm",
+      "unique_colours": 20,
+      "width": 320
+    },
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-01",
+      "nonblack_pixels": 26609,
+      "sha256": "fc49af27a8a9d2ed5e9d7539ae7daba5497fdbd776bc308972f0c93f51dca556",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f1.ppm",
+      "unique_colours": 26,
+      "width": 320
+    },
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-02",
+      "nonblack_pixels": 22851,
+      "sha256": "164f5325edae703032f1e7f5cbf6de5f68f5245b9f5bcd6d8852b7ddce54550a",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f2.ppm",
+      "unique_colours": 40,
+      "width": 320
+    },
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-03",
+      "nonblack_pixels": 16401,
+      "sha256": "f2f71e604c94bfece0b5e6fe5a6db1dcb1ed1074c661ea20c4a1bf163a585aeb",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f3.ppm",
+      "unique_colours": 40,
+      "width": 320
+    },
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-04",
+      "nonblack_pixels": 19683,
+      "sha256": "589de514c6cc023249cb8090474fa5c1897b1f64502d42a720089526df02eaff",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f4.ppm",
+      "unique_colours": 2,
+      "width": 320
+    },
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-05",
+      "nonblack_pixels": 27736,
+      "sha256": "355105c0653e116f25d524c32a9f74527254fbc3f437ec28a32c9abfafa7fda6",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f5.ppm",
+      "unique_colours": 2,
+      "width": 320
+    },
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-06",
+      "nonblack_pixels": 24289,
+      "sha256": "5473258f74a53f8d8caf4484b7aca8456c3a4ed8461fbd80fd053867ade07c0f",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f6.ppm",
+      "unique_colours": 3,
+      "width": 320
+    },
+    {
+      "bytes": 230415,
+      "height": 240,
+      "label": "period-pipeline-frame-07",
+      "nonblack_pixels": 19284,
+      "sha256": "99623942a07b6d951da95038747d86fbb33007c475a7f81b2c76b44ad5738aa1",
+      "source": "brender_core_softrend_render.exe output brender-core-softrend-render.ppm.softrend-f7.ppm",
+      "unique_colours": 5,
+      "width": 320
+    }
+  ],
+  "limitations": [
+    "Experimental textured TIA executes but black output remains blocked by a measured vertex-layout/state mismatch.",
+    "Native repeat executions on the Win32 Debug port can vary by a few edge pixels; this manifest pins the exact verified PPM source hashes used for public media.",
+    "The release media does not claim completed textured rendering, x64 readiness, production readiness, endorsement, or vendored upstream source/assets.",
+    "All raster media derive from verified render outputs or factual diagrams/cards; black diagnostic frames are excluded."
+  ],
+  "metric": {
+    "final_frame_lit": 19284,
+    "frames": 8,
+    "input_model": "dat/sph32.dat",
+    "input_palette": "dat/std.pal",
+    "input_texture": "dat/earth.pix",
+    "renderer": "softrend-float+pentprim-float",
+    "rung": "brender_core_softrend_render",
+    "valid": true
+  },
+  "outputs": [
+    {
+      "bytes": 45585,
+      "height": 630,
+      "path": "gallery/release-20260827/evidence-card.png",
+      "sha256": "1fee4b4aedbf9c202f6710a49d215217be2798fbb02e036b1f0c94b63b53a167",
+      "width": 1200
+    },
+    {
+      "bytes": 2339,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-00.png",
+      "sha256": "7b9da4cd507851bf56df2e238f7a8c8fb6ba662a2f77e5c0288d0a09d63666ed",
+      "width": 320
+    },
+    {
+      "bytes": 1683,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-01.png",
+      "sha256": "2c17b8fff47a981be28eb93c25bbb21b88bf1cc68094187e7fd57e7ea7de7316",
+      "width": 320
+    },
+    {
+      "bytes": 2157,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-02.png",
+      "sha256": "1ada0d42490e6509e1db14a40cc102931f6a0c97cd0d15df220ab43385913989",
+      "width": 320
+    },
+    {
+      "bytes": 2538,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-03.png",
+      "sha256": "a541d61a05511898458f7a6ba4408b607282457cc3e0230ecc19dcdd57b33c44",
+      "width": 320
+    },
+    {
+      "bytes": 1858,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-04.png",
+      "sha256": "bbfedea0104695c3f667168b9393758a86094644950e8b43de3c7011ae3a3928",
+      "width": 320
+    },
+    {
+      "bytes": 1363,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-05.png",
+      "sha256": "89f714524c4ea5be650c7d5704d05bbb254c6e71d4ce7750418a88e2a44d71dd",
+      "width": 320
+    },
+    {
+      "bytes": 1762,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-06.png",
+      "sha256": "dca01c297f04fadd2c188f5b3727363a3091f899bd63d5a060b4114e776837a0",
+      "width": 320
+    },
+    {
+      "bytes": 2227,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-orbit-07.png",
+      "sha256": "026c8138565485e06d7392d9f87e0631f64c7aae51c5237a3fe77bf17ad249c9",
+      "width": 320
+    },
+    {
+      "bytes": 28348,
+      "height": 700,
+      "path": "gallery/release-20260827/period-pipeline-orbit-contact-sheet.png",
+      "sha256": "2162bfacf2832a695c5f59e5c93f2271c37235395bfb055b04e779a63822b4db",
+      "width": 1416
+    },
+    {
+      "bytes": 34863,
+      "height": 720,
+      "path": "gallery/release-20260827/period-pipeline-poster.png",
+      "sha256": "da5e2ea6c642f252863497fe30f29a0eb269daa0d713dfc9483ab7ebe665eadb",
+      "width": 960
+    },
+    {
+      "bytes": 2227,
+      "height": 240,
+      "path": "gallery/release-20260827/period-pipeline-still.png",
+      "sha256": "026c8138565485e06d7392d9f87e0631f64c7aae51c5237a3fe77bf17ad249c9",
+      "width": 320
+    },
+    {
+      "bytes": 49789,
+      "height": 720,
+      "path": "gallery/release-20260827/pipeline-diagram.png",
+      "sha256": "62ec7b6923c2795b17ad8973a0dc27db198e190d0ae90433f9723eaabf560881",
+      "width": 1280
+    },
+    {
+      "bytes": 32850,
+      "height": 596,
+      "path": "gallery/release-20260827/progress-sequence.png",
+      "sha256": "b964790d3a8ed01679831011b78ca8389c5db5adb66577e9a6d465d3133e2e2c",
+      "width": 1412
+    },
+    {
+      "bytes": 44600,
+      "height": 630,
+      "path": "gallery/release-20260827/social-card-1200x630.png",
+      "sha256": "feb6ed62eb599025943e02d8fec065c07b5198090ff04cf4b5023eadb012de39",
+      "width": 1200
+    }
+  ],
+  "schema": "brender-archival.release-media-provenance/v1",
+  "source_attribution": "Argonaut Software BRender public MIT snapshot via foone/BRender-v1.3.2; referenced only, never vendored.",
+  "source_sha": "d88d0ed41122664b9781015b517db64353e16f19"
+}

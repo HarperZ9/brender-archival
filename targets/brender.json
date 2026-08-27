@@ -15,5 +15,5 @@
   "restricted_status": "none-known",
   "revival_lane": "critical-edition",
   "rights_posture": "open",
-  "summary": "Open BRender source releases and historical SDK references are now tracked as the first critical-edition revival lane."
+  "summary": "Open BRender source releases and historical SDK references anchor the first critical-edition revival lane, now verified through a Win32 21-target harness and bounded period-pipeline pixel output."
 }

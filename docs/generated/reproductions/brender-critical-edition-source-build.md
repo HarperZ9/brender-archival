@@ -6,38 +6,41 @@
 |---|---|
 | Target | brender |
 | Type | source-build |
-| Status | planned |
+| Status | verified-win32-release-boundary |
 
 ## Public Notes
 
-First public reproduction recipe for turning BRender from archived source records into a repeatable critical-edition build track.
+The BRender source-build reproduction is verified for the public v1.3.2 Win32 harness boundary. It materializes the harness from the pinned MIT snapshot, builds under Visual Studio Win32, passes native CTest 21/21, and produces current public media from nonblack period-pipeline output. The reproduction does not vendor source/assets and does not claim completed textured TIA rendering, x64 readiness, production readiness, or endorsement.
 
 ## Environment
 
 - clean working checkout outside the public metadata repo
-- public BRender v1.3.2 source branch
-- public BRender 3D Movie Maker source branch
-- period-appropriate DOS/Windows C toolchain or documented compatibility layer
+- public BRender v1.3.2 source checkout pinned at d88d0ed41122664b9781015b517db64353e16f19
+- Python 3.11+ with engine-revival test extras
+- CMake and Visual Studio generator capable of a Win32 C target
+- out-of-tree harness and build directories
 - local build log and dependency manifest captured as derived metadata
 
 ## Steps
 
-- mirror the public source branches listed in the BRender artifact records
-- record source commit identifiers, archive URLs, and local snapshot hashes
-- identify compiler, SDK, and platform assumptions from repository docs and source tree layout
-- attempt a clean build of the v1.3.2 branch without proprietary inputs
-- attempt a clean build of the 3D Movie Maker branch without proprietary inputs
-- record build commands, compiler diagnostics, missing dependencies, and successful outputs
-- promote repeatable commands into the BRender critical-edition packet
+- clone or locate the public BRender v1.3.2 snapshot at d88d0ed41122664b9781015b517db64353e16f19
+- install this repository with test extras
+- run engine-revival materialize-brender-harness with the public checkout as source-root and an out-of-tree output-root
+- configure with cmake -S <harness> -B <build> -A Win32 -DBRENDER_SOURCE_DIR=<public checkout>
+- build with cmake --build <build> --config Debug
+- run ctest --test-dir <build> -C Debug --output-on-failure
+- convert verified nonblack period-pipeline PPM frames into release media
+- run scripts/package_brender_release.py with the same public source checkout and an output staging directory
 
 ## Expected Outputs
 
 - source snapshot manifest
-- build environment manifest
-- compiler transcript
-- dependency gap list
-- sample binary or library output when the public source builds
-- critical-edition reproduction notes
+- out-of-tree CMake harness
+- Win32 Debug build transcript
+- CTest transcript for 21 targets
+- period-pipeline PPM frames from sph32.dat
+- public-safe PNG media and provenance manifest
+- staged release package with SHA256SUMS.txt and package-receipt.json
 
 ## Artifacts
 

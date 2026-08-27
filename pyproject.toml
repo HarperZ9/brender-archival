@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "engine-revival"
-version = "0.1.0"
+version = "0.1.1"
 description = "brender-archival: revival of Argonaut BRender and the tooling spine for reviving historical rendering and game engines."
 readme = "README.md"
 requires-python = ">=3.11"

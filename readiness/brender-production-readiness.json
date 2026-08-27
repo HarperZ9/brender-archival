@@ -1,116 +1,70 @@
 {
-    "blockers":  [
-                     "RESOLVED 2026-08-24: ZB pipeline renders pixels. final_frame_lit=22884 valid=true (sph32.dat, RGB_888+DEPTH_16). Fixes: explicit BrZbSceneRenderBegin/Continue/Add/End sequence; BrPrimitiveLibraryFind+BrRendererBegin binds pentprim plib; BrMaterialUpdate(BR_MATU_ALL); camera at +z (this snapshot is -Z-forward per Matrix4PerspectiveNew assert + measured m2s w-row).",
-                     "TEXTURED PATH REMAINS STUB: match.c selects TriangleRenderPIZ2I_RGB_888 (tex=PMT_NONE because material colour_map buffer does not reach prim.colour_map.buffer without a stored-state buffer registration). TIA trapezoid kernel is a flat-fill placeholder; real per-pixel perspective texture sampling not yet implemented. Palette-lookup path untested.",
-                     "DEPTH TEST DISABLED in the C I-kernel (writes always, z recorded but not compared) to land the first-pixels milestone; restoring a correct compare against the 16-bit depth convention (SZ scale -32767, unsigned remap) is follow-up work.",
-                     "x64 pointer-width port remains multi-site debugger work; harness guard verified"
-                 ],
-    "build_status":  "complete",
-    "build_ids":  [
-                      "brender-v132-build-environment"
-                  ],
-    "evidence":  [
-                     "2026-08-22 lit-textured attempt: directional light added, material-\u003eflags = BR_MATF_LIGHT|BR_MATF_SMOOTH, auto-frame verified s=1.567 centre near origin; BrZbSceneRender executed 4 frames without crash; raw-buffer metric honestly reports 0 non-black pixels; transcript builds/brender-v132-lit-textured-execution.log",
-                     "2026-08-22 auto-framing milestone: vertex-bounds centre+radius computed BEFORE BrModelUpdate(BR_MODU_ALL) which nulls vertices; scale s=1.567 computed correctly; four orbit frames rendered through BrZbSceneRender without crash into RGB_888+DEPTH_16; raw-buffer ground-truth metric confirms frames currently empty (0 non-black pixels) Ã¢â‚¬â€ root cause narrowed to material/texture state selection for pentprim block dispatch, not architecture",
-                     "2026-08-22 full-stack linkage achieved: core_float + softrend_float + pentprim_float (period OBJS_C+XOBJS_C plus 206 generated linkage stubs for asm-only kernels) link and execute; ctest 21/21 accounting expected-fail (transcript builds/brender-v132-fullstack-linked.log). The primitive-library chain is proven end to end: device registration, BrPrimitiveLibraryFind, rendererNew, facility discovery. Remaining work is exactly 206 pixel-emitting kernel bodies, inventoried in builds/pentprim-c-port-surface.txt",
-                     "2026-08-22 root cause traced by execution+source: rendfcty.c rendererNew -\u003e BrPrimitiveLibraryFind fails (no primitive library device); pentprim inventory counted from pinned makefile (OBJS_C=8, OBJS_ASM=60); transcript builds/brender-v132-softrend-integration-status.log",
-                     "2026-08-22 twenty-one-target ladder: 20/20 passing plus softrend rung registered as expected-fail; transcript builds/brender-v132-ctest-twentyone-targets.log. Softrend status: library builds clean from pinned OBJS_C, links against core float, device registers via BrDevAddStatic, BrRendererFacilityFind(NULL dest) succeeds; remaining seam is destination-less BrV1dbRendererBegin access-violating inside softrend facility discovery (period apps paired softrend with display-driver pixelmaps)",
-                     "2026-08-22 softrend lane: full OBJS_C set compiles under MSVC Win32 with zero errors; link succeeds against core float lib with three documented float-build fallback stubs (subdivision kernels unreachable: no primitive block sets BR_PRIMF_SUBDIVIDE anywhere in the pinned tree); transcript builds/brender-v132-softrend-integration-status.log",
-                     "2026-08-22 ctest transcript: 20/20 passed, 0 failed, 1.59s total (builds/brender-v132-ctest-twenty-rungs.log); includes new host/memory semantic rung closing the semantic-tests blocker. Findings: BrMemAllocateAlign declared but unimplemented in v1.3.2 FLOAT core; BrMemInquire(BR_MEMORY_APPLICATION) legitimately returns 0 pre-allocation under the default allocator",
-                     "2026-08-22 pinned checkout cloned to local temp and verified at d88d0ed41122664b9781015b517db64353e16f19; harness materialized (25 files) and full FLOAT core plus nineteen CTest targets built clean under VS 2022 x86 toolchain",
-                     "2026-08-22 ctest transcript: 19/19 passed, 0 failed, 1.59s total (builds/brender-v132-ctest-nineteen-rungs.log); asset/material/palette audits, native BrPixelmapSave round trip, material-to-face resolution rendering, file-texture sampling with palette attach, and the deterministic game-shell frame loop all verified by execution",
-                     "2026-07-03 local public checkout: git rev-parse HEAD returned d88d0ed41122664b9781015b517db64353e16f19",
-                     "2026-07-03 source tree probe counted 332 C files, 350 headers, and 68 make/mak/mk files",
-                     "2026-07-03 toolchain probe found cmake.exe but not make, nmake, cl, or gcc in PATH",
-                     "2026-07-03 portable core harness plan recorded root, core, and drivers make topology",
-                     "2026-07-03 materializer command added for out-of-tree BRender core CMake scaffold",
-                     "2026-07-03 materializer smoke run wrote CMakeLists.txt, README.md, cmake/brender-core-sources.cmake, and harness-manifest.json outside the source checkout",
-                     "2026-07-03 CMake configure succeeded with Visual Studio 18 2026 and MSVC 19.50.35721.0 in an external build tree",
-                     "2026-07-03 brender_core_float build reached compilation and failed on legacy inline x86 assembly in inc/mscifix.h under x64 MSVC",
-                     "2026-07-03 materializer added BASED_FIXED=0, INLINE_FIXED=0, STATIC=static, DEBUG=0, PARANOID=0, EVAL=0, and ADD_RCS_ID=0 to mirror period release CFLAGS",
-                     "2026-07-03 period-defines build attempt moved past mscifix.h and STATIC failures, then failed because module-wide C file globbing included files outside the period OBJS_C lists",
-                     "2026-07-03 explicit-source harness configured with Visual Studio 18 2026 and built brender_core_float.lib with MSVC 19.50.35721.0 in an external build tree",
-                     "2026-07-03 brender_core_smoke target added to the out-of-tree harness; smoke source exercises BrVector3SetFloat and BrScalarToFloat without framework startup",
-                     "2026-07-03 cmake --build completed target brender_core_smoke with exit 0 and produced Debug\\brender_core_smoke.exe",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 1/1 brender_core_smoke test",
-                     "2026-07-03 framework startup target added with portable core and host compatibility stubs for the period ASM boundary",
-                     "2026-07-03 unguarded x64 startup executable linked but crashed with 0xC0000005, so the materialized harness now requires a 32-bit C target",
-                     "2026-07-03 guarded Visual Studio Win32 configure succeeded, brender_core_smoke.exe and brender_core_startup_smoke.exe direct-ran with exit 0, and CTest passed 2/2 cases",
-                     "2026-07-03 verified the pure-C render path: memory pixelmap allocate, fill, line, pixelSet, and pixelQuery in core/pixelmap/pmmem.c dispatch through _MemPixelSet/_MemFill without the assembly softrend driver",
-                     "2026-07-03 confirmed the FLOAT build resolves BR_SIN/BR_COS to libc sin/cos in inc/angles.h, so BrMatrix4Perspective links without an engine sine table",
-                     "2026-07-03 brender_core_render_smoke target added; allocates a BR_PMT_RGB_888 memory pixelmap, builds a BrMatrix4Perspective projection, transforms a unit cube through BrMatrix4Mul and BrMatrix4ApplyP, and draws twelve edges with BrPixelmapLine",
-                     "2026-07-03 brender_core_render_smoke.exe direct-ran with exit 0, self-verified fill, pixel set/get round-trip, red diagonal endpoints, eight cube vertices projecting in front of the camera, and 1051 lit pixels, then wrote a 320x240 PPM (230415 bytes)",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 3/3 cases including brender_core_render_smoke",
-                     "2026-07-03 verified BrBegin auto-starts the v1db scene database (explicit BrV1dbBegin returned BRE_ALLREADY_ACTIVE) and BrEnd performs the matching teardown",
-                     "2026-07-03 brender_core_scene_smoke target added; builds a world/camera/model actor tree, prepares a br_model cube with BrModelUpdate under BR_MODF_UPDATEABLE (engine computed bounding radius 1.732), and projects it with BrActorToScreenMatrix4",
-                     "2026-07-03 brender_core_scene_smoke.exe direct-ran with exit 0, projected all eight cube vertices inside the viewport, drew twelve triangle faces, produced 1382 lit pixels, and wrote a 320x240 PPM",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 4/4 cases including brender_core_scene_smoke",
-                     "2026-07-03 brender_core_fill_smoke target added; reuses the scene projection, computes per-face world-space normals via BrMatrix34ApplyP, flat-shades by the absolute normal-light dot, and fills triangles with a portable C scanline rasterizer composited back-to-front",
-                     "2026-07-03 brender_core_fill_smoke.exe direct-ran with exit 0, produced a solid flat-shaded cube with 8509 lit pixels across three distinct grey levels, and wrote a 320x240 PPM",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 5/5 cases including brender_core_fill_smoke",
-                     "2026-07-03 brender_core_depth_smoke target added; a per-pixel float depth buffer over the rasterizer renders two overlapping cubes with correct per-pixel occlusion (near drawn first rejected 4391 far-cube fragments)",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 6/6 cases including brender_core_depth_smoke",
-                     "2026-07-03 brender_core_texture_smoke target added; perspective-correct texture mapping (u/w,v/w,1/w interpolation) samples a checkerboard pixelmap per pixel, depth-tested and shade-modulated, both texture colours visible across the cube",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 7/7 cases including brender_core_texture_smoke",
-                     "2026-07-03 verified BrModelLoad needs only BrBegin (static chunk table, stdio filesystem via core/std/stdfile.c); loaded models carry populated vertices/faces with no BrModelUpdate needed",
-                     "2026-07-03 brender_core_model_smoke target added; loads real period models from native .dat datafiles and renders them solid, flat-shaded and depth-buffered",
-                     "2026-07-03 rendered period assets read in place from the public checkout: duck.dat (74v/108f), teapot.dat (821v/1560f), skull.dat (702v/1243f), torus.dat (128v/256f) all render correctly",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 8/8 cases including brender_core_model_smoke",
-                     "2026-07-03 brender_core_material_smoke target added; textures a loaded model (sph32.dat, 525v/960f) through its own br_vertex.map UV coordinates, perspective-correct and depth-buffered (20816 lit pixels, 11 colours)",
-                     "2026-07-03 recorded a period .pix decode follow-up: indexed .pix carry no embedded palette (need external .pal) and 15-bit .pix load partially through BrPixelmapLoad",
-                     "2026-07-03 ctest --test-dir external build tree -C Debug --output-on-failure passed 9/9 cases including brender_core_material_smoke",
-                     "2026-07-03 brender_core_multimodel_smoke target added; BrModelLoadMany loaded 12 parts of coupe.dat and depth-composited them (658 faces, 5562 lit); CTest 10/10",
-                     "2026-07-03 brender_core_gouraud_smoke target added; per-vertex-normal smooth shading of sph32.dat renders 194 grey levels vs ~3 flat; CTest 11/11",
-                     "2026-07-03 x64 attempt: with INLINE_FIXED=0 the FLOAT core + startup smoke compiled and linked clean on an -A x64 target, but brender_core_startup_smoke.exe segfaulted (0xC0000005); overriding core/fw/resource.c (ALIGN macro to pointer-width size_t) and core/fw/loader.c (image-relocation casts to uintptr_t) out-of-tree still faulted at startup, confirming a systemic multi-site 32-bit-pointer-field port",
-                     "2026-07-03 brender_core_plotter_smoke target added (Telos Engine plotter lane): hidden-line-removed, crease-filtered SVG plots of teapot/torus/skull/duck emitted from the engine scene-graph projection; CTest 12/12"
-                 ],
-    "flagship_score":  86,
-    "harness_ids":  [
-                        "brender-v132-portable-core-plan"
-                    ],
-    "attempt_ids":  [
-                        "brender-v132-harness-materializer-smoke",
-                        "brender-v132-cmake-configure",
-                        "brender-v132-core-build-attempt",
-                        "brender-v132-period-defines-build-attempt",
-                        "brender-v132-explicit-sources-core-build",
-                        "brender-v132-vector-smoke-runtime",
-                        "brender-v132-framework-startup-smoke-win32",
-                        "brender-v132-portable-core-render-smoke",
-                        "brender-v132-portable-core-scene-smoke",
-                        "brender-v132-portable-core-fill-smoke",
-                        "brender-v132-portable-core-depth-smoke",
-                        "brender-v132-portable-core-texture-smoke",
-                        "brender-v132-portable-core-model-smoke",
-                        "brender-v132-portable-core-material-smoke",
-                        "brender-v132-portable-core-multimodel-smoke",
-                        "brender-v132-portable-core-gouraud-smoke",
-                        "brender-v132-portable-core-plotter-smoke"
-                    ],
-    "id":  "brender-production-readiness",
-    "modernization_status":  "softrend-zb-live",
-    "next_actions":  [
-                         "Register the earth.pix INDEX_8 map as a renderer buffer so match.c sees tex=BR_PMT_INDEX_8 and selects the textured TIA family.",
-                         "Implement real TrapezoidRenderPIZ2TIA_RGB_888: perspective-correct u/v sampling from work.awsl setup with palette lookup into RGB_888.",
-                         "Restore depth comparison in TriangleRenderPIZ2I_RGB_888 once SZ sign/scale convention is pinned by measurement.",
-                         "Optional: x64 port of core for pointer-width parity."
-                     ],
-    "packaging_status":  "staged-release-packager-shipped",
-    "public_notes":  "Completion state after the execution-verified sprint: twenty-target CTest ladder green (20/20, 1.59s) under VS 2022 Win32 against pinned d88d0ed4; R4 closed in substance; R5 shell lifecycle proven; host/memory semantics proven; staged-release packager shipped with digest receipts. Remaining to full completion, honestly scoped: (1) softrend period rendering requires porting seven x86 assembly geometry kernels (face_386, v1m_386, gen_386, geometry, subdiv, cull, magicsym) that have no C twins in the pinned tree; (2) x64 pointer-width port is multi-site debugger work and the harness correctly guards non-Win32 targets until then; (3) interactive viewer and real display/input drivers bind onto the proven shell lifecycle.",
-    "readiness_stage":  "stage-5-rendering",
-    "reproduction_ids":  [
-                             "brender-critical-edition-source-build"
-                         ],
-    "runtime_status":  "rendering-pixels",
-    "snapshot_ids":  [
-                         "brender-v132-main-head",
-                         "brender-3dmm-main-head"
-                     ],
-    "source_ids":  [
-                       "foone-brender-v132",
-                       "foone-brender-3dmm",
-                       "blazingrender-index"
-                   ],
-    "target_id":  "brender",
-    "test_status":  "plotter-lane-passing"
+  "blockers": [
+    "Experimental textured TIA/PIZ2TIA execution reaches the kernel but black output remains blocked by a measured vertex-layout/state mismatch; completed textured period rendering is not claimed.",
+    "x64 pointer-width portability remains unclaimed; the verified harness boundary is Visual Studio Win32.",
+    "Assembly-only pentprim kernels outside the exercised RGB_888 ZB and experimental TIA path remain linkage stubs.",
+    "MSVC warning output is warning-only in the verified Win32 build, but not yet reduced to a zero-warning portability claim."
+  ],
+  "build_status": "complete",
+  "build_ids": [
+    "brender-v132-build-environment"
+  ],
+  "evidence": [
+    "2026-08-27 verified release boundary: from public BRender v1.3.2 snapshot d88d0ed41122664b9781015b517db64353e16f19, the worktree-local materializer produced a Win32 CMake harness, MSVC built Debug successfully with warnings, and CTest passed 21/21.",
+    "2026-08-27 period-pipeline receipt: brender_core_softrend_render rendered sph32.dat through softrend-float plus pentprim-float, emitted 8 frames, and reported final_frame_lit=19284 valid=true for the release media source run.",
+    "2026-08-27 release hardening: valid PR #3 fixes were selectively ported and reverified on current main: material-resolve third-edge ew[2][0], caller-owned workfile protection, shared generated-C JSON string escaping, INDEX_8 palette resolution, and stale diagnostic removal.",
+    "2026-08-27 release media: gallery/release-20260827/provenance-manifest.json records sanitized commands, upstream source attribution, source SHA, input/output hashes, dimensions, nonblack metrics, and explicit textured-TIA limitations.",
+    "2026-08-24 period ZB pipeline milestone: BrZbSceneRender plus explicit primitive-library binding produced nonblack pixels from the upstream sph32.dat model.",
+    "2026-08-22 twenty-target ladder: host/memory semantics, asset/material/pixelmap audits, material resolution, file texture sampling, game shell, plotter, and portable render rungs were green under Win32 CTest.",
+    "2026-07-03 initial portable core ladder: vector, framework startup, wireframe, scene graph, solid fill, depth buffer, texture, model, material, multimodel, Gouraud, and plotter rungs established the public harness baseline."
+  ],
+  "flagship_score": 88,
+  "harness_ids": [
+    "brender-v132-portable-core-plan"
+  ],
+  "attempt_ids": [
+    "brender-v132-harness-materializer-smoke",
+    "brender-v132-cmake-configure",
+    "brender-v132-core-build-attempt",
+    "brender-v132-period-defines-build-attempt",
+    "brender-v132-explicit-sources-core-build",
+    "brender-v132-vector-smoke-runtime",
+    "brender-v132-framework-startup-smoke-win32",
+    "brender-v132-portable-core-render-smoke",
+    "brender-v132-portable-core-scene-smoke",
+    "brender-v132-portable-core-fill-smoke",
+    "brender-v132-portable-core-depth-smoke",
+    "brender-v132-portable-core-texture-smoke",
+    "brender-v132-portable-core-model-smoke",
+    "brender-v132-portable-core-material-smoke",
+    "brender-v132-portable-core-multimodel-smoke",
+    "brender-v132-portable-core-gouraud-smoke",
+    "brender-v132-portable-core-plotter-smoke"
+  ],
+  "id": "brender-production-readiness",
+  "modernization_status": "softrend-zb-live-tia-executes-blocked",
+  "next_actions": [
+    "Resolve the measured TIA vertex-layout/state mismatch before making any completed textured-period-render claim.",
+    "Audit and reduce the remaining MSVC warning set, especially compatibility redefinitions at the pentprim boundary.",
+    "Continue replacing assembly-only linkage stubs with measured C ports only where a test reaches the exact kernel.",
+    "Optional: x64 pointer-width port after the Win32 release boundary is preserved."
+  ],
+  "packaging_status": "staged-release-packager-with-media-provenance",
+  "public_notes": "Current public boundary, verified on 2026-08-27: the BRender archival materializer builds a Visual Studio Win32 harness from the public MIT v1.3.2 snapshot pinned at d88d0ed41122664b9781015b517db64353e16f19. Full native CTest passes 21/21, including the period-pipeline rung. That rung renders real pixels through softrend-float plus pentprim-float, emits an 8-frame sphere orbit, and reports final_frame_lit=19284 valid=true for the release media source run. Release hardening also covers generated JSON escaping, safe caller-owned workfile handling, material-resolve edge initialization, indexed-pixel palette lookup, and removal of stale investigation diagnostics. Native repeat executions on the Win32 Debug port can vary by a few edge pixels, so release media pins exact verified PPM source hashes. The experimental textured TIA path executes but still produces black output because of a measured vertex-layout/state mismatch; textured rendering, x64 readiness, production readiness, endorsement, and vendored upstream source/assets are not claimed.",
+  "readiness_stage": "stage-5-rendering-release-evidence",
+  "reproduction_ids": [
+    "brender-critical-edition-source-build"
+  ],
+  "runtime_status": "rendering-pixels",
+  "snapshot_ids": [
+    "brender-v132-main-head",
+    "brender-3dmm-main-head"
+  ],
+  "source_ids": [
+    "foone-brender-v132",
+    "foone-brender-3dmm",
+    "blazingrender-index"
+  ],
+  "target_id": "brender",
+  "test_status": "period-pipeline-release-hardening-passing"
 }
