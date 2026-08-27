@@ -22,6 +22,12 @@ SOURCE_SHA = "d88d0ed41122664b9781015b517db64353e16f19"
 BASE_SHA = "323c679a70417bd00414f646891d734e664966bb"
 FRAME_PREFIX = "brender-core-softrend-render.ppm.softrend-f"
 OUT_DIR = Path("gallery/release-20260827")
+PIPELINE_BOUNDARY_TEXT = (
+    "period pipeline renders pixels; textured TIA execution is not completed "
+    "rendering. No vendored upstream source/assets, no endorsement claim, no "
+    "x64/production-readiness claim."
+)
+PIPELINE_BOUNDARY_TEXT_BOX = (205, 528, 1085, 624)
 
 
 @dataclass(frozen=True)
@@ -79,6 +85,38 @@ def _centered(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], text: s
     x = box[0] + (box[2] - box[0] - width) // 2
     y = box[1] + (box[3] - box[1] - height) // 2
     draw.text((x, y), text, font=font, fill=fill)
+
+
+def _wrap_lines(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.ImageFont, max_width: int) -> list[str]:
+    lines: list[str] = []
+    current = ""
+    for word in text.split():
+        candidate = word if current == "" else f"{current} {word}"
+        bbox = draw.textbbox((0, 0), candidate, font=font)
+        if current and (bbox[2] - bbox[0]) > max_width:
+            lines.append(current)
+            current = word
+        else:
+            current = candidate
+    if current:
+        lines.append(current)
+    return lines
+
+
+def _wrapped_text(
+    draw: ImageDraw.ImageDraw,
+    box: tuple[int, int, int, int],
+    text: str,
+    size: int,
+    fill: str,
+    *,
+    line_gap: int = 8,
+) -> None:
+    font = _font(size)
+    x0, y0, x1, _ = box
+    line_height = draw.textbbox((0, 0), "Ag", font=font)[3]
+    for index, line in enumerate(_wrap_lines(draw, text, font, x1 - x0)):
+        draw.text((x0, y0 + index * (line_height + line_gap)), line, font=font, fill=fill)
 
 
 def _draw_arrow(draw: ImageDraw.ImageDraw, start: tuple[int, int], end: tuple[int, int], fill: str) -> None:
@@ -190,10 +228,9 @@ def _pipeline_diagram(out_dir: Path) -> None:
             _centered(draw, (box[0] + 12, box[1] + 18 + offset * 30, box[2] - 12, box[1] + 50 + offset * 30), line, 20, "#f6f1e8", bold=offset == 0)
     for start_x in (310, 620, 930):
         _draw_arrow(draw, (start_x + 20, 270), (start_x + 70, 270), "#75d18a")
-    draw.rounded_rectangle((170, 470, 1110, 598), radius=18, fill="#151b21", outline="#7e704e", width=2)
+    draw.rounded_rectangle((170, 470, 1110, 642), radius=18, fill="#151b21", outline="#7e704e", width=2)
     _text(draw, (205, 500), "Release boundary:", 24, "#f6f1e8", bold=True)
-    _text(draw, (420, 502), "period pipeline renders pixels; textured TIA execution is not completed rendering.", 22, "#d8c7a3")
-    _text(draw, (205, 545), "No vendored upstream source/assets, no endorsement claim, no x64/production-readiness claim.", 20, "#d8c7a3")
+    _wrapped_text(draw, PIPELINE_BOUNDARY_TEXT_BOX, PIPELINE_BOUNDARY_TEXT, 18, "#d8c7a3")
     _save_png(image, out_dir / "pipeline-diagram.png")
 
 
