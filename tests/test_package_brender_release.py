@@ -12,6 +12,24 @@ import pytest
 from scripts.package_brender_release import package_release
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+PRIVATE_PATH_MARKERS = tuple(
+    f"C:{separator}{root}"
+    for root in ("Use" + "rs", "de" + "v")
+    for separator in ("/", "\\")
+)
+TEXT_ENCODINGS = ("utf-8", "utf-8-sig", "utf-16", "utf-16-le")
+
+
+def _decode_staged_text(path: Path) -> str | None:
+    payload = path.read_bytes()
+    for encoding in TEXT_ENCODINGS:
+        try:
+            text = payload.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+        if "\x00" not in text:
+            return text
+    return None
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_brender_harness_materializer import _write_source_fixture
@@ -73,3 +91,26 @@ def test_package_replaces_previous_staging(tmp_path):
     package_release(source, tmp_path)
 
     assert not stale.exists()
+
+
+def test_package_stages_no_private_absolute_paths_in_text_files(tmp_path):
+    source = tmp_path / "source"
+    _write_source_fixture(source)
+    output_root = tmp_path / "dist"
+
+    package_release(source, output_root)
+    output = output_root / "brender-revival-release"
+
+    violations: list[str] = []
+    for path in sorted(output.rglob("*")):
+        if not path.is_file():
+            continue
+        text = _decode_staged_text(path)
+        if text is None:
+            continue
+        for marker in PRIVATE_PATH_MARKERS:
+            if marker in text:
+                relative = path.relative_to(output).as_posix()
+                violations.append(f"{relative} contains {marker}")
+
+    assert violations == []
