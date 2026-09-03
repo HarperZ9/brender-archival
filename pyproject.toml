@@ -15,6 +15,7 @@ dependencies = []
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
+media = ["Pillow>=10"]
 
 [project.scripts]
 engine-revival = "engine_revival.cli:main"

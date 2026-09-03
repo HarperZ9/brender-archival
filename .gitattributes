@@ -1,0 +1,2 @@
+docs/art/* text eol=lf
+docs/art/*.svg -linguist-detectable

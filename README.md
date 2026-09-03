@@ -1,5 +1,7 @@
 # brender-archival
 
+![brender-archival, a revival archive that shows its work. Records first, then a build ladder anyone can run again.](docs/art/brender-archival-header.svg)
+
 Reviving Argonaut's BRender, and every other lost rendering and game engine,
 one at a time. This is the public revival archive: reproducible harnesses,
 verified build ladders, bounded release evidence, and public-safe metadata. It
@@ -32,6 +34,8 @@ The experimental textured TIA path executes, but black output remains blocked by
 a measured vertex-layout/state mismatch. This repository does not claim
 completed textured rendering, x64 readiness, production readiness, endorsement,
 or vendored upstream source/assets.
+
+![Eight stages taking pinned upstream source to a running ladder: pin, materialize, compat, configure, build, ladder, capture, package. One upstream commit of the public BRender v1.3.2 source is named in the record. The materializer writes thirty-one files out of tree, none of them copied from upstream: the CMake project, the compatibility C ports that stand in for the period assembly kernels, and the smoke programs. CMake configures a Visual Studio Win32 target against the named source directory, and the FLOAT core is built from eight upstream directories under nine compile definitions. Twenty-one targets then run under CTest, twenty from the generated project plus the period-pipeline rung that binds softrend and pentprim into one process. Frames and transcripts are captured, and the packager hashes everything it stages. The transcript recorded on the twenty-seventh of August 2026 reports twenty-one of twenty-one passed with none failed. Three outcomes: the ladder renders a nonblack orbit, some assembly kernels remain linkage stubs, and a completed textured period render is not claimed.](docs/art/ladder-lane.svg)
 
 | Rung | What it proves |
 |---|---|
@@ -123,6 +127,8 @@ the period asset library.
 
 ## Archive workflow
 
+![Eight stages taking a lead from an empty directory to a published page: seed, record, schema, validate, rights, audit, index, publish. The seed command lays out one directory per record kind, twelve of them, covering targets, artifacts, sources, tasks, milestones, accessions, reproductions, snapshots, readiness, builds, harnesses and attempts. Each finding becomes one JSON file. Twelve schemas name the fields a record of that kind must carry, and the validate command reports any record that omits one. Every artifact carries a redistribution status and an access level, and the audit command refuses the combination of restricted material with a publishable level. The index command renders the twenty-three engine targets as one table, and the report command writes the generated pages out of the corpus. Three hundred and forty-two records sit on disk across the twelve kinds, and the audit returns no messages against them on this checkout. Three outcomes: a public record whose page regenerates from it, a reference held as metadata only, or a holding that is not held at all.](docs/art/archive-lane.svg)
+
 ```powershell
 python -m pip install -e ".[test]"
 engine-revival seed
@@ -136,6 +142,8 @@ python -m pytest
 Findings live as structured JSON records first (`readiness/`, `harnesses/`,
 `attempts/`, `reproductions/`, `sources/`, `targets/`, ...), and generated pages
 under `docs/generated/` are views over that corpus.
+
+![A table of twelve rows: what is in the archive, how many of it there are, and where each number is read from. Twelve record kinds are named in RECORD_DIRS, and three hundred and forty-two JSON records sit across their directories, with sources leading at seventy-eight and artifacts and accessions at sixty each. Twenty-three engine targets span fifteen categories: eight carry curated public sources and fifteen carry curated public metadata. Sixty-two of the seventy-eight sources are rated high confidence and sixteen moderate. Five artifacts are marked do-not-redistribute; four are metadata-only and one is public-reference, so none of them is publishable, and their accessions all record no holding. The audit command returns no messages against the whole corpus. Twelve schemas name the required fields. The report command writes two hundred and fourteen files and leaves the tree byte-identical. The BRender ladder runs twenty-one targets under CTest, the materializer generates thirty-one files, and the FLOAT core is built from eight upstream directories under nine compile definitions. One hundred and twenty-nine Python tests cover the loaders, the reports, the audit, the materializer, the packager, and every number drawn here.](docs/art/corpus-table.svg)
 
 ## License
 

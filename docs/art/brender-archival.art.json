@@ -1,0 +1,87 @@
+{
+  "header": {
+    "name": "brender-archival",
+    "role": "a revival archive that shows its work",
+    "tagline": "Records first, then a build ladder anyone can run again.",
+    "words": ["accession", "validate", "audit", "build", "render"]
+  },
+  "flows": [
+    {
+      "file": "archive-lane.svg",
+      "kicker": "a finding that is not a record is a finding nobody can check",
+      "title": "How a lead becomes a public record and then a published page",
+      "footnote": "Nothing in this lane is typed into a document by hand. Every count on the published pages is read out of the JSON corpus, and running the report command again rewrites all of them without changing a byte. The rights fields are the load-bearing part: an artifact marked do-not-redistribute cannot also be marked publishable, and the audit command is what makes that a build failure rather than a promise.",
+      "alt": "Eight stages taking a lead from an empty directory to a published page: seed, record, schema, validate, rights, audit, index, publish. The seed command lays out one directory per record kind, twelve of them, covering targets, artifacts, sources, tasks, milestones, accessions, reproductions, snapshots, readiness, builds, harnesses and attempts. Each finding becomes one JSON file. Twelve schemas name the fields a record of that kind must carry, and the validate command reports any record that omits one. Every artifact carries a redistribution status and an access level, and the audit command refuses the combination of restricted material with a publishable level. The index command renders the twenty-three engine targets as one table, and the report command writes the generated pages out of the corpus. Three hundred and forty-two records sit on disk across the twelve kinds, and the audit returns no messages against them on this checkout. Three outcomes: a public record whose page regenerates from it, a reference held as metadata only, or a holding that is not held at all.",
+      "stages": [
+        {"title": "Seed", "note": "One directory per record kind, twelve."},
+        {"title": "Record", "note": "One JSON file for one finding."},
+        {"title": "Schema", "note": "Twelve schemas name the required fields."},
+        {"title": "Validate", "note": "A missing field fails the command."},
+        {"title": "Rights", "note": "Redistribution status, then access level."},
+        {"title": "Audit", "note": "Restricted material cannot be public."},
+        {"title": "Index", "note": "Twenty-three targets in one table."},
+        {"title": "Publish", "note": "Pages written out of the records."}
+      ],
+      "returns": [
+        {"from": 2, "to": 0, "label": "TWELVE KINDS, THREE HUNDRED FORTY-TWO"},
+        {"from": 6, "to": 4, "label": "NO AUDIT MESSAGE ON THIS CORPUS"}
+      ],
+      "outcomes": [
+        {"label": "PUBLIC RECORD", "note": "the page regenerates from it", "tone": "verified"},
+        {"label": "METADATA ONLY", "note": "a reference, never a copy", "tone": "drift"},
+        {"label": "NOT HELD", "note": "no capture, by rights review", "tone": "none"}
+      ]
+    },
+    {
+      "file": "ladder-lane.svg",
+      "kicker": "a build nobody can rerun is a screenshot",
+      "title": "How pinned upstream source becomes a ladder that runs again",
+      "footnote": "The harness is generated rather than committed, so no upstream source or asset lives in this repository. What is committed is the generator, the compatibility layer that stands in for the period assembly kernels, and the transcripts. The blockers stay on the page too: the assembly-only primitive kernels no rung reaches are still linkage stubs, and neither a completed textured period render nor x64 is claimed.",
+      "alt": "Eight stages taking pinned upstream source to a running ladder: pin, materialize, compat, configure, build, ladder, capture, package. One upstream commit of the public BRender v1.3.2 source is named in the record. The materializer writes thirty-one files out of tree, none of them copied from upstream: the CMake project, the compatibility C ports that stand in for the period assembly kernels, and the smoke programs. CMake configures a Visual Studio Win32 target against the named source directory, and the FLOAT core is built from eight upstream directories under nine compile definitions. Twenty-one targets then run under CTest, twenty from the generated project plus the period-pipeline rung that binds softrend and pentprim into one process. Frames and transcripts are captured, and the packager hashes everything it stages. The transcript recorded on the twenty-seventh of August 2026 reports twenty-one of twenty-one passed with none failed. Three outcomes: the ladder renders a nonblack orbit, some assembly kernels remain linkage stubs, and a completed textured period render is not claimed.",
+      "stages": [
+        {"title": "Pin", "note": "One upstream commit, named in a record."},
+        {"title": "Materialize", "note": "Thirty-one files, none of them copied."},
+        {"title": "Compat", "note": "C ports stand in for the assembly."},
+        {"title": "Configure", "note": "CMake, Win32, the source directory named."},
+        {"title": "Build", "note": "Eight upstream directories, nine defines."},
+        {"title": "Ladder", "note": "Twenty-one targets under CTest."},
+        {"title": "Capture", "note": "Frames, transcripts, one receipt."},
+        {"title": "Package", "note": "Hashes over everything staged."}
+      ],
+      "returns": [
+        {"from": 2, "to": 0, "label": "NO UPSTREAM SOURCE IS COPIED IN"},
+        {"from": 6, "to": 4, "label": "TWENTY-ONE OF TWENTY-ONE PASSED"}
+      ],
+      "outcomes": [
+        {"label": "RENDERS", "note": "an eight-frame orbit, nonblack", "tone": "verified"},
+        {"label": "STUB LINKAGE", "note": "kernels no rung reaches yet", "tone": "drift"},
+        {"label": "NOT CLAIMED", "note": "textured period render, x64", "tone": "none"}
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "file": "corpus-table.svg",
+      "kicker": "counts, not adjectives",
+      "title": "What the archive holds, and where each number is read from",
+      "source": "the record corpus and src/engine_revival, on this checkout",
+      "heads": ["what is in the archive", "how many", "where the number comes from"],
+      "alt": "A table of twelve rows: what is in the archive, how many of it there are, and where each number is read from. Twelve record kinds are named in RECORD_DIRS, and three hundred and forty-two JSON records sit across their directories, with sources leading at seventy-eight and artifacts and accessions at sixty each. Twenty-three engine targets span fifteen categories: eight carry curated public sources and fifteen carry curated public metadata. Sixty-two of the seventy-eight sources are rated high confidence and sixteen moderate. Five artifacts are marked do-not-redistribute; four are metadata-only and one is public-reference, so none of them is publishable, and their accessions all record no holding. The audit command returns no messages against the whole corpus. Twelve schemas name the required fields. The report command writes two hundred and fourteen files and leaves the tree byte-identical. The BRender ladder runs twenty-one targets under CTest, the materializer generates thirty-one files, and the FLOAT core is built from eight upstream directories under nine compile definitions. One hundred and twenty-nine Python tests cover the loaders, the reports, the audit, the materializer, the packager, and every number drawn here.",
+      "footnote": "Every count here was read from the corpus or from the module that defines it, not typed in. The restricted row is marked because it is the one place where a wrong value would publish something that must not be published, and it is the rule the audit command exists to enforce.",
+      "fields": [
+        {"key": "record kinds", "value": "twelve of them", "note": "RECORD_DIRS in records.py: target, artifact, source, task, milestone, accession, reproduction, snapshot, readiness, build, harness, attempt."},
+        {"key": "records on disk", "value": "342 files", "note": "JSON records across the twelve directories. Sources lead at seventy-eight, then artifacts and accessions at sixty each, then tasks at thirty-one."},
+        {"key": "engines tracked", "value": "23 targets", "note": "One record per engine or lineage in targets/, across fifteen categories. Eight carry curated public sources and fifteen carry public metadata."},
+        {"key": "sources cited", "value": "78 of them", "note": "Sixty-two rated high confidence, sixteen moderate. Every artifact names the source ids it was read from, so a claim traces back to a citation."},
+        {"key": "restricted holds", "value": "five artifacts", "note": "Marked do-not-redistribute. Four are metadata-only and one is public-reference, so none is publishable. Their accessions all record no holding.", "tone": "drift"},
+        {"key": "audit messages", "value": "none", "note": "audit-public over the whole corpus on this checkout. The rule: restricted material cannot also carry a publishable access level."},
+        {"key": "schemas", "value": "twelve files", "note": "One JSON schema per record kind under schemas/, each naming the fields a record must carry. validate reports any record that omits one."},
+        {"key": "generated pages", "value": "214 written", "note": "The report command writes two hundred and thirteen markdown pages plus a database file, and the tree stays byte-identical afterwards."},
+        {"key": "ladder targets", "value": "21 under CTest", "note": "Twenty in the generated CMake project plus the period-pipeline rung. The transcript in builds/ reports twenty-one passed and none failed."},
+        {"key": "harness files", "value": "31 generated", "note": "Written by materialize-brender-harness: the CMake project, the compatibility C ports, and the smoke programs. No upstream file is copied."},
+        {"key": "build settings", "value": "eight dirs", "note": "The FLOAT core is built from fw, host, std, pixelmap, dosio, v1db, math and fmt, under nine compile definitions led by BASED_FLOAT."},
+        {"key": "python tests", "value": "129 passing", "note": "pytest over tests/, covering the record loaders, the reports, the audit, the harness materializer, the release packager, and every number on these three drawings."}
+      ]
+    }
+  ]
+}
