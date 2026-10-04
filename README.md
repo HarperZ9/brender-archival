@@ -1,6 +1,16 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/HarperZ9/brender-archival/main/docs/art/hero-dark.svg">
+  <img src="https://raw.githubusercontent.com/HarperZ9/brender-archival/main/docs/art/hero-light.svg" alt="brender-archival: Rebuild BRender from pinned source with a build ladder anyone can rerun. Bundles of fine lines carry the work through 5 stations, pin, materialize, build, ladder and package, along a sweeping path into a bright core." width="100%">
+</picture>
+
 # brender-archival
 
-![brender-archival, a revival archive that shows its work. Records first, then a build ladder anyone can run again.](docs/art/brender-archival-header.svg)
+Rebuild BRender from pinned source with a build ladder anyone can rerun.
+
+[![version: 0.2.0](https://img.shields.io/badge/version-0.2.0-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/brender-archival/releases/latest)
+[![CI](https://github.com/HarperZ9/brender-archival/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/brender-archival/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-FSL--1.1--MIT-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/brender-archival/blob/main/LICENSE)
+![python 3.11+](https://img.shields.io/badge/python-3.11%2B-e6e1d6?style=flat-square&labelColor=1a1712)
 
 Reviving Argonaut's BRender, and every other lost rendering and game engine,
 one at a time. This is the public revival archive: reproducible harnesses,
