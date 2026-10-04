@@ -147,10 +147,21 @@ under `docs/generated/` are views over that corpus.
 
 ## License
 
-Copyright (C) 2026 Zain Dana Harper. Licensed under the GNU Affero General
-Public License v3.0 or later; see [LICENSE](LICENSE). The BRender source this
-project revives is separately MIT licensed and is referenced from a public
-checkout, never vendored here.
+Copyright 2026 Zain Dana Harper. From v0.2.0, code is licensed FSL-1.1-MIT. Earlier releases remain under AGPL-3.0-or-later. FSL-1.1-MIT is the Functional Source License, Version 1.1, with MIT as the future licence: each release becomes available under MIT two years after it is made available. See [LICENSE](LICENSE).
+
+Two directories keep the terms they were released with:
+
+- `compat/` ports routines from the BRender v1.3.2 source. Ported material
+  stays MIT, copyright Argonaut Software Limited; the author's work there
+  stays AGPL-3.0-or-later. See [compat/LICENSE-NOTE.md](compat/LICENSE-NOTE.md).
+- `gallery/` holds frames rendered with BRender. They stay AGPL-3.0-or-later.
+  See [gallery/LICENSE-NOTE.md](gallery/LICENSE-NOTE.md).
+
+The licence texts are in [LICENSES/](LICENSES/). The BRender source itself is
+referenced from a public checkout and never vendored here. Records under
+`sources/`, `snapshots/`, `artifacts/` and `targets/` describe other projects;
+any text they quote stays with its owner. Every commit in this repository is
+by the author.
 
 ## Public docs
 
