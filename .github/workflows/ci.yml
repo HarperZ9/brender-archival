@@ -52,3 +52,43 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify art receipt digests
         run: python3 scripts/check_art_receipts.py
+
+  # The BRender ladder is the native result this repository exists to keep true.
+  # It builds the pinned public BRender v1.3.2 source (MIT, Argonaut Software
+  # Limited) out of tree, Win32 under MSVC, and runs every rung under CTest.
+  # The source is fetched at run time and never committed here. The expected
+  # rung count is fixed below so a ladder that silently shrinks fails.
+  brender-native:
+    runs-on: windows-latest
+    env:
+      BRENDER_COMMIT: d88d0ed41122664b9781015b517db64353e16f19
+      EXPECTED_RUNGS: "21"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e .
+      - name: fetch the pinned public BRender source
+        shell: bash
+        run: |
+          src="$RUNNER_TEMP/brender-src"
+          git init -q "$src"
+          git -C "$src" remote add origin https://github.com/foone/BRender-v1.3.2.git
+          git -C "$src" fetch -q --depth 1 origin "$BRENDER_COMMIT"
+          git -C "$src" checkout -q FETCH_HEAD
+          test "$(git -C "$src" rev-parse HEAD)" = "$BRENDER_COMMIT"
+      - name: materialize the harness, build Win32, run the ladder
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $src = Join-Path $env:RUNNER_TEMP 'brender-src'
+          $harness = Join-Path $env:RUNNER_TEMP 'brender-harness'
+          $build = Join-Path $env:RUNNER_TEMP 'brender-build'
+          engine-revival materialize-brender-harness --source-root $src --output-root $harness
+          cmake -S $harness -B $build -A Win32 "-DBRENDER_SOURCE_DIR=$src"
+          cmake --build $build --config Debug --parallel
+          $listed = (ctest --test-dir $build -C Debug -N | Select-String 'Total Tests: (\d+)').Matches[0].Groups[1].Value
+          if ($listed -ne $env:EXPECTED_RUNGS) { throw "ladder lists $listed rungs, expected $env:EXPECTED_RUNGS" }
+          ctest --test-dir $build -C Debug --output-on-failure
