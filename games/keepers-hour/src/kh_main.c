@@ -14,6 +14,8 @@
 #include <SDL3/SDL_main.h> /* the platform entry point: WinMain for a window-only program */
 #include <brender.h>
 #include "brdemo.h"
+#include "kh_boot.h"
+#include "kh_save.h"
 #include "kh_script.h"
 #include "kh_talk.h"
 #include "kh_world.h"
@@ -22,55 +24,55 @@ static kh_script script;
 static kh_talk   talk;
 static kh_world  world;
 static float     keeper_x = 0.0f, keeper_z = 3.2f, facing = 180.0f, cam_yaw = 0.0f, clock_s;
-static int       near_talker = -1, smoke, smoke_node, smoke_room, problems;
+static int       near_talker = -1, smoke, smoke_node, smoke_room, smoke_ends, problems, ended;
 static SDL_Gamepad *pad;
-
-/* Every "@room" in the script and in the room table must name a room. */
-static int check_rooms(void)
-{
-    int i, j, r, bad = 0;
-    for (i = 0; i < script.nnodes; i++)
-        for (j = 0; j < script.nodes[i].nchoices; j++) {
-            const char *to = script.nodes[i].choices[j].pass;
-            if (to[0] == '@' && kh_room_find(to + 1) < 0) { BrLogError("KEEPER", "node %s: no room %s", script.nodes[i].id, to); bad++; }
-        }
-    for (r = 0; r < kh_room_count; r++)
-        for (j = 0; j < kh_rooms[r].nprops; j++) {
-            const kh_prop *p = &kh_rooms[r].props[j];
-            if (p->node == NULL) continue;
-            if (p->node[0] == '@' ? kh_room_find(p->node + 1) < 0 : kh_script_find(&script, p->node) == NULL) {
-                BrLogError("KEEPER", "room %s: %s leads to missing %s", kh_rooms[r].id, p->talker, p->node);
-                bad++;
-            }
-        }
-    return bad ? -1 : 0;
-}
 
 static void go_to_room(const char *id)
 {
     int to = kh_room_find(id);
     if (to < 0) { problems++; return; }
     kh_world_enter(&world, to, world.current, &keeper_x, &keeper_z);
+    if (!smoke && !ended)
+        kh_save_write(kh_save_path(), kh_rooms[to].id, &talk); /* the night is saved at every room */
 }
 
-static int load_script(void)
+static void new_night(void)
 {
-    char path[1024], err[200];
-    size_t size = 0;
-    char *text;
-    snprintf(path, sizeof(path), "%sdata/night.txt", SDL_GetBasePath());
-    if ((text = SDL_LoadFile(path, &size)) == NULL) {
-        BrLogError("KEEPER", "cannot read %s", path);
-        return -1;
-    }
-    if (kh_script_parse(&script, text, err, sizeof(err)) != 0 || kh_script_check_links(&script, err, sizeof(err)) != 0) {
-        BrLogError("KEEPER", "%s", err);
-        SDL_free(text);
-        return -1;
-    }
-    SDL_free(text);
-    return check_rooms();
+    kh_save_forget(kh_save_path());
+    kh_talk_init(&talk, &script, 1998u);
+    ended = 0;
+    kh_world_enter(&world, kh_room_find("lamp"), -1, &keeper_x, &keeper_z);
+    kh_talk_open(&talk, "arrive");
 }
+
+static void continue_night(void)
+{
+    char room[64] = "lamp";
+    kh_talk saved;
+    kh_talk_init(&saved, &script, 1998u);
+    if (kh_save_read(kh_save_path(), room, sizeof(room), &saved) != 0 || kh_room_find(room) < 0) {
+        new_night();
+        return;
+    }
+    talk = saved;
+    kh_world_enter(&world, kh_room_find(room), -1, &keeper_x, &keeper_z);
+}
+
+/* A choice led to "@room" or "@@...": walk there, or end, continue or restart the night. */
+static void follow(const char *go)
+{
+    if (strcmp(go, "@end") == 0) {
+        ended = 1;
+        kh_save_forget(kh_save_path());
+    } else if (strcmp(go, "@continue") == 0) {
+        continue_night();
+    } else if (strcmp(go, "@new") == 0) {
+        new_night();
+    } else {
+        go_to_room(go);
+    }
+}
+
 
 static void place_camera(br_demo *demo)
 {
@@ -86,7 +88,7 @@ static br_error game_init(br_demo *demo)
     br_camera *c;
     SDL_InitSubSystem(SDL_INIT_GAMEPAD);
     smoke = SDL_getenv("KEEPERS_SMOKE") != NULL;
-    if (load_script() != 0)
+    if (kh_boot_load(&script) != 0)
         return BRE_FAIL;
     kh_talk_init(&talk, &script, 1998u);
     demo->clear_colour = BR_COLOUR_RGBA(6, 7, 12, 255);
@@ -103,13 +105,18 @@ static br_error game_init(br_demo *demo)
     /* KEEPERS_ROOM=<room> starts in that room: for checking a room by eye. */
     kh_world_enter(&world, kh_room_find(SDL_getenv("KEEPERS_ROOM") && kh_room_find(SDL_getenv("KEEPERS_ROOM")) >= 0 ? SDL_getenv("KEEPERS_ROOM") : "lamp"), -1, &keeper_x, &keeper_z);
     /* KEEPERS_OPEN=<node> starts in that conversation: for writers testing a scene. */
-    kh_talk_open(&talk, SDL_getenv("KEEPERS_OPEN") ? SDL_getenv("KEEPERS_OPEN") : "arrive");
+    if (SDL_getenv("KEEPERS_OPEN"))
+        kh_talk_open(&talk, SDL_getenv("KEEPERS_OPEN"));
+    else
+        kh_talk_open(&talk, !smoke && kh_save_exists(kh_save_path()) ? "resume" : "arrive");
     place_camera(demo);
     return BRE_OK;
 }
 
 static void interact(void)
 {
+    if (ended)
+        return;
     if (kh_talk_open_p(&talk)) {
         if (talk.choosing)
             kh_talk_choose(&talk, talk.selected);
@@ -124,8 +131,9 @@ static void interact(void)
 
 static void move_selection(int delta)
 {
-    if (kh_talk_open_p(&talk) && talk.choosing && talk.node->nchoices > 0)
-        talk.selected = (talk.selected + delta + talk.node->nchoices) % talk.node->nchoices;
+    int count = kh_talk_visible_count(&talk);
+    if (kh_talk_open_p(&talk) && talk.choosing && count > 0)
+        talk.selected = (talk.selected + delta + count) % count;
 }
 
 static void game_event(br_demo *demo, const SDL_Event *e)
@@ -133,8 +141,9 @@ static void game_event(br_demo *demo, const SDL_Event *e)
     (void)demo;
     switch (e->type) {
     case SDL_EVENT_KEY_DOWN:
+        if (ended && e->key.key == SDLK_R) { new_night(); break; }
         if (e->key.key == SDLK_E || e->key.key == SDLK_SPACE || e->key.key == SDLK_RETURN) interact();
-        else if (e->key.key >= SDLK_1 && e->key.key <= SDLK_4) kh_talk_choose(&talk, (int)(e->key.key - SDLK_1));
+        else if (e->key.key >= SDLK_1 && e->key.key <= SDLK_6) kh_talk_choose(&talk, (int)(e->key.key - SDLK_1));
         else if (e->key.key == SDLK_UP) move_selection(-1);
         else if (e->key.key == SDLK_DOWN) move_selection(1);
         else if (e->key.key == SDLK_ESCAPE) {
@@ -147,7 +156,8 @@ static void game_event(br_demo *demo, const SDL_Event *e)
     case SDL_EVENT_GAMEPAD_ADDED: if (pad == NULL) pad = SDL_OpenGamepad(e->gdevice.which); break;
     case SDL_EVENT_GAMEPAD_REMOVED: if (pad) { SDL_CloseGamepad(pad); pad = NULL; } break;
     case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-        if (e->gbutton.button == SDL_GAMEPAD_BUTTON_SOUTH) interact();
+        if (ended && e->gbutton.button == SDL_GAMEPAD_BUTTON_START) new_night();
+        else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_SOUTH) interact();
         else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_EAST) kh_talk_close(&talk);
         else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP) move_selection(-1);
         else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_DOWN) move_selection(1);
@@ -169,7 +179,7 @@ static void walk(float dt)
     float side = (k[SDL_SCANCODE_D] || k[SDL_SCANCODE_RIGHT]) - (k[SDL_SCANCODE_A] || k[SDL_SCANCODE_LEFT]) + axis(SDL_GAMEPAD_AXIS_LEFTX);
     float yaw = cam_yaw * 3.14159265f / 180.0f, dx, dz;
     cam_yaw -= axis(SDL_GAMEPAD_AXIS_RIGHTX) * 120.0f * dt;
-    if (kh_talk_open_p(&talk) || (fwd == 0 && side == 0))
+    if (ended || kh_talk_open_p(&talk) || (fwd == 0 && side == 0))
         return;
     dx = (side * cosf(yaw) - fwd * sinf(yaw)) * 2.6f * dt;
     dz = (-side * sinf(yaw) - fwd * cosf(yaw)) * 2.6f * dt;
@@ -191,6 +201,10 @@ static void smoke_step(void)
         smoke_node++;
         return;
     }
+    if (!smoke_ends) {
+        smoke_ends = 1;
+        problems += kh_end_check(&script);
+    }
     {
         SDL_Event q = {.type = SDL_EVENT_QUIT};
         SDL_PushEvent(&q);
@@ -204,8 +218,10 @@ static void game_update(br_demo *demo, br_scalar dt_s)
     if (smoke) smoke_step();
     else walk(dt);
     if (talk.go[0]) {
-        go_to_room(talk.go);
+        char go[KH_ID_LEN];
+        snprintf(go, sizeof(go), "%s", talk.go);
         talk.go[0] = '\0';
+        follow(go);
     }
     demo->clear_colour = kh_world_sky(&world);
     kh_world_turn_lamp(&world, clock_s);
@@ -228,16 +244,19 @@ static void game_render(br_demo *demo)
         snprintf(title, sizeof(title), "The Keeper's Hour   %s", kh_rooms[world.current].title);
         BrPixelmapText(pm, -pm->origin_x + 12, -pm->origin_y + 20, accent, BrFontProp7x9, title);
     }
-    if (!kh_talk_open_p(&talk) && near_talker >= 0) {
+    if (!ended && !kh_talk_open_p(&talk) && near_talker >= 0) {
         char prompt[96];
         const kh_talker *t = kh_world_talker(&world, near_talker);
         snprintf(prompt, sizeof(prompt), "E, click or A: %s %s", t->node[0] == '@' ? "go through" : "talk to", t->name);
         BrPixelmapText(pm, -BrPixelmapTextWidth(pm, BrFontProp7x9, prompt) / 2, pm->height - pm->origin_y - 40, ink, BrFontProp7x9, prompt);
-    } else if (!kh_talk_open_p(&talk)) {
+    } else if (!ended && !kh_talk_open_p(&talk)) {
         BrPixelmapText(pm, -pm->origin_x + 12, pm->height - pm->origin_y - 24, ink, BrFontProp7x9,
                        "WASD or left stick: walk   right drag or right stick: look   Esc: quit");
     }
-    kh_talk_draw(&talk, pm, ink, accent, BR_COLOUR_RGBA(14, 13, 18, 255));
+    if (ended)
+        kh_end_card(pm, &talk, ink, accent, BR_COLOUR_RGBA(14, 13, 18, 255));
+    else
+        kh_talk_draw(&talk, pm, ink, accent, BR_COLOUR_RGBA(14, 13, 18, 255));
 }
 
 static const br_demo_dispatch dispatch = {

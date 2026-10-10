@@ -1,0 +1,33 @@
+The Keeper's Hour
+=================
+
+The last night of a lighthouse on a coast the sea left years ago. About 25
+minutes. Walk the tower, talk to what is in it, listen to the four voices in
+the keeper's head, and decide what happens to the light at dawn.
+
+Run it
+  Double-click keepers-hour.exe. No install is needed.
+  The night is saved each time you change room. Next time you start, you
+  can carry on or begin again.
+
+Controls
+  Walk                    WASD or arrows        left stick
+  Turn the view           hold right mouse      right stick
+  Talk, continue, choose  E, Space, Enter, click   A
+  Pick a reply            1 to 6, or Up/Down then E   D-pad, then A
+  Leave a conversation    Esc                   B
+  Fullscreen              Alt+Enter
+  After dawn              R begins again        Start
+
+A skill check shows its sums: the voice's rating plus two dice against a
+target. Failing a check opens a different line, never a dead end.
+
+Licences (in licences\)
+  Code: MIT, Zain Dana Harper.
+  Words and art: CC BY 4.0, Zain Dana Harper. Reuse them with credit:
+  "The Keeper's Hour by Zain Dana Harper, CC BY 4.0."
+  Engine: BRender 1.4 from BlazingRenderer/BRender, MIT; built on BRender
+  by Argonaut Software (1998, MIT).
+  SDL3: zlib licence.
+
+Source: github.com/HarperZ9/brender-archival (games/keepers-hour)

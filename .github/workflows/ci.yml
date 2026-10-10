@@ -180,3 +180,4 @@ jobs:
           Write-Output $out
           if ($LASTEXITCODE -ne 0) { throw "keepers smoke exited $LASTEXITCODE" }
           if ($out -notmatch 'keepers smoke: 5 rooms entered, \d+ nodes opened, 0 problems, run ok') { throw "unexpected game smoke result" }
+          if ($out -notmatch 'keepers endings: 3 of 3 reached, save ok') { throw "an ending or the save round trip failed" }

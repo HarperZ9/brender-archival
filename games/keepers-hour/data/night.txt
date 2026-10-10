@@ -17,6 +17,7 @@ STATIC: ...kssh... Relay Nine, Relay Nine, we see you... kssh...
 * Look into the lens. -> lamp_look
 * [LEDGER 9] Recite the maintenance schedule from memory. -> lamp_schedule | lamp_schedule_fail
 * [STATIC 10] Listen to whoever just said that. -> lamp_voice | lamp_voice_fail
+* (?letter) Decide what happens at dawn. -> decide
 * Step back. -> END
 
 == lamp_look
@@ -408,3 +409,43 @@ TIDE: Log it.
 == gull_call_fail
 LENS: You make a noise you believe a gull would respect. The sheep below look up.
 * Leave it. -> END
+
+# --------------------------------------------------------- dawn, and the endings
+
+== resume
+LEDGER: There is a night already under way. The kettle is where you left it. The voices remember what they said.
+* Carry on from where you were. -> @@continue
+* Begin the night again. -> @@new
+
+== decide
+LENS: 05:58. The sky over the fields is going grey at the edges. The lamp turns. The beam is thinner now against the light.
+LEDGER: Dawn at 06:12. Fourteen minutes. The switch is on the wall, where it has always been, under a little brass cover.
+TIDE: Whatever you do, do it on purpose.
+* Keep it burning. Let them come and turn it off themselves. -> ending_keep
+* (?painting_two_ledger) Do what Agnes did: keep it one night past, then let it go properly. -> ending_ceremony
+* (?town_window) Turn the lens by hand until the beam rests on the town. -> ending_town
+* Not yet. -> END
+
+== ending_keep
+LEDGER: You leave the brass cover closed. 06:12 comes and goes. The lamp turns. Nobody comes.
+LENS: At 09:40 a van from the Coastal Authority grinds up the track. A young man with a clipboard climbs all 112 steps.
+TIDE: He stands in the doorway, out of breath, and watches the lamp for a long time before he says anything.
+STATIC: ...kssh... Relay Nine, Relay Nine, we see you... kssh...
+LENS: He writes something on the clipboard. Later you will read it: "Light found operating. Keeper found operating. Recommend: review."
+* The light is kept. -> @@end
+
+== ending_ceremony
+LEDGER: You write the last entry first, so it is done properly: "06:12. Light extinguished by the keeper. Nothing." Then you cross out "Nothing".
+TIDE: You wind the clockwork one last time anyway. It deserves to finish its turn.
+LENS: At 06:12 you lift the brass cover and turn the switch. The lens keeps turning for eleven seconds on its own weight, dark, and then it stops.
+STATIC: ...kssh... thank you, Relay Nine... we know where we are... kssh... and then nothing, the good kind.
+TIDE: Agnes asked for one night past. You gave the light one night past. You did not ask for anything. That was allowed too.
+* The light is let go. -> @@end
+
+== ending_town
+LENS: The lens is heavy and it does not want to stop, but you lean on the brass rail and walk it round, a degree at a time, until the beam lies on the town.
+LENS: It stays there. Third street up from the old quay, top floor. A small window, lit up like noon.
+TIDE: Down in the town a light comes on, and then another, and then a whole street, people at windows in their coats.
+LEDGER: This is not in any schedule. There will be paperwork.
+TIDE: At 06:12 you turn it off, and the town, all of it, turns its own lights off a moment later, like an answer.
+* The light is given away. -> @@end

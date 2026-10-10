@@ -7,7 +7,7 @@
 
 #define KH_MAX_NODES   128
 #define KH_MAX_LINES   12
-#define KH_MAX_CHOICES 4
+#define KH_MAX_CHOICES 6
 #define KH_ID_LEN      32
 #define KH_TEXT_LEN    240
 
@@ -24,6 +24,7 @@ typedef struct kh_choice {
     int      target;             /* two dice plus the rating must reach this */
     char     pass[KH_ID_LEN];    /* node on success, or "END" */
     char     fail[KH_ID_LEN];    /* node on failure (checks only) */
+    char     needs[KH_ID_LEN];   /* shown only after this node was visited; "" always */
 } kh_choice;
 
 typedef struct kh_node {

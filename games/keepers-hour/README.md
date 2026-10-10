@@ -4,15 +4,19 @@ A short, strange, talkative game about the last night of a lighthouse on a
 coast the sea left years ago. Built on BRender, the 1990s Argonaut engine,
 running 64-bit on a modern PC. The design is in [DESIGN.md](DESIGN.md).
 
-**Milestone M1, the tower:** five rooms (the lamp room, the stairs, the radio
-room, the keeper's room and the gallery outside), 15 things to talk to, and
-75 script nodes. Walk between rooms through the doors and stairs, listen to
-the four voices in the keeper's head argue, and watch every skill check show
-its dice. The endings come in M2.
+**Milestone M2: a complete short game.** Five rooms (the lamp room, the stairs,
+the radio room, the keeper's room and the gallery outside), 15 things to talk
+to, 80 script nodes, and three endings at dawn, opened by what you found in the
+night. The night saves every time you change room, and the next start offers
+to carry on. Every skill check shows its sums.
 
-## Play it
+**Download for Windows:** `keepers-hour-<version>-windows-x64.zip` on the
+[releases page](https://github.com/HarperZ9/brender-archival/releases). Unzip
+and run `keepers-hour.exe`; the SHA-256 is beside the zip.
 
-Build it with the modern BRender build (see [../../modern/README.md](../../modern/README.md)):
+## Build it
+
+Or build it with the modern BRender build (see [../../modern/README.md](../../modern/README.md)):
 
 ```
 cmake -S modern -B build -A x64

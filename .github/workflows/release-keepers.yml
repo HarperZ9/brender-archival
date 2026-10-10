@@ -1,0 +1,60 @@
+name: release-keepers
+
+# Builds The Keeper's Hour for 64-bit Windows and attaches the zip and its
+# SHA-256 to the GitHub release of a keepers-v* tag.
+on:
+  push:
+    tags: ["keepers-v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shader tools for the OpenGL driver (glslang, spirv-cross)
+        shell: pwsh
+        run: |
+          vcpkg install glslang[tools]:x64-windows spirv-cross:x64-windows
+          $tools = Join-Path $env:VCPKG_INSTALLATION_ROOT 'installed/x64-windows/tools'
+          foreach ($exe in 'glslang.exe', 'spirv-cross.exe') {
+            $hit = Get-ChildItem -Path $tools -Recurse -Filter $exe | Select-Object -First 1
+            if (-not $hit) { throw "vcpkg did not install $exe" }
+            Add-Content $env:GITHUB_PATH $hit.DirectoryName
+          }
+      - name: build
+        run: |
+          cmake -S modern -B build -A x64
+          cmake --build build --config Release --parallel --target keepers-hour
+          cmake --install build --config Release --prefix stage --component keepers
+      - name: licences and quickstart
+        shell: pwsh
+        run: |
+          Copy-Item games/keepers-hour/QUICKSTART.txt stage/keepers-hour/
+          New-Item -ItemType Directory stage/keepers-hour/licences | Out-Null
+          Copy-Item LICENSE stage/keepers-hour/licences/code-MIT.txt
+          Copy-Item LICENSES/CC-BY-4.0.txt stage/keepers-hour/licences/words-and-art-CC-BY-4.0.txt
+          Copy-Item LICENSES/MIT-BlazingRenderer.txt stage/keepers-hour/licences/BlazingRenderer-MIT.txt
+          Copy-Item LICENSES/MIT-BRender.txt stage/keepers-hour/licences/BRender-1.3.2-MIT.txt
+          Copy-Item LICENSES/Zlib-SDL3.txt stage/keepers-hour/licences/SDL3-Zlib.txt
+      - name: the packaged game opens every room, node and ending
+        shell: pwsh
+        env:
+          SDL_VIDEODRIVER: offscreen
+          KEEPERS_SMOKE: "1"
+        run: |
+          $out = & stage/keepers-hour/keepers-hour.exe 2>&1 | Out-String
+          Write-Output $out
+          if ($LASTEXITCODE -ne 0 -or $out -notmatch '0 problems, run ok' -or $out -notmatch '3 of 3 reached, save ok') { throw "packaged smoke failed" }
+      - name: zip, hash and publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $name = "keepers-hour-$($env:GITHUB_REF_NAME -replace '^keepers-v','')-windows-x64.zip"
+          Compress-Archive -Path stage/keepers-hour -DestinationPath $name
+          $hash = (Get-FileHash $name -Algorithm SHA256).Hash.ToLower()
+          [IO.File]::WriteAllText((Join-Path $PWD "$name.sha256"), "$hash  $name`n")
+          gh release upload $env:GITHUB_REF_NAME $name "$name.sha256" --clobber
