@@ -1,0 +1,37 @@
+brview: BRender on a modern PC
+==============================
+
+BRender was Argonaut Software's real-time 3D engine of the 1990s. brview opens
+the sample models that shipped with BRender 1.3.2 and draws them with BRender
+1.4, the modern 64-bit BRender maintained at github.com/BlazingRenderer/BRender.
+
+Run it
+  Double-click brview.exe. No install is needed.
+
+  brview.exe                      cycle through the bundled models
+  brview.exe dat\teapot.dat       open one model
+  brview.exe my.dat my.pix        open your own model with a texture
+  brview.exe --force-software     draw with BRender's software rasteriser
+  brview.exe --help               every option
+
+Controls
+  Mouse drag        orbit          Right or middle drag   pan
+  Wheel, Q and E    zoom           WASD or arrow keys     orbit
+  Tab or N, P       next, previous model
+  T                 texture on or off
+  Space             spin on or off
+  R                 reset the view
+  H or F1           hide the help
+  Alt+Enter         fullscreen     Esc   quit
+
+Gamepad
+  Left stick orbit, triggers zoom, A next model, X previous, B spin,
+  Y texture, Start reset, Back help.
+
+Licences (in licences\)
+  brview: MIT, Zain Dana Harper.
+  BRender 1.3.2 sample models: MIT, copyright 1998 Argonaut Software Limited.
+  BRender 1.4 (BlazingRenderer): MIT, Zane van Iperen, erysdren and contributors.
+  SDL3: zlib licence, Sam Lantinga.
+
+Source and documentation: github.com/HarperZ9/brender-archival
