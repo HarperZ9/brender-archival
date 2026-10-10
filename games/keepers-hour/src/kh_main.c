@@ -1,97 +1,110 @@
-/* The Keeper's Hour: the tower (M1), five rooms and their talkers.
+/* The Keeper's Hour: the night's main loop.
  * Drawn by BRender 1.4 (BlazingRenderer/BRender, MIT) through brdemo and SDL3.
  *
- * KEEPERS_SMOKE=1 runs headless: checks every link in the night script, opens
- * every node once and enters every room, with a frame drawn for each, then
- * quits. The exit code is the number of problems found.
+ * For checking by machine and by eye:
+ *   KEEPERS_SMOKE=1   enter every room, open every node, reach every ending,
+ *                     round-trip a save; the exit code counts the problems
+ *   KEEPERS_SHOT=f    draw one still of the room into f (PPM) and quit
+ *   KEEPERS_ROOM=r    start in room r      KEEPERS_OPEN=n   start in node n
  * SPDX-License-Identifier: MIT */
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h> /* the platform entry point: WinMain for a window-only program */
 #include <brender.h>
 #include "brdemo.h"
+#include "kh_audio.h"
 #include "kh_boot.h"
+#include "kh_game.h"
 #include "kh_save.h"
-#include "kh_script.h"
-#include "kh_talk.h"
-#include "kh_world.h"
+#include "kh_tex.h"
 
-static kh_script script;
-static kh_talk   talk;
-static kh_world  world;
-static float     keeper_x = 0.0f, keeper_z = 3.2f, facing = 180.0f, cam_yaw = 0.0f, clock_s;
-static int       near_talker = -1, smoke, smoke_node, smoke_room, smoke_ends, problems, ended;
-static SDL_Gamepad *pad;
+kh_game G = {.keeper_z = 3.2f, .facing = 180.0f, .near_talker = -1};
 
-static void go_to_room(const char *id)
+static void set_ambience(void)
 {
-    int to = kh_room_find(id);
-    if (to < 0) { problems++; return; }
-    kh_world_enter(&world, to, world.current, &keeper_x, &keeper_z);
-    if (!smoke && !ended)
-        kh_save_write(kh_save_path(), kh_rooms[to].id, &talk); /* the night is saved at every room */
+    const char *id = kh_rooms[G.world.current].id;
+    kh_audio_ambience(strcmp(id, "lamp") == 0 ? KH_AMB_LAMP : strcmp(id, "radio") == 0 ? KH_AMB_RADIO
+                      : strcmp(id, "gallery") == 0 ? KH_AMB_OUTSIDE : KH_AMB_INSIDE);
 }
 
-static void new_night(void)
+static void enter(int room, int from)
+{
+    kh_world_enter(&G.world, room, from, &G.keeper_x, &G.keeper_z);
+    set_ambience();
+}
+
+void kh_game_go(const char *id)
+{
+    int to = kh_room_find(id);
+    if (to < 0) { G.problems++; return; }
+    kh_audio_play(KH_SND_DOOR, 0);
+    enter(to, G.world.current);
+    if (!G.smoke && !G.ended)
+        kh_save_write(kh_save_path(), kh_rooms[to].id, &G.talk); /* the night is saved at every room */
+}
+
+void kh_game_new_night(void)
 {
     kh_save_forget(kh_save_path());
-    kh_talk_init(&talk, &script, 1998u);
-    ended = 0;
-    kh_world_enter(&world, kh_room_find("lamp"), -1, &keeper_x, &keeper_z);
-    kh_talk_open(&talk, "arrive");
+    kh_talk_init(&G.talk, &G.script, 1998u);
+    G.ended = 0;
+    enter(kh_room_find("lamp"), -1);
+    kh_talk_open(&G.talk, "arrive");
 }
 
 static void continue_night(void)
 {
     char room[64] = "lamp";
     kh_talk saved;
-    kh_talk_init(&saved, &script, 1998u);
+    kh_talk_init(&saved, &G.script, 1998u);
     if (kh_save_read(kh_save_path(), room, sizeof(room), &saved) != 0 || kh_room_find(room) < 0) {
-        new_night();
+        kh_game_new_night();
         return;
     }
-    talk = saved;
-    kh_world_enter(&world, kh_room_find(room), -1, &keeper_x, &keeper_z);
+    G.talk = saved;
+    enter(kh_room_find(room), -1);
 }
 
-/* A choice led to "@room" or "@@...": walk there, or end, continue or restart the night. */
-static void follow(const char *go)
+void kh_game_follow(const char *go)
 {
     if (strcmp(go, "@end") == 0) {
-        ended = 1;
+        G.ended = 1;
+        kh_audio_play(KH_SND_DAWN, 0);
         kh_save_forget(kh_save_path());
     } else if (strcmp(go, "@continue") == 0) {
         continue_night();
     } else if (strcmp(go, "@new") == 0) {
-        new_night();
+        kh_game_new_night();
     } else {
-        go_to_room(go);
+        kh_game_go(go);
     }
 }
-
 
 static void place_camera(br_demo *demo)
 {
     br_actor *cam = demo->camera;
     BrMatrix34Translate(&cam->t.t.mat, 0, 0, BR_SCALAR(10.0f));
     BrMatrix34PostRotateX(&cam->t.t.mat, BR_ANGLE_DEG(-52));
-    BrMatrix34PostRotateY(&cam->t.t.mat, BR_ANGLE_DEG(cam_yaw));
-    BrMatrix34PostTranslate(&cam->t.t.mat, BR_SCALAR(keeper_x), BR_SCALAR(1.2f), BR_SCALAR(keeper_z));
+    BrMatrix34PostRotateY(&cam->t.t.mat, BR_ANGLE_DEG(G.cam_yaw));
+    BrMatrix34PostTranslate(&cam->t.t.mat, BR_SCALAR(G.keeper_x), BR_SCALAR(1.2f), BR_SCALAR(G.keeper_z));
 }
 
 static br_error game_init(br_demo *demo)
 {
+    const char *room = SDL_getenv("KEEPERS_ROOM");
     br_camera *c;
     SDL_InitSubSystem(SDL_INIT_GAMEPAD);
-    smoke = SDL_getenv("KEEPERS_SMOKE") != NULL;
-    if (kh_boot_load(&script) != 0)
+    G.smoke = SDL_getenv("KEEPERS_SMOKE") != NULL;
+    G.shot_path = SDL_getenv("KEEPERS_SHOT");
+    if (kh_boot_load(&G.script) != 0)
         return BRE_FAIL;
-    kh_talk_init(&talk, &script, 1998u);
-    demo->clear_colour = BR_COLOUR_RGBA(6, 7, 12, 255);
+    kh_options_load(&G.opt, kh_options_path());
+    if (!G.smoke && !G.shot_path && kh_audio_open() == 0)
+        kh_audio_volume(G.opt.volume);
+    kh_talk_init(&G.talk, &G.script, 1998u);
     demo->camera = BrActorAdd(demo->world, BrActorAllocate(BR_ACTOR_CAMERA, NULL));
     demo->camera->t.type = BR_TRANSFORM_MATRIX34;
     c = demo->camera->type_data;
@@ -101,112 +114,31 @@ static br_error game_init(br_demo *demo)
     c->yon_z = BR_SCALAR(60);
     demo->order_table->min_z = c->hither_z;
     demo->order_table->max_z = c->yon_z;
-    kh_world_build(&world, demo->world);
-    /* KEEPERS_ROOM=<room> starts in that room: for checking a room by eye. */
-    kh_world_enter(&world, kh_room_find(SDL_getenv("KEEPERS_ROOM") && kh_room_find(SDL_getenv("KEEPERS_ROOM")) >= 0 ? SDL_getenv("KEEPERS_ROOM") : "lamp"), -1, &keeper_x, &keeper_z);
-    /* KEEPERS_OPEN=<node> starts in that conversation: for writers testing a scene. */
-    if (SDL_getenv("KEEPERS_OPEN"))
-        kh_talk_open(&talk, SDL_getenv("KEEPERS_OPEN"));
+    kh_world_build(&G.world, demo->world);
+    enter(kh_room_find(room && kh_room_find(room) >= 0 ? room : "lamp"), -1);
+    if (G.shot_path)
+        ;
+    else if (SDL_getenv("KEEPERS_OPEN"))
+        kh_talk_open(&G.talk, SDL_getenv("KEEPERS_OPEN"));
     else
-        kh_talk_open(&talk, !smoke && kh_save_exists(kh_save_path()) ? "resume" : "arrive");
+        kh_talk_open(&G.talk, !G.smoke && kh_save_exists(kh_save_path()) ? "resume" : "arrive");
     place_camera(demo);
     return BRE_OK;
 }
 
-static void interact(void)
-{
-    if (ended)
-        return;
-    if (kh_talk_open_p(&talk)) {
-        if (talk.choosing)
-            kh_talk_choose(&talk, talk.selected);
-        else
-            kh_talk_advance(&talk);
-    } else if (near_talker >= 0) {
-        const kh_talker *t = kh_world_talker(&world, near_talker);
-        if (t->node[0] == '@') go_to_room(t->node + 1);
-        else kh_talk_open(&talk, t->node);
-    }
-}
-
-static void move_selection(int delta)
-{
-    int count = kh_talk_visible_count(&talk);
-    if (kh_talk_open_p(&talk) && talk.choosing && count > 0)
-        talk.selected = (talk.selected + delta + count) % count;
-}
-
-static void game_event(br_demo *demo, const SDL_Event *e)
-{
-    (void)demo;
-    switch (e->type) {
-    case SDL_EVENT_KEY_DOWN:
-        if (ended && e->key.key == SDLK_R) { new_night(); break; }
-        if (e->key.key == SDLK_E || e->key.key == SDLK_SPACE || e->key.key == SDLK_RETURN) interact();
-        else if (e->key.key >= SDLK_1 && e->key.key <= SDLK_6) kh_talk_choose(&talk, (int)(e->key.key - SDLK_1));
-        else if (e->key.key == SDLK_UP) move_selection(-1);
-        else if (e->key.key == SDLK_DOWN) move_selection(1);
-        else if (e->key.key == SDLK_ESCAPE) {
-            if (kh_talk_open_p(&talk)) kh_talk_close(&talk);
-            else { SDL_Event q = {.type = SDL_EVENT_QUIT}; SDL_PushEvent(&q); }
-        }
-        break;
-    case SDL_EVENT_MOUSE_BUTTON_DOWN: if (e->button.button == SDL_BUTTON_LEFT) interact(); break;
-    case SDL_EVENT_MOUSE_MOTION: if (e->motion.state & SDL_BUTTON_RMASK) cam_yaw -= e->motion.xrel * 0.3f; break;
-    case SDL_EVENT_GAMEPAD_ADDED: if (pad == NULL) pad = SDL_OpenGamepad(e->gdevice.which); break;
-    case SDL_EVENT_GAMEPAD_REMOVED: if (pad) { SDL_CloseGamepad(pad); pad = NULL; } break;
-    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-        if (ended && e->gbutton.button == SDL_GAMEPAD_BUTTON_START) new_night();
-        else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_SOUTH) interact();
-        else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_EAST) kh_talk_close(&talk);
-        else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP) move_selection(-1);
-        else if (e->gbutton.button == SDL_GAMEPAD_BUTTON_DPAD_DOWN) move_selection(1);
-        break;
-    default: break;
-    }
-}
-
-static float axis(SDL_GamepadAxis a)
-{
-    float v = pad ? SDL_GetGamepadAxis(pad, a) / 32767.0f : 0.0f;
-    return fabsf(v) < 0.18f ? 0.0f : v;
-}
-
-static void walk(float dt)
-{
-    const bool *k = SDL_GetKeyboardState(NULL);
-    float fwd = (k[SDL_SCANCODE_W] || k[SDL_SCANCODE_UP]) - (k[SDL_SCANCODE_S] || k[SDL_SCANCODE_DOWN]) - axis(SDL_GAMEPAD_AXIS_LEFTY);
-    float side = (k[SDL_SCANCODE_D] || k[SDL_SCANCODE_RIGHT]) - (k[SDL_SCANCODE_A] || k[SDL_SCANCODE_LEFT]) + axis(SDL_GAMEPAD_AXIS_LEFTX);
-    float yaw = cam_yaw * 3.14159265f / 180.0f, dx, dz;
-    cam_yaw -= axis(SDL_GAMEPAD_AXIS_RIGHTX) * 120.0f * dt;
-    if (ended || kh_talk_open_p(&talk) || (fwd == 0 && side == 0))
-        return;
-    dx = (side * cosf(yaw) - fwd * sinf(yaw)) * 2.6f * dt;
-    dz = (-side * sinf(yaw) - fwd * cosf(yaw)) * 2.6f * dt;
-    keeper_x += dx;
-    keeper_z += dz;
-    kh_world_clamp(&world, &keeper_x, &keeper_z);
-    facing = atan2f(dx, dz) * 180.0f / 3.14159265f;
-}
-
 static void smoke_step(void)
 {
-    if (smoke_room < kh_room_count) {
-        go_to_room(kh_rooms[smoke_room++].id);
-        return;
-    }
-    if (smoke_node < script.nnodes) {
-        if (kh_talk_open(&talk, script.nodes[smoke_node].id) != 0)
-            problems++;
-        smoke_node++;
-        return;
-    }
-    if (!smoke_ends) {
-        smoke_ends = 1;
-        problems += kh_end_check(&script);
-    }
-    {
-        SDL_Event q = {.type = SDL_EVENT_QUIT};
+    SDL_Event q = {.type = SDL_EVENT_QUIT};
+    if (G.smoke_room < kh_room_count) {
+        kh_game_go(kh_rooms[G.smoke_room++].id);
+    } else if (G.smoke_node < G.script.nnodes) {
+        G.problems += kh_talk_open(&G.talk, G.script.nodes[G.smoke_node++].id) != 0;
+    } else if (!G.smoke_ends) {
+        G.smoke_ends = 1;
+        G.problems += kh_end_check(&G.script);
+        G.problems += kh_audio_check();
+        G.problems += kh_options_check();
+    } else {
         SDL_PushEvent(&q);
     }
 }
@@ -214,68 +146,89 @@ static void smoke_step(void)
 static void game_update(br_demo *demo, br_scalar dt_s)
 {
     float dt = BrScalarToFloat(dt_s), fx, fz;
-    clock_s += dt;
-    if (smoke) smoke_step();
-    else walk(dt);
-    if (talk.go[0]) {
+    G.clock_s = G.shot_path ? 1.0f : G.clock_s + dt; /* a still has a fixed lamp angle */
+    if (G.smoke) smoke_step();
+    else kh_input_walk(dt);
+    if (G.talk.go[0]) {
         char go[KH_ID_LEN];
-        snprintf(go, sizeof(go), "%s", talk.go);
-        talk.go[0] = '\0';
-        follow(go);
+        snprintf(go, sizeof(go), "%s", G.talk.go);
+        G.talk.go[0] = '\0';
+        kh_game_follow(go);
     }
-    demo->clear_colour = kh_world_sky(&world);
-    kh_world_turn_lamp(&world, clock_s);
-    world.keeper->t.type = BR_TRANSFORM_MATRIX34;
-    BrMatrix34RotateY(&world.keeper->t.t.mat, BR_ANGLE_DEG(facing));
-    BrMatrix34PostTranslate(&world.keeper->t.t.mat, BR_SCALAR(keeper_x), 0, BR_SCALAR(keeper_z));
-    fx = sinf(facing * 3.14159265f / 180.0f);
-    fz = cosf(facing * 3.14159265f / 180.0f);
-    near_talker = kh_world_talker_near(&world, keeper_x, keeper_z, fx, fz);
+    demo->clear_colour = kh_world_sky(&G.world, demo->colour_buffer);
+    kh_world_turn_lamp(&G.world, G.clock_s);
+    G.world.keeper->t.type = BR_TRANSFORM_MATRIX34;
+    BrMatrix34RotateY(&G.world.keeper->t.t.mat, BR_ANGLE_DEG(G.facing));
+    BrMatrix34PostTranslate(&G.world.keeper->t.t.mat, BR_SCALAR(G.keeper_x), 0, BR_SCALAR(G.keeper_z));
+    fx = sinf(G.facing * 3.14159265f / 180.0f);
+    fz = cosf(G.facing * 3.14159265f / 180.0f);
+    G.near_talker = kh_world_talker_near(&G.world, G.keeper_x, G.keeper_z, fx, fz);
     place_camera(demo);
+}
+
+static void hud(br_pixelmap *pm, br_colour ink, br_colour accent)
+{
+    char text[128];
+    snprintf(text, sizeof(text), "The Keeper's Hour   %s", kh_rooms[G.world.current].title);
+    kh_text(pm, -pm->origin_x + 12, -pm->origin_y + 20, accent, text);
+    if (G.ended || kh_talk_open_p(&G.talk))
+        return;
+    if (G.near_talker >= 0) {
+        const kh_talker *t = kh_world_talker(&G.world, G.near_talker);
+        snprintf(text, sizeof(text), "%s, click or A: %s %s", SDL_GetScancodeName(G.opt.keys[KH_ACT_TALK]),
+                 t->node[0] == '@' ? "go through" : "talk to", t->name);
+        kh_text(pm, -BrPixelmapTextWidth(pm, BrFontProp7x9, text) / 2, pm->height - pm->origin_y - 40, ink, text);
+    } else {
+        kh_text(pm, -pm->origin_x + 12, pm->height - pm->origin_y - 24, ink,
+                       "Walk: WASD or left stick   Look: right drag or right stick   Options: F2   Quit: Esc");
+    }
 }
 
 static void game_render(br_demo *demo)
 {
     br_pixelmap *pm = demo->colour_buffer;
-    br_colour ink = BR_COLOUR_RGBA(236, 230, 216, 255), accent = BR_COLOUR_RGBA(232, 180, 92, 255);
+    br_colour ink = kh_px(pm, 236, 230, 216), accent = kh_px(pm, 232, 180, 92), panel = kh_px(pm, 14, 13, 18);
+    kh_text_via_memory(!demo->hw_accel);
     BrDemoDefaultRender(demo);
-    {
-        char title[96];
-        snprintf(title, sizeof(title), "The Keeper's Hour   %s", kh_rooms[world.current].title);
-        BrPixelmapText(pm, -pm->origin_x + 12, -pm->origin_y + 20, accent, BrFontProp7x9, title);
+    if (G.shot_path) {
+        if (++G.shot_frames == 20) {
+            SDL_Event q = {.type = SDL_EVENT_QUIT};
+            G.problems += kh_frame_write(pm, G.shot_path, demo->hw_accel) != 0;
+            SDL_PushEvent(&q);
+        }
+        return;
     }
-    if (!ended && !kh_talk_open_p(&talk) && near_talker >= 0) {
-        char prompt[96];
-        const kh_talker *t = kh_world_talker(&world, near_talker);
-        snprintf(prompt, sizeof(prompt), "E, click or A: %s %s", t->node[0] == '@' ? "go through" : "talk to", t->name);
-        BrPixelmapText(pm, -BrPixelmapTextWidth(pm, BrFontProp7x9, prompt) / 2, pm->height - pm->origin_y - 40, ink, BrFontProp7x9, prompt);
-    } else if (!ended && !kh_talk_open_p(&talk)) {
-        BrPixelmapText(pm, -pm->origin_x + 12, pm->height - pm->origin_y - 24, ink, BrFontProp7x9,
-                       "WASD or left stick: walk   right drag or right stick: look   Esc: quit");
-    }
-    if (ended)
-        kh_end_card(pm, &talk, ink, accent, BR_COLOUR_RGBA(14, 13, 18, 255));
+    hud(pm, ink, accent);
+    if (G.ended)
+        kh_end_card(pm, &G.talk, ink, accent, panel);
     else
-        kh_talk_draw(&talk, pm, ink, accent, BR_COLOUR_RGBA(14, 13, 18, 255));
+        kh_talk_draw(&G.talk, pm, ink, accent, panel);
+    kh_options_draw(&G.opt, pm, ink, accent, panel);
 }
+
+static void game_event(br_demo *demo, const SDL_Event *e) { (void)demo; kh_input_event(e); }
+static void game_destroy(br_demo *demo) { (void)demo; kh_audio_close(); }
 
 static const br_demo_dispatch dispatch = {
     .init = game_init, .process_event = game_event, .update = game_update,
-    .render = game_render, .on_resize = BrDemoDefaultOnResize, .destroy = BrDemoDefaultDestroy,
+    .render = game_render, .on_resize = BrDemoDefaultOnResize, .destroy = game_destroy,
 };
 
 int main(int argc, char **argv)
 {
     br_demo_run_args args;
-    int ret;
+    char **used;
+    int ret, n;
     BrDemoDefaultArgs(&args);
     args.title = "The Keeper's Hour";
-    if (BrDemoParseArgs(&args, argc, argv) != 0)
+    used = kh_boot_argv(argc, argv, &n);
+    if (BrDemoParseArgs(&args, n, used) != 0)
         return 1;
     args.no_stats = 1;
     BrLogSetLevel(args.verbose);
     ret = BrDemoRunArg(&dispatch, &args);
-    if (SDL_getenv("KEEPERS_SMOKE") != NULL)
-        printf("keepers smoke: %d rooms entered, %d nodes opened, %d problems, run %s\n", smoke_room, smoke_node, problems, ret == 0 ? "ok" : "failed");
-    return ret != 0 ? ret : problems;
+    if (G.smoke)
+        printf("keepers smoke: %d rooms entered, %d nodes opened, %d problems, run %s\n", G.smoke_room, G.smoke_node, G.problems,
+               ret == 0 ? "ok" : "failed");
+    return ret != 0 ? ret : G.problems;
 }

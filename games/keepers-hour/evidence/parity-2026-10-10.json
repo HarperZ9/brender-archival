@@ -1,0 +1,61 @@
+{
+  "bounds": {
+    "edge_correlation_min": 0.76,
+    "silhouette_iou_min": 0.95,
+    "calibrated": "after seeing the 2026-10-10 measurements; see the module docstring"
+  },
+  "rooms": {
+    "lamp": {
+      "edge_correlation": 0.784,
+      "silhouette_iou": 0.9975,
+      "pass": true
+    },
+    "stairs": {
+      "edge_correlation": 0.855,
+      "silhouette_iou": 0.9975,
+      "pass": true
+    },
+    "radio": {
+      "edge_correlation": 0.862,
+      "silhouette_iou": 0.9987,
+      "pass": true
+    },
+    "keeper": {
+      "edge_correlation": 0.839,
+      "silhouette_iou": 0.9974,
+      "pass": true
+    },
+    "gallery": {
+      "edge_correlation": 0.831,
+      "silhouette_iou": 0.9975,
+      "pass": true
+    }
+  },
+  "wrong_room_control": {
+    "max": 0.733,
+    "all_fail": true,
+    "pairs": {
+      "lamp-gl/stairs-sw": 0.113,
+      "lamp-gl/radio-sw": 0.393,
+      "lamp-gl/keeper-sw": 0.332,
+      "lamp-gl/gallery-sw": 0.053,
+      "stairs-gl/lamp-sw": 0.262,
+      "stairs-gl/radio-sw": 0.238,
+      "stairs-gl/keeper-sw": 0.249,
+      "stairs-gl/gallery-sw": 0.069,
+      "radio-gl/lamp-sw": 0.648,
+      "radio-gl/stairs-sw": 0.223,
+      "radio-gl/keeper-sw": 0.733,
+      "radio-gl/gallery-sw": 0.039,
+      "keeper-gl/lamp-sw": 0.552,
+      "keeper-gl/stairs-sw": 0.259,
+      "keeper-gl/radio-sw": 0.657,
+      "keeper-gl/gallery-sw": 0.11,
+      "gallery-gl/lamp-sw": 0.136,
+      "gallery-gl/stairs-sw": 0.087,
+      "gallery-gl/radio-sw": 0.078,
+      "gallery-gl/keeper-sw": 0.1
+    }
+  },
+  "pass": true
+}

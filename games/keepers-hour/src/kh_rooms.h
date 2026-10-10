@@ -13,6 +13,7 @@ typedef struct kh_prop {
     float         x, z, turn;
     const char   *talker;           /* NULL: scenery */
     const char   *node;             /* script node, or "@room" for a way through */
+    const char   *tex;              /* a picture from data/art (without .ppm), or NULL */
 } kh_prop;
 
 typedef struct kh_room {

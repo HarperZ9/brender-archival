@@ -1,0 +1,2 @@
+# The pictures are binary PPM: never let a checkout rewrite their bytes.
+data/art/*.ppm binary

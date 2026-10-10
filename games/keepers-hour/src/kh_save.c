@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "kh_tex.h"
 #include "kh_save.h"
 
 const char *kh_save_path(void)
@@ -92,14 +93,14 @@ void kh_end_card(br_pixelmap *pm, const kh_talk *t, br_colour ink, br_colour acc
     char row[128];
     int v;
     BrPixelmapRectangleFill(pm, x - 24, y - 24, 408, 260, panel);
-    BrPixelmapText(pm, x, y, accent, BrFontProp7x9, "Dawn. 06:12.");
-    BrPixelmapText(pm, x, y += step * 2, ink, BrFontProp7x9, title ? title : "The night ends");
-    BrPixelmapText(pm, x, y += step * 2, accent, BrFontProp7x9, "The voices you listened to tonight:");
+    kh_text(pm, x, y, accent, "Dawn. 06:12.");
+    kh_text(pm, x, y += step * 2, ink, title ? title : "The night ends");
+    kh_text(pm, x, y += step * 2, accent, "The voices you listened to tonight:");
     for (v = 0; v < KH_VOICE_COUNT; v++) {
         snprintf(row, sizeof(row), "%-7s heard %d of %d times", kh_voice_name((kh_voice)v), t->heard[v], t->asked[v]);
-        BrPixelmapText(pm, x + 12, y += step, ink, BrFontProp7x9, row);
+        kh_text(pm, x + 12, y += step, ink, row);
     }
-    BrPixelmapText(pm, x, y += step * 2, accent, BrFontProp7x9, "R or Start: begin the night again   Esc: leave");
+    kh_text(pm, x, y += step * 2, accent, "R or Start: begin the night again   Esc: leave");
 }
 
 typedef struct route { const char *needs[2]; const char *choice; const char *ending; } route;

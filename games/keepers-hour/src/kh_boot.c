@@ -1,6 +1,7 @@
 /* The Keeper's Hour: reading the night script and checking it against the rooms.
  * SPDX-License-Identifier: MIT */
 #include <stdio.h>
+#include <string.h>
 
 #include <SDL3/SDL.h>
 #include <brender.h>
@@ -45,4 +46,21 @@ int kh_boot_load(kh_script *s)
     }
     SDL_free(text);
     return check_rooms(s);
+}
+
+/* The software renderer draws in 24-bit colour unless --software-bpp is given. */
+char **kh_boot_argv(int argc, char **argv, int *out_argc)
+{
+    static char *used[64];
+    int i, given = 0;
+    for (i = 0; i < argc && i < 60; i++) {
+        used[i] = argv[i];
+        given |= strcmp(argv[i], "--software-bpp") == 0;
+    }
+    if (!given) {
+        used[i++] = "--software-bpp";
+        used[i++] = "24";
+    }
+    *out_argc = i;
+    return used;
 }

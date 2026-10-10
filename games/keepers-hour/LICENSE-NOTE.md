@@ -2,7 +2,8 @@
 
 - **Code** (`src/`, `CMakeLists.txt`): MIT, copyright 2026 Zain Dana Harper.
   See [../../LICENSE](../../LICENSE).
-- **Words and art** (`data/`, and every model, texture, image or sound made for
+- **Words and art** (`data/`, including the pictures in `data/art/`, which
+  `tools/make_art.py` draws; and every model, texture, image or sound made for
   the game): Creative Commons Attribution 4.0 International (CC BY 4.0),
   copyright 2026 Zain Dana Harper. See
   [../../LICENSES/CC-BY-4.0.txt](../../LICENSES/CC-BY-4.0.txt).

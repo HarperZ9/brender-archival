@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "kh_shapes.h"
+#include "kh_tex.h"
 #include "kh_world.h"
 
 static br_actor *add_light(kh_room_stage *s, br_actor *parent, br_uint_8 type, int r, int g, int b)
@@ -21,13 +22,13 @@ static br_actor *add_light(kh_room_stage *s, br_actor *parent, br_uint_8 type, i
 
 static void build_shell(kh_room_stage *s, const kh_room *room)
 {
-    br_material *floor = kh_material("floor", room->floor[0], room->floor[1], room->floor[2], 0, 1);
+    /* boards indoors, stone flags outside on the gallery; stone walls */
+    br_material *floor = kh_tex_material(room->walled ? "boards" : "stone", 1);
+    br_model *floor_model = kh_prism_planar("floor", 8, 6.0f, 6.0f, -0.1f, 0.0f, 0.4f, 0.0f);
     br_actor *fill;
-    kh_place(s->root, kh_prism("floor", 8, 6.0f, 6.0f, -0.1f, 0.0f, 1, 0, 0), floor, 0, 0, 0, 22.5f);
-    if (room->walled) {
-        br_material *wall = kh_material("wall", room->wall[0], room->wall[1], room->wall[2], 1, 0);
-        kh_place(s->root, kh_prism("wall", 8, 6.0f, 5.6f, 0.0f, 4.2f, 0, 0, 1), wall, 0, 0, 0, 22.5f);
-    }
+    kh_place(s->root, floor_model, floor, 0, 0, 0, 22.5f);
+    if (room->walled)
+        kh_place(s->root, kh_prism("wall", 8, 6.0f, 5.6f, 0.0f, 4.2f, 0, 0, 1), kh_tex_material("stone", 0), 0, 0, 0, 22.5f);
     fill = add_light(s, s->root, BR_LIGHT_DIRECT, room->walled ? 120 : 70, room->walled ? 116 : 80, room->walled ? 130 : 130);
     BrMatrix34RotateX(&fill->t.t.mat, BR_ANGLE_DEG(-65));
     BrMatrix34PostRotateY(&fill->t.t.mat, BR_ANGLE_DEG(30));
@@ -46,12 +47,15 @@ static void build_prop(kh_room_stage *s, const kh_prop *p, int index)
         model = kh_prism(name, p->sides, p->r0, p->r1, p->y0, p->y1, 1, 0, 0);
         break;
     case KH_PANEL:
-        mat = kh_material(name, p->r, p->g, p->b, 0, 0);
+        mat = p->tex ? kh_tex_material(p->tex, 0) : kh_material(name, p->r, p->g, p->b, 0, 0);
         model = kh_panel(p->r0, p->y0, p->y1);
         break;
     default:
-        mat = kh_material(name, p->r, p->g, p->b, p->sides > 6, 1);
-        model = kh_prism(name, p->sides, p->r0, p->r1, p->y0, p->y1, 1, p->sides > 6, 0);
+        mat = p->tex ? kh_tex_material(p->tex, 1) : kh_material(name, p->r, p->g, p->b, p->sides > 6, 1);
+        if (p->tex && p->y1 - p->y0 < p->r0) /* a flat textured box (the letter) shows its picture once on top */
+            model = kh_prism_planar(name, p->sides, p->r0, p->r1, p->y0, p->y1, 0.5f / p->r0, 0.5f);
+        else
+            model = kh_prism(name, p->sides, p->r0, p->r1, p->y0, p->y1, 1, p->sides > 6, 0);
         break;
     }
     /* a panel shows its face to the room centre; the near ones vanish with the cutaway */
@@ -171,8 +175,8 @@ int kh_world_talker_near(const kh_world *w, float x, float z, float dx, float dz
 
 const kh_talker *kh_world_talker(const kh_world *w, int i) { return &w->rooms[w->current].talkers[i]; }
 
-br_colour kh_world_sky(const kh_world *w)
+br_colour kh_world_sky(const kh_world *w, const br_pixelmap *target)
 {
     const kh_room *room = &kh_rooms[w->current];
-    return BR_COLOUR_RGBA(room->sky[0], room->sky[1], room->sky[2], 255);
+    return kh_px(target, room->sky[0], room->sky[1], room->sky[2]);
 }

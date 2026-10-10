@@ -4,6 +4,11 @@ A short, strange, talkative game about the last night of a lighthouse on a
 coast the sea left years ago. Built on BRender, the 1990s Argonaut engine,
 running 64-bit on a modern PC. The design is in [DESIGN.md](DESIGN.md).
 
+**Milestone M3: craft.** Textured stone, boards and pictures; sound made in
+code; an options screen with volume, look speed and key remapping (F2); and
+the same scene on OpenGL and on BRender's software rasteriser
+(`--force-software`), checked room by room.
+
 **Milestone M2: a complete short game.** Five rooms (the lamp room, the stairs,
 the radio room, the keeper's room and the gallery outside), 15 things to talk
 to, 80 script nodes, and three endings at dawn, opened by what you found in the
@@ -31,6 +36,7 @@ build\keepers-hour\Release\keepers-hour.exe
 | Talk, continue, choose | E, Space, Enter or left click | A |
 | Pick a reply | 1 to 4, or Up and Down then E | D-pad, then A |
 | Leave a conversation | Esc | B |
+| Options and key remapping | F2 | Back |
 | Fullscreen | Alt+Enter | |
 | Quit | Esc outside a conversation | |
 

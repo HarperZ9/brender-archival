@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "kh_tex.h"
+#include "kh_audio.h"
 #include "kh_talk.h"
 
 static int roll_die(kh_talk *t)
@@ -21,6 +23,15 @@ void kh_talk_init(kh_talk *t, const kh_script *s, unsigned int seed)
     t->rng = seed ? seed : 1998u;
 }
 
+/* Each voice has its own note when its line appears: the Tide low, the Lens high. */
+static void line_sound(const kh_talk *t)
+{
+    const char *who = t->node->lines[t->line - 1].speaker;
+    int pitch = strcmp(who, "TIDE") == 0 ? 0 : strcmp(who, "LEDGER") == 0 ? 2 : strcmp(who, "LENS") == 0 ? 3 : 1;
+    if (t->node->nlines > 0)
+        kh_audio_play(KH_SND_LINE, pitch);
+}
+
 int kh_talk_open(kh_talk *t, const char *node_id)
 {
     const kh_node *n = kh_script_find(t->script, node_id);
@@ -32,6 +43,7 @@ int kh_talk_open(kh_talk *t, const char *node_id)
     t->choosing = n->nlines <= 1;
     t->visited[n - t->script->nodes] = 1;
     snprintf(t->last, sizeof(t->last), "%s", n->id);
+    line_sound(t);
     return 0;
 }
 
@@ -69,6 +81,8 @@ void kh_talk_advance(kh_talk *t)
         return;
     if (++t->line >= t->node->nlines)
         t->choosing = 1;
+    if (t->line <= t->node->nlines)
+        line_sound(t);
 }
 
 static const char *roll(kh_talk *t, const kh_choice *c)
@@ -77,6 +91,7 @@ static const char *roll(kh_talk *t, const kh_choice *c)
     int total = rating + a + b, pass = total >= c->target;
     snprintf(t->check, sizeof(t->check), "%s %d + dice %d + %d = %d against %d: %s", kh_voice_name(c->voice), rating, a, b, total,
              c->target, pass ? "success" : "failure");
+    kh_audio_play(KH_SND_DICE, 0);
     t->asked[c->voice]++;
     t->heard[c->voice] += pass;
     return pass ? c->pass : c->fail;
@@ -121,7 +136,7 @@ static br_int_32 wrapped(br_pixelmap *pm, br_int_32 x, br_int_32 y, br_int_32 wi
             n = last_space;
         memcpy(row, p, n);
         row[n] = '\0';
-        BrPixelmapText(pm, x, y, colour, BrFontProp7x9, row);
+        kh_text(pm, x, y, colour, row);
         y += step;
         p += n;
         while (*p == ' ') p++;
@@ -149,11 +164,11 @@ void kh_talk_draw(const kh_talk *t, br_pixelmap *pm, br_colour ink, br_colour ac
     for (i = 0; i < t->line && i < t->node->nlines; i++) {
         const kh_line *l = &t->node->lines[i];
         snprintf(label, sizeof(label), "%s", l->speaker);
-        BrPixelmapText(pm, x, y, accent, BrFontProp7x9, label);
+        kh_text(pm, x, y, accent, label);
         y = wrapped(pm, x + 72, y, width - 72, ink, l->text) + 2;
     }
     if (!t->choosing) {
-        BrPixelmapText(pm, x, y + 4, accent, BrFontProp7x9, "Space, E or A: continue");
+        kh_text(pm, x, y + 4, accent, "Space, E or A: continue");
         return;
     }
     for (i = 0; i < kh_talk_visible_count(t); i++) {
