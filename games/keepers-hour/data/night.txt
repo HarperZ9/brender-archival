@@ -1,0 +1,136 @@
+# The Keeper's Hour: the night script.
+# Words: CC BY 4.0, Zain Dana Harper. Reuse them with credit.
+# Format: see src/kh_script.c. END closes a conversation.
+
+voices: lens 3, ledger 4, tide 2, static 1
+
+== arrive
+LETTER: By order of the Coastal Authority, the light at Relay Nine is to be extinguished at dawn. There is no longer a coast to guard.
+TIDE: There is a coast. You are standing on it. It just has no sea.
+LEDGER: Dawn is at 06:12. That gives us the night. Paperwork first.
+LENS: The lamp is turning. It has not stopped in eleven years. Go and look at it.
+* Put the letter down. -> END
+
+== lamp
+LENS: Four seconds a sweep. The beam crosses the north window, the stairwell, your hands, the north window.
+STATIC: ...kssh... Relay Nine, Relay Nine, we see you... kssh...
+* Look into the lens. -> lamp_look
+* [LEDGER 9] Recite the maintenance schedule from memory. -> lamp_schedule | lamp_schedule_fail
+* [STATIC 10] Listen to whoever just said that. -> lamp_voice | lamp_voice_fail
+* Step back. -> END
+
+== lamp_look
+LENS: Three hundred and twelve facets of pressed glass. Each one holds a smaller lamp, turning.
+LENS: In the middle there is a white point you cannot look at for long. You look at it for long.
+TIDE: It is not looking back. Probably.
+* Count the facets. -> lamp_count
+* Look away. -> lamp
+
+== lamp_count
+LENS: You lose count at forty. You start again. You lose count at forty.
+LEDGER: The number is three hundred and twelve. It is written on a brass plate. You polished the plate on Tuesday.
+* Fine. -> lamp
+
+== lamp_schedule
+LEDGER: Wick trimmed daily. Lens wiped at dusk. Clockwork wound every four hours. Log signed at each winding.
+LEDGER: You have done all of these, every night, for eleven years, for nobody. That is not nothing. That is a record.
+* It is a record. -> lamp
+
+== lamp_schedule_fail
+LEDGER: Wick... daily. Lens... at some point. Something about the clockwork.
+LEDGER: We had it written down. We always have it written down. The logbook will know.
+* Ask the logbook later. -> lamp
+
+== lamp_voice
+STATIC: ...kssh... Relay Nine. This is the Marigold, out of nowhere, bound for nowhere. We have been following your light for a long time...
+STATIC: ...please do not... kssh... we would not know where we were.
+TIDE: There is no Marigold. There has not been a ship here since the water went. And yet.
+* "Marigold, this is Relay Nine. I hear you." -> lamp_marigold
+* Turn the radio down in your head. -> lamp
+
+== lamp_voice_fail
+STATIC: ...kssh... kssh... a shipping forecast for a sea that is not there. Fair, becoming poor. Good, occasionally moderate.
+* Let it fade. -> lamp
+
+== lamp_marigold
+STATIC: ...kssh...
+LENS: Nothing answers. The beam crosses your hands again.
+TIDE: You said it out loud. That counts for something. Tell the logbook.
+* Step back. -> END
+
+== logbook
+LOGBOOK: Ahem. Relay Nine, keeper's log, volume eleven. You are holding me upside down.
+LENS: The last entry is in your handwriting. It says "Nothing." in careful capitals.
+* Turn it the right way up. -> logbook_open
+* [TIDE 8] Ask it how it is. -> logbook_feelings | logbook_feelings_fail
+* Close it. -> END
+
+== logbook_open
+LOGBOOK: Four thousand and seven entries. Four thousand and six of them say "Nothing." One of them says "Gull."
+LEDGER: The gull was in the spring of the third year. We were very excited about the gull.
+* Read the gull entry. -> logbook_gull
+* Write tonight's entry. -> logbook_write
+
+== logbook_gull
+LOGBOOK: "03:40. Gull on the gallery rail. Looked at the light. Left. Light unaffected. Keeper unaffected." The ink is smudged around "unaffected."
+TIDE: It was not unaffected.
+* Close it gently. -> END
+
+== logbook_write
+LOGBOOK: The pen is ready. What happened tonight, keeper?
+* "Nothing." -> logbook_nothing
+* "A letter came." -> logbook_letter
+* "Marigold called." -> logbook_marigold
+
+== logbook_nothing
+LOGBOOK: Four thousand and eight. Consistent. I admire consistency. Goodnight.
+* Goodnight. -> END
+
+== logbook_letter
+LOGBOOK: A letter. In eleven years, a letter. I will need a second line for that.
+LEDGER: We do not have a procedure for a second line.
+TIDE: Make one.
+* Leave the pen in the book. -> END
+
+== logbook_marigold
+LOGBOOK: There is no column for ships that are not there. I will put it in the margin. The margin is where the true things go.
+* Close it. -> END
+
+== logbook_feelings
+LOGBOOK: Nobody has asked me that. I am... full. I am nearly full. There are eleven pages left.
+TIDE: Eleven pages. Eleven years. It does the arithmetic so you do not have to.
+* "We will make them count." -> END
+
+== logbook_feelings_fail
+LOGBOOK: I am a logbook. I am logged. Thank you for asking. Please do not ask again.
+* Fair enough. -> END
+
+== kettle
+KETTLE: ...
+LENS: A tin kettle on a paraffin stove. Cold. There is a ring of rust where the water line used to be.
+* Light the stove. -> kettle_light
+* [LENS 7] Look at the ring of rust. -> kettle_rust | kettle_rust_fail
+* Leave it. -> END
+
+== kettle_light
+KETTLE: Oh. Oh, that is nice. Nobody has done that since Thursday.
+TIDE: It is Thursday.
+KETTLE: Then nobody has done that since today. I will boil. It takes a while. Most things worth doing do.
+* Wait for it. -> kettle_boil
+* Leave it to boil. -> END
+
+== kettle_boil
+KETTLE: (a long, rising note, like a ship's horn heard from very far away)
+STATIC: ...kssh... Relay Nine... is that you?
+LENS: Steam crosses the beam and for a moment the light has a shape: a column, a tower, a person standing very straight.
+* Pour the tea. -> END
+
+== kettle_rust
+LENS: The rust line is three fingers below the brim, always. You fill it to the same place every night.
+LEDGER: Habit.
+TIDE: Care. They look the same from the outside.
+* Fill it to the line. -> kettle_light
+
+== kettle_rust_fail
+LENS: It is rust. On a kettle. It is very much rust on a kettle.
+* Leave it. -> END

@@ -227,7 +227,16 @@ int main(int argc, char **argv)
 {
     int ret;
     smoke_mode = SDL_getenv("BRVIEW_SMOKE") != NULL;
-    ret = BrDemoRunArgv("brview: BRender on a modern PC", &dispatch, argc, argv);
+    {
+        br_demo_run_args args;
+        BrDemoDefaultArgs(&args);
+        args.title = "brview: BRender on a modern PC";
+        if (BrDemoParseArgs(&args, argc, argv) != 0)
+            return 1;
+        args.no_stats = 1;
+        BrLogSetLevel(args.verbose);
+        ret = BrDemoRunArg(&dispatch, &args);
+    }
     if (smoke_mode)
         printf("brview smoke: %d scenes, %d failed to load, run %s\n", BrViewSceneCount(), smoke_failures, ret == 0 ? "ok" : "failed");
     return ret != 0 ? ret : smoke_failures;
