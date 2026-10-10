@@ -9,4 +9,7 @@
  * name. 0 on success; problems are logged. */
 int kh_boot_load(kh_script *s);
 
+/* argv with "--software-bpp 24" added unless the player chose a depth. */
+char **kh_boot_argv(int argc, char **argv, int *out_argc);
+
 #endif

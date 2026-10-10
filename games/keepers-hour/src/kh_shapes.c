@@ -27,6 +27,7 @@ br_material *kh_glow(const char *name, int r, int g, int b)
 }
 
 static void vertex(br_model *m, int i, float x, float y, float z) { BrVector3Set(&m->vertices[i].p, BR_SCALAR(x), BR_SCALAR(y), BR_SCALAR(z)); }
+static void uv(br_model *m, int i, float u, float v) { BrVector2Set(&m->vertices[i].map, BR_SCALAR(u), BR_SCALAR(v)); }
 
 static void face(br_model *m, int i, int a, int b, int c, br_uint_16 smoothing)
 {
@@ -36,7 +37,7 @@ static void face(br_model *m, int i, int a, int b, int c, br_uint_16 smoothing)
     m->faces[i].smoothing = smoothing;
 }
 
-br_model *kh_prism(const char *name, int n, float r0, float r1, float y0, float y1, int caps, int smooth, int inward)
+static br_model *prism_build(const char *name, int n, float r0, float r1, float y0, float y1, int caps, int smooth, int inward)
 {
     br_model *m = BrModelAllocate(name, 2 * n + 2, 2 * n + (caps ? 2 * n : 0));
     br_uint_16 group = smooth ? 1 : 0;
@@ -45,6 +46,9 @@ br_model *kh_prism(const char *name, int n, float r0, float r1, float y0, float 
         float a = 2 * KH_PI * i / n;
         vertex(m, i, r0 * cosf(a), y0, r0 * sinf(a));
         vertex(m, n + i, r1 * cosf(a), y1, r1 * sinf(a));
+        /* round the sides: one texture repeat for every two sides, two units high */
+        uv(m, i, i * 0.5f, y0 * 0.5f);
+        uv(m, n + i, i * 0.5f, y1 * 0.5f);
     }
     vertex(m, 2 * n, 0, y0, 0);
     vertex(m, 2 * n + 1, 0, y1, 0);
@@ -62,6 +66,12 @@ br_model *kh_prism(const char *name, int n, float r0, float r1, float y0, float 
             face(m, f++, 2 * n + 1, n + j, n + i, 0);
         }
     }
+    return m;
+}
+
+br_model *kh_prism(const char *name, int n, float r0, float r1, float y0, float y1, int caps, int smooth, int inward)
+{
+    br_model *m = prism_build(name, n, r0, r1, y0, y1, caps, smooth, inward);
     BrModelAdd(m);
     return m;
 }
@@ -90,6 +100,10 @@ br_model *kh_panel(float w, float y0, float y1)
     vertex(m, 1, 0, y1, -w / 2);
     vertex(m, 2, 0, y1, w / 2);
     vertex(m, 3, 0, y0, w / 2);
+    uv(m, 0, 0.0f, 1.0f);
+    uv(m, 1, 0.0f, 0.0f);
+    uv(m, 2, 1.0f, 0.0f);
+    uv(m, 3, 1.0f, 1.0f);
     face(m, 0, 0, 1, 2, 0);
     face(m, 1, 0, 2, 3, 0);
     BrModelAdd(m);
@@ -105,4 +119,15 @@ br_actor *kh_place(br_actor *parent, br_model *model, br_material *mat, float x,
     BrMatrix34RotateY(&a->t.t.mat, BR_ANGLE_DEG(turn));
     BrMatrix34PostTranslate(&a->t.t.mat, BR_SCALAR(x), BR_SCALAR(y), BR_SCALAR(z));
     return a;
+}
+
+br_model *kh_prism_planar(const char *name, int n, float r0, float r1, float y0, float y1, float scale, float offset)
+{
+    br_model *m = prism_build(name, n, r0, r1, y0, y1, 1, 0, 0);
+    int i;
+    /* u, v from x, z, set before BrModelAdd prepares (and may release) the vertices */
+    for (i = 0; i < m->nvertices; i++)
+        uv(m, i, BrScalarToFloat(m->vertices[i].p.v[0]) * scale + offset, BrScalarToFloat(m->vertices[i].p.v[2]) * scale + offset);
+    BrModelAdd(m);
+    return m;
 }

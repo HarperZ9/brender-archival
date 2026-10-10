@@ -7,6 +7,8 @@ the keeper's head, and decide what happens to the light at dawn.
 
 Run it
   Double-click keepers-hour.exe. No install is needed.
+  keepers-hour.exe --force-software draws with BRender's own 1990s-style
+  software rasteriser instead of OpenGL.
   The night is saved each time you change room. Next time you start, you
   can carry on or begin again.
 
@@ -16,6 +18,7 @@ Controls
   Talk, continue, choose  E, Space, Enter, click   A
   Pick a reply            1 to 6, or Up/Down then E   D-pad, then A
   Leave a conversation    Esc                   B
+  Options, remap keys     F2                    Back
   Fullscreen              Alt+Enter
   After dawn              R begins again        Start
 

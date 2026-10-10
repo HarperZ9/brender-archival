@@ -181,3 +181,5 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "keepers smoke exited $LASTEXITCODE" }
           if ($out -notmatch 'keepers smoke: 5 rooms entered, \d+ nodes opened, 0 problems, run ok') { throw "unexpected game smoke result" }
           if ($out -notmatch 'keepers endings: 3 of 3 reached, save ok') { throw "an ending or the save round trip failed" }
+          if ($out -notmatch 'keepers audio: peak 0\.\d+, rms 0\.\d+, 0 clipped samples') { throw "the mixer clipped or was silent" }
+          if ($out -notmatch 'keepers options: rebind and save ok') { throw "rebinding or saving options failed" }

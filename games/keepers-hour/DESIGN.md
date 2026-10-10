@@ -107,7 +107,30 @@ Every action is remappable in a later milestone; the slice ships the defaults.
 | M0 Slice (done) | lamp room, three talkers, four voices, checks, walk and look | `KEEPERS_SMOKE=1` walks a scripted route, opens every node in the lamp room and exits 0; the script parser rejects a node that links to a missing node |
 | M1 Tower (done) | all five rooms and their talkers | every node reachable from the start, checked by a graph test over `night.txt` |
 | M2 Endings (done) | the letter, three endings, a save at each room | each ending reached by a scripted route in CI |
-| M3 Craft | hand-made models and textures, sound, remapping, an options screen | software and OpenGL runs show the same scene within a stated pixel tolerance |
+| M3 Craft (done, see notes) | textures, sound, remapping, an options screen | software and OpenGL runs show the same scene: edge correlation >= 0.76 per room, with a wrong-room control that must fail |
 | M4 Release | Windows zip on GitHub releases with credits and licences | the packaged copy passes the smoke run in CI |
 
 The game stays small on purpose: one tower, one night, about 25 minutes.
+
+### Notes on M3, as built
+
+- **Pictures:** seven 128 x 128 textures (floorboards, stone, the sea chart,
+  the tower painting, Agnes's portrait, the photograph, the letter) are drawn
+  stroke by stroke by `tools/make_art.py` from fixed seeds. A test holds the
+  committed files to the script. The furniture is still built in code from
+  BRender primitives; hand-modelled `.dat` furniture is not done and moves to
+  a later milestone.
+- **Sound:** a small mixer synthesises everything (wind, the clockwork tick
+  once a sweep, radio crackle, a note per voice, dice, doors, a chord at dawn).
+  raw-native's sound engine was not used: it is web-side, and this is a native
+  C build. There are no sound files.
+- **Options:** F2 or the gamepad's Back button: volume, look speed and six
+  rebindable actions, saved in the player's preferences folder.
+- **Renderer parity:** `tools/parity.py` draws a still of every room on
+  OpenGL and on the software rasteriser and compares them. The first bounds,
+  set before measuring, also passed a wrong-room comparison, so they could not
+  tell rooms apart. The verdict now rests on edge correlation (>= 0.76), a
+  bound chosen after seeing the numbers (same room 0.78 to 0.86, wrong rooms
+  up to 0.73: a thin margin). Each run repeats the wrong-room control. Result
+  on 10 October 2026: all five rooms pass and all 20 wrong-room pairs fail
+  (`evidence/parity-2026-10-10.json`). CI has no OpenGL, so this runs locally.

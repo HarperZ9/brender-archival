@@ -7,7 +7,9 @@
 
 #define BOX(x, z, turn, w, y0, y1, r, g, b) {KH_PRISM, 4, w, w, y0, y1, r, g, b, x, z, turn, NULL, NULL}
 #define TALK_BOX(x, z, turn, w, y0, y1, r, g, b, who, node) {KH_PRISM, 4, w, w, y0, y1, r, g, b, x, z, turn, who, node}
-#define PANEL(x, z, turn, w, y0, y1, r, g, b, who, node) {KH_PANEL, 0, w, w, y0, y1, r, g, b, x, z, turn, who, node}
+#define PANEL(x, z, turn, w, y0, y1, r, g, b, who, node) {KH_PANEL, 0, w, w, y0, y1, r, g, b, x, z, turn, who, node, NULL}
+#define PICTURE(x, z, turn, w, y0, y1, tex, who, node) {KH_PANEL, 0, w, w, y0, y1, 255, 255, 255, x, z, turn, who, node, tex}
+#define TEX_BOX(x, z, turn, w, y0, y1, tex, who, node) {KH_PRISM, 4, w, w, y0, y1, 255, 255, 255, x, z, turn, who, node, tex}
 
 static const kh_prop lamp_room[] = {
     {KH_PRISM, 8, 0.9f, 0.6f, 0.0f, 1.4f, 196, 152, 64, 0.0f, 0.0f, 0, "the lamp", "lamp"},
@@ -24,7 +26,7 @@ static const kh_prop lamp_room[] = {
 };
 
 static const kh_prop stairs_room[] = {
-    {KH_PRISM, 8, 0.8f, 0.8f, 0.0f, 4.2f, 120, 112, 100, 0.0f, 0.0f, 0, NULL, NULL},
+    {KH_PRISM, 8, 0.8f, 0.8f, 0.0f, 4.2f, 255, 255, 255, 0.0f, 0.0f, 0, NULL, NULL, "stone"},
     BOX(1.3f, 0.0f, 0, 0.45f, 0.0f, 0.25f, 96, 70, 44),
     BOX(0.9f, 0.9f, 45, 0.45f, 0.25f, 0.5f, 96, 70, 44),
     BOX(0.0f, 1.3f, 90, 0.45f, 0.5f, 0.75f, 96, 70, 44),
@@ -32,8 +34,8 @@ static const kh_prop stairs_room[] = {
     BOX(-1.3f, 0.0f, 180, 0.45f, 1.0f, 1.25f, 96, 70, 44),
     BOX(-0.9f, -0.9f, 225, 0.45f, 1.25f, 1.5f, 96, 70, 44),
     TALK_BOX(2.6f, 2.4f, 10, 0.45f, 0.0f, 0.22f, 130, 96, 60, "the step that creaks", "step"),
-    PANEL(5.5f, 0.0f, 0, 1.4f, 1.2f, 2.6f, 150, 96, 60, "the first painting", "painting_one"),
-    PANEL(-3.9f, 3.9f, -135, 1.4f, 1.2f, 2.6f, 80, 110, 140, "the second painting", "painting_two"),
+    PICTURE(5.5f, 0.0f, 0, 1.4f, 1.2f, 2.6f, "painting-tower", "the first painting", "painting_one"),
+    PICTURE(-3.9f, 3.9f, -135, 1.4f, 1.2f, 2.6f, "portrait", "the second painting", "painting_two"),
     TALK_BOX(-3.6f, -3.0f, 40, 0.75f, 0.0f, 0.06f, 30, 26, 22, "the stairs up", "@lamp"),
     TALK_BOX(3.4f, -3.2f, 40, 0.75f, 0.0f, 0.06f, 30, 26, 22, "the stairs down", "@keeper"),
     TALK_BOX(-4.6f, 0.4f, 0, 0.5f, 0.0f, 2.6f, 70, 48, 32, "the radio room door", "@radio"),
@@ -43,7 +45,7 @@ static const kh_prop radio_room[] = {
     TALK_BOX(0.0f, -3.4f, 0, 1.0f, 0.0f, 1.2f, 70, 76, 70, "the radio", "radio"),
     {KH_GLOW, 6, 0.18f, 0.18f, 1.2f, 1.3f, 120, 230, 160, 0.4f, -3.0f, 0, NULL, NULL},
     BOX(0.0f, -1.8f, 0, 0.45f, 0.0f, 0.55f, 90, 64, 42),
-    PANEL(-5.5f, 0.0f, -180, 2.2f, 1.0f, 3.0f, 168, 160, 128, "the chart", "chart"),
+    PICTURE(-5.5f, 0.0f, -180, 2.2f, 1.0f, 3.0f, "chart", "the chart", "chart"),
     TALK_BOX(3.0f, 3.0f, 30, 0.5f, 0.0f, 0.45f, 120, 110, 90, "the box of letters", "letters_box"),
     TALK_BOX(4.4f, -1.2f, 0, 0.5f, 0.0f, 2.6f, 70, 48, 32, "the door to the stairs", "@stairs"),
 };
@@ -52,13 +54,13 @@ static const kh_prop keeper_room[] = {
     BOX(-3.0f, -2.4f, 30, 1.0f, 0.0f, 0.5f, 140, 130, 120),
     TALK_BOX(-2.2f, -1.6f, 30, 1.0f, 0.0f, 0.55f, 160, 150, 140, "the bed", "bed"),
     BOX(2.8f, -2.6f, 45, 0.8f, 0.0f, 0.85f, 104, 72, 46),
-    TALK_BOX(2.8f, -2.6f, 10, 0.3f, 0.85f, 0.88f, 236, 230, 214, "the letter", "letter"),
-    PANEL(5.5f, 0.0f, 0, 0.9f, 1.4f, 2.4f, 200, 180, 150, "the photograph", "photo"),
+    TEX_BOX(2.8f, -2.6f, 10, 0.3f, 0.85f, 0.88f, "letter", "the letter", "letter"),
+    PICTURE(5.5f, 0.0f, 0, 0.9f, 1.4f, 2.4f, "photograph", "the photograph", "photo"),
     TALK_BOX(-3.4f, 3.0f, 40, 0.75f, 0.0f, 0.06f, 30, 26, 22, "the stairs up", "@stairs"),
 };
 
 static const kh_prop gallery[] = {
-    {KH_PRISM, 8, 3.0f, 3.0f, 0.0f, 5.0f, 120, 112, 100, 0.0f, 0.0f, 0, NULL, NULL},
+    {KH_PRISM, 8, 3.0f, 3.0f, 0.0f, 5.0f, 255, 255, 255, 0.0f, 0.0f, 0, NULL, NULL, "stone"},
     {KH_PRISM, 16, 5.8f, 5.8f, 0.0f, 0.9f, 60, 64, 70, 0.0f, 0.0f, 0, NULL, NULL},
     {KH_GLOW, 4, 0.35f, 0.0f, -2.5f, -1.6f, 255, 214, 140, -26.0f, -4.0f, 0, NULL, NULL},
     {KH_GLOW, 4, 0.35f, 0.0f, -2.5f, -1.6f, 255, 200, 120, -27.0f, 0.0f, 0, NULL, NULL},

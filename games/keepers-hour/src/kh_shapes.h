@@ -22,6 +22,9 @@ br_model *kh_lens(float radius, float half_height);
 /* An upright quad of width w from y0 to y1 facing -x: a window or a picture. */
 br_model *kh_panel(float w, float y0, float y1);
 
+/* A capped prism with texture u, v mapped from x, z: a floor, or a flat box. */
+br_model *kh_prism_planar(const char *name, int n, float r0, float r1, float y0, float y1, float scale, float offset);
+
 br_actor *kh_place(br_actor *parent, br_model *model, br_material *mat, float x, float y, float z, float turn);
 
 #endif
