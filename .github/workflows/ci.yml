@@ -170,3 +170,13 @@ jobs:
           Write-Output $out
           if ($LASTEXITCODE -ne 0) { throw "brview smoke exited $LASTEXITCODE" }
           if ($out -notmatch 'brview smoke: 8 scenes, 0 failed to load, run ok') { throw "unexpected smoke result" }
+      - name: the game slice opens every node of its script
+        shell: pwsh
+        env:
+          SDL_VIDEODRIVER: offscreen
+          KEEPERS_SMOKE: "1"
+        run: |
+          $out = & build/keepers-hour/Release/keepers-hour.exe 2>&1 | Out-String
+          Write-Output $out
+          if ($LASTEXITCODE -ne 0) { throw "keepers smoke exited $LASTEXITCODE" }
+          if ($out -notmatch 'keepers smoke: \d+ nodes opened, 0 problems, run ok') { throw "unexpected game smoke result" }

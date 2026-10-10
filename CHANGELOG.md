@@ -2,6 +2,8 @@
 
 ## 0.3.0 (unreleased)
 
+- `games/keepers-hour`: The Keeper's Hour, design and first playable slice (the lamp room). Code MIT; words and art CC BY 4.0 (`LICENSES/CC-BY-4.0.txt`). CI opens every script node headless; tests check every link and that every node is reachable.
+- brview hides the frame-time line; the release workflow writes the .sha256 with LF so `sha256sum -c` reads it as is.
 - `modern/`: brview, a model viewer for 64-bit Windows built on BRender 1.4 from BlazingRenderer/BRender (MIT, pinned commit `ed5e7a91`) and SDL3 (zlib, `release-3.4.16`), with the 1998 sample models. Released as a Windows zip by `release-brview.yml` on `brview-v*` tags.
 - `modern/ladder64`: the 21-step ladder against BRender 1.4, 64-bit; 21 of 21 pass. CI jobs `ladder64` and `brview` run on every change.
 - `LICENSES/` adds the BlazingRenderer MIT and SDL3 zlib texts for the binary distribution.

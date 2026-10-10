@@ -68,3 +68,6 @@ install(FILES $<TARGET_FILE:SDL3::SDL3> DESTINATION .)
 foreach(f IN LISTS BRVIEW_DAT)
   install(FILES "${BRENDER132_SOURCE_DIR}/dat/${f}" DESTINATION dat)
 endforeach()
+
+# The showcase game's first playable slice.
+add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../games/keepers-hour" keepers-hour)

@@ -55,5 +55,5 @@ jobs:
           $name = "brview-$($env:GITHUB_REF_NAME -replace '^brview-v','')-windows-x64.zip"
           Compress-Archive -Path stage/brview -DestinationPath $name
           $hash = (Get-FileHash $name -Algorithm SHA256).Hash.ToLower()
-          "$hash  $name" | Out-File -Encoding ascii "$name.sha256"
+          [IO.File]::WriteAllText((Join-Path $PWD "$name.sha256"), "$hash  $name`n")
           gh release upload $env:GITHUB_REF_NAME $name "$name.sha256" --clobber
