@@ -2,6 +2,7 @@
 
 ## 0.3.0 (unreleased)
 
+- brview 0.1.1 and the game build as window-only programs (Windows GUI subsystem, SDL3 entry point): no console window opens beside them.
 - `games/keepers-hour`: The Keeper's Hour, design and first playable slice (the lamp room). Code MIT; words and art CC BY 4.0 (`LICENSES/CC-BY-4.0.txt`). CI opens every script node headless; tests check every link and that every node is reachable.
 - brview hides the frame-time line; the release workflow writes the .sha256 with LF so `sha256sum -c` reads it as is.
 - `modern/`: brview, a model viewer for 64-bit Windows built on BRender 1.4 from BlazingRenderer/BRender (MIT, pinned commit `ed5e7a91`) and SDL3 (zlib, `release-3.4.16`), with the 1998 sample models. Released as a Windows zip by `release-brview.yml` on `brview-v*` tags.

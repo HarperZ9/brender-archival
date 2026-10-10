@@ -47,7 +47,8 @@ if(NOT BRENDER132_SOURCE_DIR)
   set(BRENDER132_SOURCE_DIR "${brender132_SOURCE_DIR}")
 endif()
 
-add_executable(brview viewer/brview.c viewer/brview_scenes.c viewer/brview_scenes.h)
+# WIN32: a window-only program, so no console window opens beside it.
+add_executable(brview WIN32 viewer/brview.c viewer/brview_scenes.c viewer/brview_scenes.h)
 target_link_libraries(brview PRIVATE brdemo)
 if(MSVC)
   target_compile_definitions(brview PRIVATE _CRT_SECURE_NO_WARNINGS)
