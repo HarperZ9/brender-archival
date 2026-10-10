@@ -61,8 +61,12 @@ void kh_talk_choose(kh_talk *t, int index)
                  total, c->target, pass ? "success" : "failure");
         next = pass ? c->pass : c->fail;
     }
-    if (strcmp(next, "END") == 0 || kh_talk_open(t, next) != 0)
+    if (next[0] == '@') {
+        snprintf(t->go, sizeof(t->go), "%s", next + 1);
         t->node = NULL;
+    } else if (strcmp(next, "END") == 0 || kh_talk_open(t, next) != 0) {
+        t->node = NULL;
+    }
 }
 
 /* Draw text wrapped to width; returns the y below the last row. */

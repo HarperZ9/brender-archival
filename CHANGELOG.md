@@ -2,6 +2,7 @@
 
 ## 0.3.0 (unreleased)
 
+- The Keeper's Hour M1, the tower: five rooms built from a room table (lamp room, stairs, radio room, keeper's room, gallery), doors between them, 15 talkers and 75 script nodes. Shapes move to kh_shapes.c; rooms are data in kh_rooms.c. CI enters every room and opens every node; tests check every door leads somewhere and back.
 - brview 0.1.1 and the game build as window-only programs (Windows GUI subsystem, SDL3 entry point): no console window opens beside them.
 - `games/keepers-hour`: The Keeper's Hour, design and first playable slice (the lamp room). Code MIT; words and art CC BY 4.0 (`LICENSES/CC-BY-4.0.txt`). CI opens every script node headless; tests check every link and that every node is reachable.
 - brview hides the frame-time line; the release workflow writes the .sha256 with LF so `sha256sum -c` reads it as is.

@@ -4,9 +4,11 @@ A short, strange, talkative game about the last night of a lighthouse on a
 coast the sea left years ago. Built on BRender, the 1990s Argonaut engine,
 running 64-bit on a modern PC. The design is in [DESIGN.md](DESIGN.md).
 
-**This is the first playable slice:** the lamp room. Walk around it, talk to
-the lamp, the logbook and the kettle, and listen to the four voices in the
-keeper's head argue. Every skill check shows its dice.
+**Milestone M1, the tower:** five rooms (the lamp room, the stairs, the radio
+room, the keeper's room and the gallery outside), 15 things to talk to, and
+75 script nodes. Walk between rooms through the doors and stairs, listen to
+the four voices in the keeper's head argue, and watch every skill check show
+its dice. The endings come in M2.
 
 ## Play it
 
@@ -29,7 +31,7 @@ build\keepers-hour\Release\keepers-hour.exe
 | Quit | Esc outside a conversation | |
 
 For writers: `KEEPERS_OPEN=lamp keepers-hour.exe` starts inside any node of
-[data/night.txt](data/night.txt). `KEEPERS_SMOKE=1` opens every node once and
+[data/night.txt](data/night.txt), and `KEEPERS_ROOM=gallery` starts in any room. `KEEPERS_SMOKE=1` opens every node once and
 reports problems; CI runs it, and `tests/test_keepers_script.py` checks that
 every link resolves and every node can be reached.
 

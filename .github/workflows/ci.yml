@@ -179,4 +179,4 @@ jobs:
           $out = & build/keepers-hour/Release/keepers-hour.exe 2>&1 | Out-String
           Write-Output $out
           if ($LASTEXITCODE -ne 0) { throw "keepers smoke exited $LASTEXITCODE" }
-          if ($out -notmatch 'keepers smoke: \d+ nodes opened, 0 problems, run ok') { throw "unexpected game smoke result" }
+          if ($out -notmatch 'keepers smoke: 5 rooms entered, \d+ nodes opened, 0 problems, run ok') { throw "unexpected game smoke result" }

@@ -15,6 +15,7 @@ typedef struct kh_talk {
     char             check[160]; /* the last roll, shown in full */
     unsigned int     rng;
     int              visited[KH_MAX_NODES];
+    char             go[KH_ID_LEN]; /* set when a choice leads to "@room": the room to walk to */
 } kh_talk;
 
 void kh_talk_init(kh_talk *t, const kh_script *s, unsigned int seed);

@@ -104,8 +104,8 @@ Every action is remappable in a later milestone; the slice ships the defaults.
 
 | Milestone | What ships | Exit check a test can run |
 |---|---|---|
-| M0 Slice | lamp room, three talkers, four voices, checks, walk and look | `KEEPERS_SMOKE=1` walks a scripted route, opens every node in the lamp room and exits 0; the script parser rejects a node that links to a missing node |
-| M1 Tower | all five rooms and their talkers | every node reachable from the start, checked by a graph test over `night.txt` |
+| M0 Slice (done) | lamp room, three talkers, four voices, checks, walk and look | `KEEPERS_SMOKE=1` walks a scripted route, opens every node in the lamp room and exits 0; the script parser rejects a node that links to a missing node |
+| M1 Tower (done) | all five rooms and their talkers | every node reachable from the start, checked by a graph test over `night.txt` |
 | M2 Endings | the letter, three endings, a save at each room | each ending reached by a scripted route in CI |
 | M3 Craft | hand-made models and textures, sound, remapping, an options screen | software and OpenGL runs show the same scene within a stated pixel tolerance |
 | M4 Release | Windows zip on GitHub releases with credits and licences | the packaged copy passes the smoke run in CI |
