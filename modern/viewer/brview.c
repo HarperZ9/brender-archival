@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h> /* the platform entry point: WinMain for a window-only program */
 #include <brender.h>
 #include "brdemo.h"
 #include "brview_scenes.h"
