@@ -53,8 +53,10 @@ dependency, and the period build in the rest of this repository does not use it.
 
 ## Build it yourself
 
-Needs CMake 3.24 or newer and a C compiler (Visual Studio 2022 or newer on
-Windows). The first configure fetches the three pinned sources.
+Needs CMake 3.24 or newer, a C compiler (Visual Studio 2022 or newer on
+Windows), and `glslang` and `spirv-cross` on the PATH for BRender's OpenGL
+driver (both come with the Vulkan SDK, or `vcpkg install glslang[tools]
+spirv-cross`). The first configure fetches the three pinned sources.
 
 ```
 cmake -S modern -B build -A x64

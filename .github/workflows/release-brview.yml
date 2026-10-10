@@ -14,6 +14,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: shader tools for the OpenGL driver (glslang, spirv-cross)
+        shell: pwsh
+        run: |
+          vcpkg install glslang[tools]:x64-windows spirv-cross:x64-windows
+          $tools = Join-Path $env:VCPKG_INSTALLATION_ROOT 'installed/x64-windows/tools'
+          foreach ($exe in 'glslang.exe', 'spirv-cross.exe') {
+            $hit = Get-ChildItem -Path $tools -Recurse -Filter $exe | Select-Object -First 1
+            if (-not $hit) { throw "vcpkg did not install $exe" }
+            Add-Content $env:GITHUB_PATH $hit.DirectoryName
+          }
       - name: build
         run: |
           cmake -S modern -B build -A x64
