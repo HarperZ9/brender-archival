@@ -122,6 +122,9 @@ release media, provenance manifest, `SHA256SUMS.txt`, and
 
 ## Reproduce the BRender build
 
+The `engine-revival` command comes from the [Engine Revival](https://github.com/HarperZ9/engine-revival)
+package, pinned in `pyproject.toml`; installing this repository installs it.
+
 ```powershell
 python -m pip install -e ".[test]"
 engine-revival materialize-brender-harness `
@@ -153,18 +156,19 @@ Findings live as structured JSON records first (`readiness/`, `harnesses/`,
 `attempts/`, `reproductions/`, `sources/`, `targets/`, ...), and generated pages
 under `docs/generated/` are views over that corpus.
 
-![A table of twelve rows: what is in the archive, how many of it there are, and where each number is read from. Twelve record kinds are named in RECORD_DIRS, and three hundred and forty-two JSON records sit across their directories, with sources leading at seventy-eight and artifacts and accessions at sixty each. Twenty-three engine targets span fifteen categories: eight carry curated public sources and fifteen carry curated public metadata. Sixty-two of the seventy-eight sources are rated high confidence and sixteen moderate. Five artifacts are marked do-not-redistribute; four are metadata-only and one is public-reference, so none of them is publishable, and their accessions all record no holding. The audit command returns no messages against the whole corpus. Twelve schemas name the required fields. The report command writes two hundred and fourteen files and leaves the tree byte-identical. The BRender ladder runs twenty-one targets under CTest, the materializer generates thirty-one files, and the FLOAT core is built from eight upstream directories under nine compile definitions. One hundred and thirty Python tests cover the loaders, the reports, the audit, the materializer, the packager, and every number drawn here.](docs/art/corpus-table.svg)
+![A table of twelve rows: what is in the archive, how many of it there are, and where each number is read from. Twelve record kinds are named in RECORD_DIRS, and three hundred and forty-two JSON records sit across their directories, with sources leading at seventy-eight and artifacts and accessions at sixty each. Twenty-three engine targets span fifteen categories: eight carry curated public sources and fifteen carry curated public metadata. Sixty-two of the seventy-eight sources are rated high confidence and sixteen moderate. Five artifacts are marked do-not-redistribute; four are metadata-only and one is public-reference, so none of them is publishable, and their accessions all record no holding. The audit command returns no messages against the whole corpus. Twelve schemas name the required fields. The report command writes two hundred and fourteen files and leaves the tree byte-identical. The BRender ladder runs twenty-one targets under CTest, the materializer generates thirty-one files, and the FLOAT core is built from eight upstream directories under nine compile definitions. Twenty-two Python tests cover the release media, the packager, the project metadata and every number drawn here; the engine-revival package carries its own tests.](docs/art/corpus-table.svg)
 
 ## License
 
 MIT, the same terms Argonaut's BRender v1.3.2 was published under. Copyright
 2026 Zain Dana Harper; see [LICENSE](LICENSE). This covers the whole
-repository, `compat/` and `gallery/` included.
+repository, `gallery/` included.
 
-- `compat/` ports routines from the BRender v1.3.2 source. Ported material
-  keeps its upstream notice, copyright 1998 Argonaut Software Limited, in
-  [LICENSES/MIT-BRender.txt](LICENSES/MIT-BRender.txt). See
-  [compat/LICENSE-NOTE.md](compat/LICENSE-NOTE.md).
+- The C ports of BRender routines that the harness builds ship in the
+  engine-revival package (`engine_revival/brender_compat/`), MIT, with their
+  upstream notice. Material from BRender keeps that notice, copyright 1998
+  Argonaut Software Limited, also kept here in
+  [LICENSES/MIT-BRender.txt](LICENSES/MIT-BRender.txt).
 - `gallery/` holds frames rendered with BRender. See
   [gallery/LICENSE-NOTE.md](gallery/LICENSE-NOTE.md).
 

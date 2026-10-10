@@ -32,7 +32,7 @@ def _decode_staged_text(path: Path) -> str | None:
     return None
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from test_brender_harness_materializer import _write_source_fixture
+from brender_source_fixture import _write_source_fixture
 
 
 def test_package_stages_harness_docs_evidence_and_receipt(tmp_path):

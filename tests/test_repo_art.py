@@ -125,10 +125,13 @@ def test_one_schema_file_per_record_kind():
     from engine_revival.schema import load_schema
 
     assert CARD["schemas"]["value"] == "twelve files"
-    files = sorted((ROOT / "schemas").glob("*.schema.json"))
+    from engine_revival.validate import _schema_root
+
+    # the schemas ship inside the pinned engine-revival package
+    files = sorted((_schema_root() / "schemas").glob("*.schema.json"))
     assert len(files) == 12
     for kind in RECORD_DIRS:
-        assert load_schema(ROOT, kind).required
+        assert load_schema(_schema_root(), kind).required
 
 
 def test_the_report_writes_two_hundred_and_fourteen_files(tmp_path):

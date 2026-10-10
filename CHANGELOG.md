@@ -2,6 +2,8 @@
 
 ## 0.3.0 (unreleased)
 
+- The `engine_revival` package now lives only in [engine-revival](https://github.com/HarperZ9/engine-revival), pinned here at v0.3.0. `src/`, `schemas/` and `compat/` are removed from this repository, and so are the package tests, which run in engine-revival.
+- The project is named `brender-archival` in `pyproject.toml` and installs no package of its own.
 - The repository is MIT licensed, matching the terms BRender v1.3.2 was published under. This includes `compat/` and `gallery/`, which were AGPL-3.0-or-later.
 - The upstream BRender notice (copyright 1998 Argonaut Software Limited) stays in `LICENSES/MIT-BRender.txt` and is now shipped in the package metadata beside `LICENSE`.
 - The two `compat/` C files carry SPDX MIT headers naming both copyright holders.
