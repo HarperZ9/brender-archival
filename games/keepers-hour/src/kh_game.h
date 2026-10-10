@@ -18,8 +18,6 @@ typedef struct kh_game {
     int          near_talker, ended, problems;
     int          smoke, smoke_node, smoke_room, smoke_ends;
     SDL_Gamepad *pad;
-    const char  *shot_path;  /* KEEPERS_SHOT=<file.ppm>: draw one still of the room, save it, quit */
-    int          shot_frames;
 } kh_game;
 
 extern kh_game G;

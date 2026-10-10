@@ -183,3 +183,22 @@ jobs:
           if ($out -notmatch 'keepers endings: 3 of 3 reached, save ok') { throw "an ending or the save round trip failed" }
           if ($out -notmatch 'keepers audio: peak 0\.\d+, rms 0\.\d+, 0 clipped samples') { throw "the mixer clipped or was silent" }
           if ($out -notmatch 'keepers options: rebind and save ok') { throw "rebinding or saving options failed" }
+      - name: the frame recorder is deterministic and the lamp moves
+        shell: pwsh
+        env:
+          SDL_VIDEODRIVER: offscreen
+          KEEPERS_SECONDS: "0.2"
+          KEEPERS_YAW_SPEED: "30"
+        run: |
+          foreach ($run in 'a', 'b') {
+            $env:KEEPERS_RECORD = Join-Path $env:RUNNER_TEMP "rec-$run"
+            & build/keepers-hour/Release/keepers-hour.exe | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "recording $run exited $LASTEXITCODE" }
+          }
+          $a = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rec-a') -Filter *.ppm | Sort-Object Name
+          $b = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'rec-b') -Filter *.ppm | Sort-Object Name
+          if ($a.Count -ne 6 -or $b.Count -ne 6) { throw "expected 6 frames, got $($a.Count) and $($b.Count)" }
+          for ($i = 0; $i -lt 6; $i++) {
+            if ((Get-FileHash $a[$i].FullName).Hash -ne (Get-FileHash $b[$i].FullName).Hash) { throw "frame $i differs between runs" }
+          }
+          if ((Get-FileHash $a[0].FullName).Hash -eq (Get-FileHash $a[5].FullName).Hash) { throw "the first and last frames are the same: nothing moved" }

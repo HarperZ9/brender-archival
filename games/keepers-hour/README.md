@@ -44,6 +44,23 @@ build\keepers-hour\Release\keepers-hour.exe
 | Fullscreen | Alt+Enter | |
 | Quit | Esc outside a conversation | |
 
+For films: `KEEPERS_RECORD=<dir>` writes numbered PPM frames at a fixed step
+of game time, with no wall clock, so two runs give the same bytes. Settings
+are in [src/kh_capture.h](src/kh_capture.h); one lamp sweep, 30 frames a
+second, slowly turning:
+
+```
+set KEEPERS_ROOM=lamp
+set KEEPERS_RECORD=frames
+set KEEPERS_FPS=30
+set KEEPERS_SECONDS=4
+set KEEPERS_YAW_SPEED=6
+keepers-hour.exe
+```
+
+`KEEPERS_SHOT=<file.ppm>` draws one still; `KEEPERS_CLOCK=<seconds>` sets the
+lamp's angle for it (90 degrees a second).
+
 For writers: `KEEPERS_OPEN=lamp keepers-hour.exe` starts inside any node of
 [data/night.txt](data/night.txt), and `KEEPERS_ROOM=gallery` starts in any room. `KEEPERS_SMOKE=1` opens every node once and
 reports problems; CI runs it, and `tests/test_keepers_script.py` checks that
