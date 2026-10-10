@@ -4,6 +4,10 @@ A short, strange, talkative game about the last night of a lighthouse on a
 coast the sea left years ago. Built on BRender, the 1990s Argonaut engine,
 running 64-bit on a modern PC. The design is in [DESIGN.md](DESIGN.md).
 
+**Milestone M4: released.** Credits on the dawn card and in CREDITS.txt; the
+release workflow publishes a build only after the packaged copy passes the
+full smoke run. All four milestones in DESIGN.md are done.
+
 **Milestone M3: craft.** Textured stone, boards and pictures; sound made in
 code; an options screen with volume, look speed and key remapping (F2); and
 the same scene on OpenGL and on BRender's software rasteriser

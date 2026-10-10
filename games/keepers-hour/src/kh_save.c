@@ -92,7 +92,14 @@ void kh_end_card(br_pixelmap *pm, const kh_talk *t, br_colour ink, br_colour acc
     br_int_32 x = -180, y = -110, step = BrPixelmapTextHeight(pm, BrFontProp7x9) + 8;
     char row[128];
     int v;
-    BrPixelmapRectangleFill(pm, x - 24, y - 24, 408, 260, panel);
+    static const char *credits[] = {
+        "The Keeper's Hour, by Zain Dana Harper. Words and pictures CC BY 4.0, code MIT.",
+        "Drawn by BRender, Argonaut Software's engine (1998, MIT),",
+        "running as BRender 1.4 by BlazingRenderer: Zane van Iperen, erysdren and contributors.",
+        "Window, sound and gamepad by SDL3: Sam Lantinga and contributors (zlib).",
+    };
+    int c;
+    BrPixelmapRectangleFill(pm, x - 24, y - 24, 560, 360, panel);
     kh_text(pm, x, y, accent, "Dawn. 06:12.");
     kh_text(pm, x, y += step * 2, ink, title ? title : "The night ends");
     kh_text(pm, x, y += step * 2, accent, "The voices you listened to tonight:");
@@ -101,6 +108,8 @@ void kh_end_card(br_pixelmap *pm, const kh_talk *t, br_colour ink, br_colour acc
         kh_text(pm, x + 12, y += step, ink, row);
     }
     kh_text(pm, x, y += step * 2, accent, "R or Start: begin the night again   Esc: leave");
+    for (c = 0, y += step; c < (int)(sizeof(credits) / sizeof(credits[0])); c++)
+        kh_text(pm, x, y += step, ink, credits[c]);
 }
 
 typedef struct route { const char *needs[2]; const char *choice; const char *ending; } route;

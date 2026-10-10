@@ -108,7 +108,7 @@ Every action is remappable in a later milestone; the slice ships the defaults.
 | M1 Tower (done) | all five rooms and their talkers | every node reachable from the start, checked by a graph test over `night.txt` |
 | M2 Endings (done) | the letter, three endings, a save at each room | each ending reached by a scripted route in CI |
 | M3 Craft (done, see notes) | textures, sound, remapping, an options screen | software and OpenGL runs show the same scene: edge correlation >= 0.76 per room, with a wrong-room control that must fail |
-| M4 Release | Windows zip on GitHub releases with credits and licences | the packaged copy passes the smoke run in CI |
+| M4 Release (done) | Windows zip on GitHub releases with credits and licences | the packaged copy passes the smoke run in CI (`release-keepers.yml` refuses to publish otherwise) |
 
 The game stays small on purpose: one tower, one night, about 25 minutes.
 
