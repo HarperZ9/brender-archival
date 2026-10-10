@@ -5,8 +5,10 @@
  *   SPEAKER: a line of dialogue
  *   * A plain choice -> next_node
  *   * [LEDGER 9] A checked choice -> on_success | on_failure
+ *   * (?node_id) A choice shown only after node_id was visited -> next
  *
- * Lines starting with # are comments. END closes the conversation.
+ * Lines starting with # are comments. END closes the conversation, "@room"
+ * walks to a room, and "@@end" ends the night.
  * SPDX-License-Identifier: MIT */
 #include <ctype.h>
 #include <stdio.h>
@@ -62,6 +64,13 @@ static int parse_choice(kh_choice *c, const char *p)
     c->voice = KH_NO_VOICE;
     if (arrow == NULL) return -1;
     while (isspace((unsigned char)*p)) p++;
+    if (p[0] == '(' && p[1] == '?') {
+        const char *close = strchr(p, ')');
+        if (close == NULL) return -1;
+        trim_copy(c->needs, sizeof(c->needs), p + 2, (size_t)(close - p - 2));
+        p = close + 1;
+        while (isspace((unsigned char)*p)) p++;
+    }
     if (*p == '[') {
         char word[16] = {0};
         if (sscanf(p + 1, "%15s %d]", word, &c->target) != 2) return -1;
@@ -144,7 +153,8 @@ int kh_script_check_links(const kh_script *s, char *err, size_t err_len)
     for (i = 0; i < s->nnodes; i++)
         for (j = 0; j < s->nodes[i].nchoices; j++) {
             const kh_choice *c = &s->nodes[i].choices[j];
-            const char *bad = !link_ok(s, c->pass) ? c->pass : (c->fail[0] && !link_ok(s, c->fail)) ? c->fail : NULL;
+            const char *bad = !link_ok(s, c->pass) ? c->pass : (c->fail[0] && !link_ok(s, c->fail)) ? c->fail
+                            : (c->needs[0] && kh_script_find(s, c->needs) == NULL) ? c->needs : NULL;
             if (bad && broken++ == 0)
                 snprintf(err, err_len, "node %s links to missing node %s", s->nodes[i].id, bad);
         }

@@ -18,7 +18,7 @@ def _nodes():
             current = line[2:].strip()
             nodes[current] = []
         elif line.startswith("*"):
-            check = re.match(r"\*\s*\[(\w+) (\d+)\]", line)
+            check = re.match(r"\*\s*(?:\(\?\w+\)\s*)?\[(\w+) (\d+)\]", line)
             targets = [t.strip() for t in line.split("->", 1)[1].split("|")]
             nodes[current].append((check.group(1) if check else None, targets))
     return nodes
@@ -43,7 +43,8 @@ def _talkers():
 
 
 def _starts():
-    return {node for _, _, node in _talkers() if not node.startswith("@")} | {"arrive"}
+    # the night opens at "arrive", or at "resume" when a saved night is waiting
+    return {node for _, _, node in _talkers() if not node.startswith("@")} | {"arrive", "resume"}
 
 
 def test_every_link_leads_to_a_node_or_end():
@@ -51,7 +52,8 @@ def test_every_link_leads_to_a_node_or_end():
     for node, choices in nodes.items():
         for voice, targets in choices:
             for target in targets:
-                ok = target == "END" or target in nodes or (target.startswith("@") and target[1:] in _rooms())
+                ok = target in ("END", "@@end", "@@continue", "@@new") or target in nodes or (
+                    target.startswith("@") and target[1:] in _rooms())
                 assert ok, f"{node} -> {target}"
             if voice is not None:
                 assert voice in VOICES, voice
@@ -64,7 +66,7 @@ def test_every_node_is_reachable_from_a_talker():
     assert set(stack) <= set(nodes), set(stack) - set(nodes)
     while stack:
         node = stack.pop()
-        if node in seen or node == "END":
+        if node in seen or node == "END" or node.startswith("@"):
             continue
         seen.add(node)
         stack.extend(t for _, targets in nodes[node] for t in targets)
@@ -107,3 +109,20 @@ def test_every_talker_starts_a_node_that_exists():
     assert len(talkers) >= 15
     for room, who, node in talkers:
         assert node in nodes, f"{room}: {who} -> {node}"
+
+
+def test_every_condition_names_a_node():
+    text = SCRIPT.read_text(encoding="utf-8")
+    nodes = _nodes()
+    for needs in re.findall(r"^\*\s*\(\?(\w+)\)", text, re.M):
+        assert needs in nodes, needs
+
+
+def test_three_endings_each_end_the_night_and_are_reached_from_the_decision():
+    nodes = _nodes()
+    endings = ["ending_keep", "ending_ceremony", "ending_town"]
+    decide_targets = [t for _, targets in nodes["decide"] for t in targets]
+    for ending in endings:
+        assert ending in decide_targets, ending
+        assert [t for _, targets in nodes[ending] for t in targets] == ["@@end"], ending
+    assert "decide" in [t for _, targets in nodes["lamp"] for t in targets]
