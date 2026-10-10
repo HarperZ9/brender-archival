@@ -20,6 +20,17 @@ vendors no proprietary source, no game assets, and no restricted material.
 BRender is the current flagship release lane. The rest of the roster remains in
 progress.
 
+## Run BRender on a modern PC
+
+**brview** opens the 1998 sample models in a window on 64-bit Windows, with
+mouse, keyboard and gamepad controls. Download the zip from
+[releases](https://github.com/HarperZ9/brender-archival/releases), unzip it and run
+`brview.exe`. It is built on BRender 1.4 from
+[BlazingRenderer/BRender](https://github.com/BlazingRenderer/BRender), the maintained
+modern fork (MIT), and the same 21-step ladder passes against it 64-bit. How it
+is built, what is pinned and how to build it yourself:
+[modern/README.md](modern/README.md).
+
 ## BRender: rebuilt and rendering
 
 From the public BRender v1.3.2 source snapshot (MIT, provenance via Foone
@@ -156,7 +167,7 @@ Findings live as structured JSON records first (`readiness/`, `harnesses/`,
 `attempts/`, `reproductions/`, `sources/`, `targets/`, ...), and generated pages
 under `docs/generated/` are views over that corpus.
 
-![A table of twelve rows: what is in the archive, how many of it there are, and where each number is read from. Twelve record kinds are named in RECORD_DIRS, and three hundred and forty-two JSON records sit across their directories, with sources leading at seventy-eight and artifacts and accessions at sixty each. Twenty-three engine targets span fifteen categories: eight carry curated public sources and fifteen carry curated public metadata. Sixty-two of the seventy-eight sources are rated high confidence and sixteen moderate. Five artifacts are marked do-not-redistribute; four are metadata-only and one is public-reference, so none of them is publishable, and their accessions all record no holding. The audit command returns no messages against the whole corpus. Twelve schemas name the required fields. The report command writes two hundred and fourteen files and leaves the tree byte-identical. The BRender ladder runs twenty-one targets under CTest, the materializer generates thirty-one files, and the FLOAT core is built from eight upstream directories under nine compile definitions. Twenty-two Python tests cover the release media, the packager, the project metadata and every number drawn here; the engine-revival package carries its own tests.](docs/art/corpus-table.svg)
+![A table of twelve rows: what is in the archive, how many of it there are, and where each number is read from. Twelve record kinds are named in RECORD_DIRS, and three hundred and forty-two JSON records sit across their directories, with sources leading at seventy-eight and artifacts and accessions at sixty each. Twenty-three engine targets span fifteen categories: eight carry curated public sources and fifteen carry curated public metadata. Sixty-two of the seventy-eight sources are rated high confidence and sixteen moderate. Five artifacts are marked do-not-redistribute; four are metadata-only and one is public-reference, so none of them is publishable, and their accessions all record no holding. The audit command returns no messages against the whole corpus. Twelve schemas name the required fields. The report command writes two hundred and fourteen files and leaves the tree byte-identical. The BRender ladder runs twenty-one targets under CTest, the materializer generates thirty-one files, and the FLOAT core is built from eight upstream directories under nine compile definitions. Twenty-five Python tests cover the release media, the packager, the project metadata, the modern build pins and every number drawn here; the engine-revival package carries its own tests.](docs/art/corpus-table.svg)
 
 ## License
 
