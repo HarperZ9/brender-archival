@@ -1,0 +1,16 @@
+The Keeper's Hour: credits
+==========================
+
+Writing, pictures, sound design and code: Zain Dana Harper.
+  Words and pictures: CC BY 4.0. Code: MIT.
+
+Engine: BRender, the real-time 3D engine by Argonaut Software
+  (version 1.3.2, 1998; source published under MIT by Foone Turing with
+  the approval of Argonaut's former CEO Jez San).
+  Running as BRender 1.4 from BlazingRenderer/BRender: Zane van Iperen,
+  erysdren and contributors (MIT).
+
+Window, input, gamepad and audio: SDL3, Sam Lantinga and contributors
+  (zlib licence).
+
+The licence texts are in the licences folder.

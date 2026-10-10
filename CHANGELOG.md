@@ -2,6 +2,7 @@
 
 ## 0.3.0 (unreleased)
 
+- The Keeper's Hour M4, release: credits on the dawn card and CREDITS.txt in the zip; the release workflow publishes only after the packaged copy passes the full smoke run.
 - The Keeper's Hour M3, craft: seven textures drawn by tools/make_art.py (held to the script by a test); a synthesised sound mixer; options and key remapping (F2); the software renderer defaults to 24-bit and draws its text through memory; tools/parity.py compares OpenGL and software stills per room with a wrong-room control (all 5 pass, 20 of 20 controls fail; evidence committed).
 - The Keeper's Hour M2, the endings: a decision at the lamp opens three endings, shown or hidden by what the night has found (`(?node)` choices); an end card shows which voices you listened to; the night saves at each room and offers to carry on. CI reaches all three endings by fixed routes and round-trips a save. `release-keepers.yml` packages the game for Windows on `keepers-v*` tags.
 - The Keeper's Hour M1, the tower: five rooms built from a room table (lamp room, stairs, radio room, keeper's room, gallery), doors between them, 15 talkers and 75 script nodes. Shapes move to kh_shapes.c; rooms are data in kh_rooms.c. CI enters every room and opens every node; tests check every door leads somewhere and back.

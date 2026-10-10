@@ -33,6 +33,7 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item games/keepers-hour/QUICKSTART.txt stage/keepers-hour/
+          Copy-Item games/keepers-hour/CREDITS.txt stage/keepers-hour/
           New-Item -ItemType Directory stage/keepers-hour/licences | Out-Null
           Copy-Item LICENSE stage/keepers-hour/licences/code-MIT.txt
           Copy-Item LICENSES/CC-BY-4.0.txt stage/keepers-hour/licences/words-and-art-CC-BY-4.0.txt
