@@ -1,4 +1,10 @@
 /*
+ * SPDX-License-Identifier: MIT
+ * Portions copyright (c) 1998 Argonaut Software Limited (BRender v1.3.2).
+ * Copyright (c) 2026 Zain Dana Harper.
+ * See compat/LICENSE-NOTE.md, LICENSE and LICENSES/MIT-BRender.txt.
+ */
+/*
  * Pentprim C port: DIAGNOSTIC build - every stub prints when called.
  * This traces which rasterizer functions fire during BrZbSceneRender.
  */

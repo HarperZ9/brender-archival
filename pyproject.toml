@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "engine-revival"
-version = "0.2.0"
+version = "0.3.0"
 description = "brender-archival: revival of Argonaut BRender and the tooling spine for reviving historical rendering and game engines."
 readme = "README.md"
 requires-python = ">=3.11"
-license = "FSL-1.1-MIT"
-license-files = ["LICENSE"]
+license = "MIT"
+license-files = ["LICENSE", "LICENSES/MIT-BRender.txt"]
 authors = [{ name = "Zain Dana Harper" }]
 keywords = ["brender", "game-engines", "rendering", "preservation", "archives", "provenance"]
 dependencies = []
