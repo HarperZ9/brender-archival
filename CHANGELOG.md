@@ -2,6 +2,7 @@
 
 ## 0.3.0 (unreleased)
 
+- The Keeper's Hour: KEEPERS_RECORD writes numbered frames at a fixed step of game time (KEEPERS_FPS, KEEPERS_SECONDS, KEEPERS_CLOCK, KEEPERS_YAW, KEEPERS_YAW_SPEED, KEEPERS_CAPTURE_UI), for the trailer; KEEPERS_CLOCK also sets the lamp angle of a KEEPERS_SHOT still. CI records twice headless and requires identical bytes and a moving picture.
 - The Keeper's Hour M4, release: credits on the dawn card and CREDITS.txt in the zip; the release workflow publishes only after the packaged copy passes the full smoke run.
 - The Keeper's Hour M3, craft: seven textures drawn by tools/make_art.py (held to the script by a test); a synthesised sound mixer; options and key remapping (F2); the software renderer defaults to 24-bit and draws its text through memory; tools/parity.py compares OpenGL and software stills per room with a wrong-room control (all 5 pass, 20 of 20 controls fail; evidence committed).
 - The Keeper's Hour M2, the endings: a decision at the lamp opens three endings, shown or hidden by what the night has found (`(?node)` choices); an end card shows which voices you listened to; the night saves at each room and offers to carry on. CI reaches all three endings by fixed routes and round-trips a save. `release-keepers.yml` packages the game for Windows on `keepers-v*` tags.

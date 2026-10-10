@@ -5,6 +5,7 @@
  *   KEEPERS_SMOKE=1   enter every room, open every node, reach every ending,
  *                     round-trip a save; the exit code counts the problems
  *   KEEPERS_SHOT=f    draw one still of the room into f (PPM) and quit
+ *   KEEPERS_RECORD=d  write numbered frames at a fixed step (see kh_capture.h)
  *   KEEPERS_ROOM=r    start in room r      KEEPERS_OPEN=n   start in node n
  * SPDX-License-Identifier: MIT */
 #include <math.h>
@@ -17,6 +18,7 @@
 #include "brdemo.h"
 #include "kh_audio.h"
 #include "kh_boot.h"
+#include "kh_capture.h"
 #include "kh_game.h"
 #include "kh_save.h"
 #include "kh_tex.h"
@@ -98,11 +100,11 @@ static br_error game_init(br_demo *demo)
     br_camera *c;
     SDL_InitSubSystem(SDL_INIT_GAMEPAD);
     G.smoke = SDL_getenv("KEEPERS_SMOKE") != NULL;
-    G.shot_path = SDL_getenv("KEEPERS_SHOT");
+    kh_capture_init();
     if (kh_boot_load(&G.script) != 0)
         return BRE_FAIL;
     kh_options_load(&G.opt, kh_options_path());
-    if (!G.smoke && !G.shot_path && kh_audio_open() == 0)
+    if (!G.smoke && !kh_capture_active() && kh_audio_open() == 0)
         kh_audio_volume(G.opt.volume);
     kh_talk_init(&G.talk, &G.script, 1998u);
     demo->camera = BrActorAdd(demo->world, BrActorAllocate(BR_ACTOR_CAMERA, NULL));
@@ -116,12 +118,11 @@ static br_error game_init(br_demo *demo)
     demo->order_table->max_z = c->yon_z;
     kh_world_build(&G.world, demo->world);
     enter(kh_room_find(room && kh_room_find(room) >= 0 ? room : "lamp"), -1);
-    if (G.shot_path)
-        ;
-    else if (SDL_getenv("KEEPERS_OPEN"))
+    if (SDL_getenv("KEEPERS_OPEN"))
         kh_talk_open(&G.talk, SDL_getenv("KEEPERS_OPEN"));
     else
-        kh_talk_open(&G.talk, !G.smoke && kh_save_exists(kh_save_path()) ? "resume" : "arrive");
+        if (!kh_capture_active())
+            kh_talk_open(&G.talk, !G.smoke && kh_save_exists(kh_save_path()) ? "resume" : "arrive");
     place_camera(demo);
     return BRE_OK;
 }
@@ -146,9 +147,14 @@ static void smoke_step(void)
 static void game_update(br_demo *demo, br_scalar dt_s)
 {
     float dt = BrScalarToFloat(dt_s), fx, fz;
-    G.clock_s = G.shot_path ? 1.0f : G.clock_s + dt; /* a still has a fixed lamp angle */
+    if (kh_capture_active()) { /* game time comes from the frame number, not the wall clock */
+        G.clock_s = kh_capture_clock();
+        G.cam_yaw = kh_capture_yaw();
+    } else {
+        G.clock_s += dt;
+    }
     if (G.smoke) smoke_step();
-    else kh_input_walk(dt);
+    else if (!kh_capture_active()) kh_input_walk(dt);
     if (G.talk.go[0]) {
         char go[KH_ID_LEN];
         snprintf(go, sizeof(go), "%s", G.talk.go);
@@ -190,10 +196,13 @@ static void game_render(br_demo *demo)
     br_colour ink = kh_px(pm, 236, 230, 216), accent = kh_px(pm, 232, 180, 92), panel = kh_px(pm, 14, 13, 18);
     kh_text_via_memory(!demo->hw_accel);
     BrDemoDefaultRender(demo);
-    if (G.shot_path) {
-        if (++G.shot_frames == 20) {
+    if (kh_capture_active()) {
+        if (kh_capture_ui()) {
+            hud(pm, ink, accent);
+            kh_talk_draw(&G.talk, pm, ink, accent, panel);
+        }
+        if (kh_capture_frame(pm, demo->hw_accel, &G.problems)) {
             SDL_Event q = {.type = SDL_EVENT_QUIT};
-            G.problems += kh_frame_write(pm, G.shot_path, demo->hw_accel) != 0;
             SDL_PushEvent(&q);
         }
         return;
