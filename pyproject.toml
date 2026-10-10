@@ -3,7 +3,7 @@ requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "engine-revival"
+name = "brender-archival"
 version = "0.3.0"
 description = "brender-archival: revival of Argonaut BRender and the tooling spine for reviving historical rendering and game engines."
 readme = "README.md"
@@ -12,18 +12,17 @@ license = "MIT"
 license-files = ["LICENSE", "LICENSES/MIT-BRender.txt"]
 authors = [{ name = "Zain Dana Harper" }]
 keywords = ["brender", "game-engines", "rendering", "preservation", "archives", "provenance"]
-dependencies = []
+dependencies = [
+    "engine-revival @ git+https://github.com/HarperZ9/engine-revival@v0.3.0",
+]
 
 [project.optional-dependencies]
-test = ["pytest>=8"]
+test = ["pytest>=8", "packaging>=24"]
 media = ["Pillow>=10"]
 
-[project.scripts]
-engine-revival = "engine_revival.cli:main"
-
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools]
+packages = []
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = [".", "tests"]
 testpaths = ["tests"]
