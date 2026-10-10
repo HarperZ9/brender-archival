@@ -1,7 +1,8 @@
 # The Keeper's Hour, built by modern/CMakeLists.txt beside brview.
 # Code: MIT. Words and art in data/: CC BY 4.0.
 add_executable(keepers-hour WIN32
-  src/kh_main.c src/kh_script.c src/kh_script.h src/kh_talk.c src/kh_talk.h src/kh_world.c src/kh_world.h)
+  src/kh_main.c src/kh_script.c src/kh_script.h src/kh_talk.c src/kh_talk.h src/kh_world.c src/kh_world.h
+  src/kh_shapes.c src/kh_shapes.h src/kh_rooms.c src/kh_rooms.h)
 target_link_libraries(keepers-hour PRIVATE brdemo)
 if(MSVC)
   target_compile_definitions(keepers-hour PRIVATE _CRT_SECURE_NO_WARNINGS)

@@ -134,3 +134,277 @@ TIDE: Care. They look the same from the outside.
 == kettle_rust_fail
 LENS: It is rust. On a kettle. It is very much rust on a kettle.
 * Leave it. -> END
+
+# ---------------------------------------------------------------- the stairs
+
+== step
+STEP: Creak.
+LEDGER: Step forty-one. It has creaked since the second winter. There is a requisition form for it, unanswered.
+* [LENS 8] Look at the wood. -> step_look | step_look_fail
+* [TIDE 7] Step on it again, gently. -> step_again | step_again_fail
+* Step over it. -> END
+
+== step_look
+LENS: Someone has carved a tally into the riser. Four strokes and a slash, over and over, small, for years.
+LENS: It is not your hand. The keeper before you counted something here.
+TIDE: Nights, probably. That is what you would count.
+* Count them. -> step_count
+* Leave them uncounted. -> END
+
+== step_count
+LENS: Three hundred and sixty-five, and then one more stroke, much fainter, as if the knife was tired.
+LEDGER: A year and a day. The old tenancy term. They served it exactly and then they left.
+* Go on up. -> END
+
+== step_look_fail
+LENS: Wood. Old wood. Polished by feet into a shallow bowl. It is a step.
+* Go on. -> END
+
+== step_again
+STEP: Creak. Creak.
+TIDE: It is not complaining. It is answering. You knock, it answers. That is most of what a friendship is.
+* Knock twice more. -> END
+
+== step_again_fail
+STEP: CREAK.
+LEDGER: That was louder than necessary. You will wake nobody, because there is nobody, but still.
+* Sorry, step. -> END
+
+== painting_one
+LENS: An oil painting of this tower, done from the sea, back when there was sea. The lamp is a single dab of white.
+STATIC: ...kssh... that is the view from the Marigold... kssh...
+* [LENS 9] Look at the dab of white. -> painting_one_light | painting_one_light_fail
+* [STATIC 9] Ask the Marigold how it knows. -> painting_one_static | painting_one_static_fail
+* Move along. -> END
+
+== painting_one_light
+LENS: Up close the white is not white. It is every colour on the palette, laid on in a ring, with a black dot in the middle.
+LENS: Whoever painted it knew that a light seen from far off is mostly the dark around it.
+* Move along. -> END
+
+== painting_one_light_fail
+LENS: It is white. It is a dab. You are not an art critic, you are a keeper.
+* Move along. -> END
+
+== painting_one_static
+STATIC: ...we were painted in too... look... lower left... kssh...
+LENS: Lower left there is a small boat with a yellow sail, and a figure in it, waving at the tower.
+TIDE: Nobody has waved at this tower in eleven years. Wave back.
+* Wave at the painting. -> END
+* Do not wave at the painting. -> END
+
+== painting_one_static_fail
+STATIC: ...kssh... kssh...
+* Move along. -> END
+
+== painting_two
+LENS: A portrait of a woman in a keeper's coat, the same coat as yours, buttons done up wrong.
+LEDGER: Agnes Varga, keeper, nineteen-something to nineteen-something. The plaque has been polished blank.
+* [TIDE 8] Ask her about the job. -> painting_two_tide | painting_two_tide_fail
+* [LEDGER 8] Recall what the register says about her. -> painting_two_ledger | painting_two_ledger_fail
+* Leave her be. -> END
+
+== painting_two_tide
+TIDE: She would say: you do not keep the light for the ships. You keep it so that you are a person who keeps a light.
+TIDE: She would say it kindly, and then she would tell you your buttons are wrong.
+LENS: Your buttons are wrong.
+* Fix your buttons. -> END
+
+== painting_two_tide_fail
+TIDE: She looks past you, at the stairs. She is waiting for someone, and it is not you.
+* Leave her be. -> END
+
+== painting_two_ledger
+LEDGER: Register, volume three. "Varga, A. Requested the light be kept one night past decommission. Request granted. Light kept. Varga, A. resigned the next morning."
+TIDE: One night past. That is all she asked for. That is all we have.
+* Remember that. -> END
+
+== painting_two_ledger_fail
+LEDGER: There was something about her in volume three. The volume is downstairs. The stairs are long.
+* Leave her be. -> END
+
+# ------------------------------------------------------------- the radio room
+
+== radio
+RADIO: (a hiss like the sea used to make)
+STATIC: ...kssh... Relay Nine... Marigold... still here... kssh...
+* [STATIC 8] Tune it carefully. -> radio_tune | radio_tune_fail
+* Turn it off. -> radio_off
+* Leave it on. -> END
+
+== radio_tune
+STATIC: ...this is the Marigold, out of nowhere... we have been at sea since the sea left... we navigate by you...
+STATIC: ...if the light goes, we will be the only thing out here that remembers there was water...
+LEDGER: There is no frequency in the register for the Marigold. There is no Marigold in the register.
+TIDE: The register is not the sea.
+* "Marigold, what do you want me to do?" -> radio_ask
+* Write the frequency down. -> END
+
+== radio_ask
+STATIC: ...kssh... we want what anybody wants... to be told where we are... kssh... and then to be let go...
+* Turn the dial slowly back to silence. -> END
+
+== radio_tune_fail
+STATIC: ...cricket scores... a recipe for barley soup... an apology, not for you... kssh...
+* Leave it on anyway. -> END
+
+== radio_off
+RADIO: (click)
+TIDE: The silence is very large now. It fills the room the way water fills a glass.
+* Turn it back on. -> radio
+* Sit in the silence. -> END
+
+== chart
+LENS: A sea chart of this coast. Depths in fathoms, rocks marked with tiny crosses. All of it is now dry land, farmed.
+LEDGER: Chart 2210, corrected to the edition before last. The corrections stopped when the water did.
+* [LENS 8] Find the tower on the chart. -> chart_find | chart_find_fail
+* [LEDGER 9] Read the corrections in the margin. -> chart_margin | chart_margin_fail
+* Roll it up. -> END
+
+== chart_find
+LENS: There: a small star and the words "Fl. 4s", flashing every four seconds. Beside it, in pencil, somebody has added "still".
+* Leave it as it is. -> END
+
+== chart_find_fail
+LENS: Too many crosses. Too many depths. You find a town that is now a car park.
+* Roll it up. -> END
+
+== chart_margin
+LEDGER: "Shoal extending, 3 cables." "Shoal extending, 5 cables." "Shoal extending, 2 miles." "Shoal."
+LEDGER: And then, in a different hand: "Sea not found. Light maintained."
+* Add your initials. -> END
+
+== chart_margin_fail
+LEDGER: The handwriting is a keeper's handwriting, which is to say illegible by design.
+* Roll it up. -> END
+
+== letters_box
+LENS: A biscuit tin full of letters. All addressed to "The Keeper, Relay Nine". All from children, all from years ago.
+* [TIDE 7] Read one. -> letters_read | letters_read_fail
+* Close the tin. -> END
+
+== letters_read
+TIDE: "Dear Keeper, I can see your light from my bedroom. When it comes round I say goodnight to it. Does it say goodnight back. From Ilse, age 7."
+TIDE: The town is still there. Ilse is not seven any more. But somebody is.
+* Put the letter back with care. -> END
+
+== letters_read_fail
+TIDE: The writing is round and enormous. You cannot read it because your eyes have gone strange.
+* Close the tin. -> END
+
+# --------------------------------------------------------- the keeper's room
+
+== bed
+LENS: A narrow bed, made with hospital corners. You have not slept in it at night for eleven years. Days only.
+* [TIDE 8] Lie down for a moment. -> bed_lie | bed_lie_fail
+* Not yet. -> END
+
+== bed_lie
+TIDE: The ceiling has a crack in it shaped like a coastline. You know every inlet.
+LENS: The beam comes in through the slit window above you, every four seconds, and lies across the blanket like a cat.
+TIDE: If it goes off, the room will be just a room.
+* Get up. -> END
+
+== bed_lie_fail
+LEDGER: The clockwork needs winding in fifty minutes. Lying down is how you miss a winding.
+* Get up. -> END
+
+== letter
+LETTER: By order of the Coastal Authority, the light at Relay Nine is to be extinguished at dawn.
+LENS: There is a second page. You have not read the second page.
+* [LENS 7] Read the second page. -> letter_two | letter_two_fail
+* Fold it away. -> END
+
+== letter_two
+LETTER: "The Authority thanks the keeper for their service. The keeper may, at their discretion, retain one item of station equipment as a memento."
+LEDGER: One item. Not the lens. The lens is property. Read the schedule.
+TIDE: One item. Choose it like you would choose what to save from a fire.
+* Think about it. -> END
+
+== letter_two_fail
+LENS: The second page is stuck to the first with something that was once marmalade.
+* Fold it away. -> END
+
+== photo
+LENS: A photograph of you on your first day, holding the keys, squinting. The sea is behind you, just. A thin bright line.
+* [TIDE 9] Look at your face. -> photo_face | photo_face_fail
+* [STATIC 10] Listen to the photograph. -> photo_static | photo_static_fail
+* Turn it to the wall. -> END
+
+== photo_face
+TIDE: You look afraid and pleased, the way people look at the start of something long.
+TIDE: You do not look like that now. You look like someone who knows how long it was.
+* Turn it back to face the room. -> END
+
+== photo_face_fail
+LENS: It is a photograph of a person. You recognise the coat.
+* Leave it. -> END
+
+== photo_static
+STATIC: ...kssh... the sound of a shutter... gulls, hundreds of them... a voice saying "smile, then"... waves...
+TIDE: Waves. Listen to that. Waves.
+* Listen until it fades. -> END
+
+== photo_static_fail
+STATIC: ...kssh...
+* Leave it. -> END
+
+# --------------------------------------------------------------- the gallery
+
+== town
+LENS: Far off and below, the town: a few dozen lights where the harbour used to be. A car moving slowly. A window going dark.
+* [TIDE 7] Think about who is awake down there. -> town_awake | town_awake_fail
+* [LENS 10] Look for the bedroom window. -> town_window | town_window_fail
+* Look away. -> END
+
+== town_awake
+TIDE: A baker. A nurse coming off a shift. Someone who cannot sleep, at a window, watching a light on a tower turn.
+TIDE: They do not know it goes off at dawn. Nobody told them. Nobody tells the people who were not asked.
+* Look a little longer. -> END
+
+== town_awake_fail
+TIDE: Lights. People, presumably. It is hard to feel things about a pixel.
+* Look away. -> END
+
+== town_window
+LENS: Third street up from the old quay, top floor, a small window. The curtain is open. A shape there, small.
+LENS: When the beam crosses the town, the shape lifts a hand.
+* Lift a hand back. -> END
+
+== town_window_fail
+LENS: Windows. So many windows. Any of them could be the one. None of them has to be.
+* Look away. -> END
+
+== railing
+LENS: Cold iron, painted white over rust over white. Below it, a long drop to dry grass and a field of sheep.
+* [LEDGER 7] Check the railing bolts. -> railing_bolts | railing_bolts_fail
+* Lean on it. -> railing_lean
+
+== railing_bolts
+LEDGER: Twelve bolts, all tight. You check them every Sunday. It is not Sunday. You checked them anyway.
+* Good. -> END
+
+== railing_bolts_fail
+LEDGER: One of them turns a quarter. Nothing to be done now. Make a note. You will not make a note.
+* Leave it. -> END
+
+== railing_lean
+TIDE: The wind comes up off the fields smelling of grass and, faintly, impossibly, of salt.
+STATIC: ...kssh... it remembers... the air remembers... kssh...
+* Breathe in. -> END
+
+== gull
+LENS: The place on the rail where the gull stood, in the spring of the third year. You never repainted that bit.
+* [STATIC 11] Call the gull. -> gull_call | gull_call_fail
+* Leave the place empty. -> END
+
+== gull_call
+STATIC: ...kssh...
+LENS: Nothing. Then, out of the dark over the fields, a white shape, too big for the dark, riding the beam.
+LENS: It lands on its place. It looks at the light. It does not leave.
+TIDE: Log it.
+* "Gull." -> END
+
+== gull_call_fail
+LENS: You make a noise you believe a gull would respect. The sheep below look up.
+* Leave it. -> END

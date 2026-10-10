@@ -1,9 +1,9 @@
-/* The Keeper's Hour: first playable slice, the lamp room.
+/* The Keeper's Hour: the tower (M1), five rooms and their talkers.
  * Drawn by BRender 1.4 (BlazingRenderer/BRender, MIT) through brdemo and SDL3.
  *
  * KEEPERS_SMOKE=1 runs headless: checks every link in the night script, opens
- * every node once with a frame drawn for each, then quits. The exit code is
- * the number of problems found.
+ * every node once and enters every room, with a frame drawn for each, then
+ * quits. The exit code is the number of problems found.
  * SPDX-License-Identifier: MIT */
 #include <math.h>
 #include <stdio.h>
@@ -22,8 +22,36 @@ static kh_script script;
 static kh_talk   talk;
 static kh_world  world;
 static float     keeper_x = 0.0f, keeper_z = 3.2f, facing = 180.0f, cam_yaw = 0.0f, clock_s;
-static int       near_talker = -1, smoke, smoke_node, problems;
+static int       near_talker = -1, smoke, smoke_node, smoke_room, problems;
 static SDL_Gamepad *pad;
+
+/* Every "@room" in the script and in the room table must name a room. */
+static int check_rooms(void)
+{
+    int i, j, r, bad = 0;
+    for (i = 0; i < script.nnodes; i++)
+        for (j = 0; j < script.nodes[i].nchoices; j++) {
+            const char *to = script.nodes[i].choices[j].pass;
+            if (to[0] == '@' && kh_room_find(to + 1) < 0) { BrLogError("KEEPER", "node %s: no room %s", script.nodes[i].id, to); bad++; }
+        }
+    for (r = 0; r < kh_room_count; r++)
+        for (j = 0; j < kh_rooms[r].nprops; j++) {
+            const kh_prop *p = &kh_rooms[r].props[j];
+            if (p->node == NULL) continue;
+            if (p->node[0] == '@' ? kh_room_find(p->node + 1) < 0 : kh_script_find(&script, p->node) == NULL) {
+                BrLogError("KEEPER", "room %s: %s leads to missing %s", kh_rooms[r].id, p->talker, p->node);
+                bad++;
+            }
+        }
+    return bad ? -1 : 0;
+}
+
+static void go_to_room(const char *id)
+{
+    int to = kh_room_find(id);
+    if (to < 0) { problems++; return; }
+    kh_world_enter(&world, to, world.current, &keeper_x, &keeper_z);
+}
 
 static int load_script(void)
 {
@@ -41,7 +69,7 @@ static int load_script(void)
         return -1;
     }
     SDL_free(text);
-    return 0;
+    return check_rooms();
 }
 
 static void place_camera(br_demo *demo)
@@ -72,6 +100,8 @@ static br_error game_init(br_demo *demo)
     demo->order_table->min_z = c->hither_z;
     demo->order_table->max_z = c->yon_z;
     kh_world_build(&world, demo->world);
+    /* KEEPERS_ROOM=<room> starts in that room: for checking a room by eye. */
+    kh_world_enter(&world, kh_room_find(SDL_getenv("KEEPERS_ROOM") && kh_room_find(SDL_getenv("KEEPERS_ROOM")) >= 0 ? SDL_getenv("KEEPERS_ROOM") : "lamp"), -1, &keeper_x, &keeper_z);
     /* KEEPERS_OPEN=<node> starts in that conversation: for writers testing a scene. */
     kh_talk_open(&talk, SDL_getenv("KEEPERS_OPEN") ? SDL_getenv("KEEPERS_OPEN") : "arrive");
     place_camera(demo);
@@ -86,7 +116,9 @@ static void interact(void)
         else
             kh_talk_advance(&talk);
     } else if (near_talker >= 0) {
-        kh_talk_open(&talk, world.talkers[near_talker].node);
+        const kh_talker *t = kh_world_talker(&world, near_talker);
+        if (t->node[0] == '@') go_to_room(t->node + 1);
+        else kh_talk_open(&talk, t->node);
     }
 }
 
@@ -149,6 +181,10 @@ static void walk(float dt)
 
 static void smoke_step(void)
 {
+    if (smoke_room < kh_room_count) {
+        go_to_room(kh_rooms[smoke_room++].id);
+        return;
+    }
     if (smoke_node < script.nnodes) {
         if (kh_talk_open(&talk, script.nodes[smoke_node].id) != 0)
             problems++;
@@ -167,7 +203,13 @@ static void game_update(br_demo *demo, br_scalar dt_s)
     clock_s += dt;
     if (smoke) smoke_step();
     else walk(dt);
+    if (talk.go[0]) {
+        go_to_room(talk.go);
+        talk.go[0] = '\0';
+    }
+    demo->clear_colour = kh_world_sky(&world);
     kh_world_turn_lamp(&world, clock_s);
+    world.keeper->t.type = BR_TRANSFORM_MATRIX34;
     BrMatrix34RotateY(&world.keeper->t.t.mat, BR_ANGLE_DEG(facing));
     BrMatrix34PostTranslate(&world.keeper->t.t.mat, BR_SCALAR(keeper_x), 0, BR_SCALAR(keeper_z));
     fx = sinf(facing * 3.14159265f / 180.0f);
@@ -181,10 +223,15 @@ static void game_render(br_demo *demo)
     br_pixelmap *pm = demo->colour_buffer;
     br_colour ink = BR_COLOUR_RGBA(236, 230, 216, 255), accent = BR_COLOUR_RGBA(232, 180, 92, 255);
     BrDemoDefaultRender(demo);
-    BrPixelmapText(pm, -pm->origin_x + 12, -pm->origin_y + 20, accent, BrFontProp7x9, "The Keeper's Hour   the lamp room");
+    {
+        char title[96];
+        snprintf(title, sizeof(title), "The Keeper's Hour   %s", kh_rooms[world.current].title);
+        BrPixelmapText(pm, -pm->origin_x + 12, -pm->origin_y + 20, accent, BrFontProp7x9, title);
+    }
     if (!kh_talk_open_p(&talk) && near_talker >= 0) {
         char prompt[96];
-        snprintf(prompt, sizeof(prompt), "E, click or A: talk to %s", world.talkers[near_talker].name);
+        const kh_talker *t = kh_world_talker(&world, near_talker);
+        snprintf(prompt, sizeof(prompt), "E, click or A: %s %s", t->node[0] == '@' ? "go through" : "talk to", t->name);
         BrPixelmapText(pm, -BrPixelmapTextWidth(pm, BrFontProp7x9, prompt) / 2, pm->height - pm->origin_y - 40, ink, BrFontProp7x9, prompt);
     } else if (!kh_talk_open_p(&talk)) {
         BrPixelmapText(pm, -pm->origin_x + 12, pm->height - pm->origin_y - 24, ink, BrFontProp7x9,
@@ -210,6 +257,6 @@ int main(int argc, char **argv)
     BrLogSetLevel(args.verbose);
     ret = BrDemoRunArg(&dispatch, &args);
     if (SDL_getenv("KEEPERS_SMOKE") != NULL)
-        printf("keepers smoke: %d nodes opened, %d problems, run %s\n", smoke_node, problems, ret == 0 ? "ok" : "failed");
+        printf("keepers smoke: %d rooms entered, %d nodes opened, %d problems, run %s\n", smoke_room, smoke_node, problems, ret == 0 ? "ok" : "failed");
     return ret != 0 ? ret : problems;
 }

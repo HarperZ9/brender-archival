@@ -135,7 +135,8 @@ const kh_node *kh_script_find(const kh_script *s, const char *id)
     return NULL;
 }
 
-static int link_ok(const kh_script *s, const char *id) { return strcmp(id, "END") == 0 || kh_script_find(s, id) != NULL; }
+/* "@room" moves the keeper to a room; the game checks room names itself. */
+static int link_ok(const kh_script *s, const char *id) { return strcmp(id, "END") == 0 || id[0] == '@' || kh_script_find(s, id) != NULL; }
 
 int kh_script_check_links(const kh_script *s, char *err, size_t err_len)
 {
