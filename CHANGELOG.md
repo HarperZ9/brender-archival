@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased: textured parity
+
+- Depends on engine-revival 0.5.0. Its port of `t_piza.asm`, under Argonaut's `awtmz.c` setup, makes the period build draw textured scenes, and its renderer rung now requires a textured frame.
+- `modern/parity/`: three textured scenes (the sphere with `earth.pix` at two angles, and the torus with `rosewood.pix`). Measured 16 October 2026 against BRender 1.4: coverage IoU 0.9992 or better, 95.7% to 99.7% identical pixels, MAD at most 1.09. Period runs are byte-identical across all nine scenes.
+- `parity_compare.py --only` and `--skip` hold one class of scene to its own bounds. CI gates untextured and textured scenes separately.
+
 ## Unreleased: the 1998 rasteriser, measured
 
 - Depends on engine-revival 0.4.0. Its C port of BRender's `tt24_piz.asm` kernels makes the period build draw the flat and Gouraud scenes, and deterministically. The renderer rung now fails CTest when its render is invalid.

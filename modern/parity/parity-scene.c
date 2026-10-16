@@ -48,20 +48,24 @@ typedef struct scene {
     int         angle;   /* model turn about Y, degrees */
     br_uint_32  flags;   /* material flags */
     int         light;   /* add a directional light */
+    const char *texture; /* a period .pix, expanded to RGB_888 through std.pal, or NULL */
 } scene;
 
-/* Untextured on purpose: the period build's textured path is not working yet
- * (README, "BRender: rebuilt and rendering"), so texture parity is not
- * measured here. The control scene repeats "torus-flat" turned by another
- * 25 degrees; compared with "torus-flat" it must not match. */
+/* Untextured scenes, then unlit textured ones (RGB_888 maps, the period
+ * kernel TriangleRenderPIZ2TA24). The control scene repeats "torus-flat"
+ * turned by another 25 degrees; compared with "torus-flat" it must not
+ * match. */
 static const scene scenes[] = {
-    {"sphere-flat", "sph32.dat", 35, 0, 0},
-    {"sphere-lit", "sph32.dat", 35, BR_MATF_LIGHT, 1},
-    {"sphere-smooth", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1},
-    {"torus-flat", "torus.dat", 60, 0, 0},
-    {"torus-smooth", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1},
-    {"teapot-smooth", "teapot.dat", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1},
-    {"control-torus-turned", "torus.dat", 85, 0, 0},
+    {"sphere-flat", "sph32.dat", 35, 0, 0, NULL},
+    {"sphere-lit", "sph32.dat", 35, BR_MATF_LIGHT, 1, NULL},
+    {"sphere-smooth", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL},
+    {"torus-flat", "torus.dat", 60, 0, 0, NULL},
+    {"torus-smooth", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL},
+    {"teapot-smooth", "teapot.dat", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL},
+    {"sphere-textured", "sph32.dat", 35, 0, 0, "earth.pix"},
+    {"sphere-textured-turned", "sph32.dat", 160, 0, 0, "earth.pix"},
+    {"torus-textured", "torus.dat", 60, 0, 0, "rosewood.pix"},
+    {"control-torus-turned", "torus.dat", 85, 0, 0, NULL},
 };
 
 static int dump_ppm(const br_pixelmap *pm, const char *path)
@@ -92,6 +96,34 @@ static long count_lit(const br_pixelmap *pm)
             total += (row[x * 3] | row[x * 3 + 1] | row[x * 3 + 2]) != 0;
     }
     return total;
+}
+
+/* Load a period texture and expand it through std.pal into RGB_888, the
+ * same bytes on both sides, then register it so the renderer stores it. */
+static br_pixelmap *load_texture(const char *dat, const char *name)
+{
+    char path[1024];
+    br_pixelmap *tex, *pal, *rgb;
+    int x, y;
+    snprintf(path, sizeof(path), "%s/%s", dat, name);
+    if ((tex = BrPixelmapLoad(path)) == NULL) return NULL;
+    snprintf(path, sizeof(path), "%s/std.pal", dat);
+    pal = tex->map != NULL ? tex->map : BrPixelmapLoad(path);
+    if (tex->type != BR_PMT_INDEX_8 || pal == NULL) return NULL;
+    rgb = BrPixelmapAllocate(BR_PMT_RGB_888, tex->width, tex->height, NULL, BR_PMAF_NORMAL);
+    if (rgb == NULL) return NULL;
+    for (y = 0; y < (int)tex->height; y++) {
+        const unsigned char *src = (const unsigned char *)tex->pixels + (long)y * tex->row_bytes;
+        unsigned char *dst = (unsigned char *)rgb->pixels + (long)y * rgb->row_bytes;
+        for (x = 0; x < (int)tex->width; x++) {
+            const unsigned char *entry = (const unsigned char *)pal->pixels + (long)src[x] * pal->row_bytes;
+            dst[x * 3 + 0] = entry[0]; dst[x * 3 + 1] = entry[1]; dst[x * 3 + 2] = entry[2];
+        }
+    }
+    rgb->identifier = (char *)name;
+    BrMapAdd(rgb);
+    BrMapUpdate(rgb, BR_MAPU_ALL);
+    return rgb;
 }
 
 /* Fit the model in a unit sphere at the origin, then turn it: the same
@@ -201,6 +233,12 @@ int main(int argc, char **argv)
         material->kd = BrFloatToScalar(0.85f);
         material->ks = BrFloatToScalar(0.0f);
         material->flags = sc->flags;
+        if (sc->texture != NULL && (material->colour_map = load_texture(dat, sc->texture)) == NULL) {
+            printf("{\"scene\":\"%s\",\"error\":\"texture %s did not load\"}\n", sc->name, sc->texture);
+            BrActorRemove(actor);
+            failed++;
+            continue;
+        }
         BrMaterialUpdate(material, BR_MATU_ALL);
         BrModelUpdate(model, BR_MODU_ALL);
         actor->model = model;
