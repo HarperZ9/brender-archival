@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased: deterministic OpenGL capture
+
+- The Keeper's Hour finishes the OpenGL frame (`glFinish`) before each captured frame is read back. Under Mesa llvmpipe the readback sometimes returned the previous frame; four 15-frame recordings repeated a frame in every run, and with the fix five 30-frame recordings gave 30 distinct frames, identical across runs. Play is not affected: only captures wait.
+- CI records twice on both renderers on Linux, and on Windows, and fails if any frame repeats the one before it (the stale-readback signature) or the two runs differ.
+
 ## Unreleased: display options
 
 - The Keeper's Hour: pixel size 1 to 6, field of view 40 to 90 degrees and vsync in the F2 options, saved with the others. Pixel size draws the scene into a smaller offscreen buffer and scales it up with whole pixels (nearest neighbour), then draws the text and panels at full resolution. `kh_display.c` holds it. `KEEPERS_PIXEL` and `KEEPERS_FOV` override the two for one run.

@@ -210,7 +210,9 @@ jobs:
           for ($i = 0; $i -lt 6; $i++) {
             if ((Get-FileHash $a[$i].FullName).Hash -ne (Get-FileHash $b[$i].FullName).Hash) { throw "frame $i differs between runs" }
           }
-          if ((Get-FileHash $a[0].FullName).Hash -eq (Get-FileHash $a[5].FullName).Hash) { throw "the first and last frames are the same: nothing moved" }
+          for ($i = 1; $i -lt 6; $i++) {
+            if ((Get-FileHash $a[$i].FullName).Hash -eq (Get-FileHash $a[$i - 1].FullName).Hash) { throw "frame $i repeats the one before: nothing moved, or a stale readback" }
+          }
 
   # The same programs on 64-bit Linux: brview, the game and the 21-step
   # ladder, built with GCC and Ninja from the pins in modern/CMakeLists.txt.
@@ -253,23 +255,24 @@ jobs:
         run: |
           python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour
           python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour --opengl
-      # The software rasteriser is the deterministic path here. Under Mesa's
-      # llvmpipe the OpenGL readback sometimes returns the previous frame,
-      # so this check records with --force-software (see docs/ROADMAP.md).
-      - name: the frame recorder is deterministic and the lamp moves
+      # Both renderers. A stale OpenGL readback shows up as a frame that
+      # repeats the one before it, so no two neighbouring frames may match.
+      - name: the frame recorder is deterministic and the lamp moves, on both renderers
         shell: bash
         env:
           KEEPERS_SECONDS: "0.2"
           KEEPERS_YAW_SPEED: "30"
         run: |
-          for run in a b; do
-            KEEPERS_RECORD="$RUNNER_TEMP/rec-$run" ./build/keepers-hour/keepers-hour --force-software > /dev/null
+          for mode in software opengl; do
+            flag=""; [ "$mode" = software ] && flag=--force-software
+            for run in a b; do
+              KEEPERS_RECORD="$RUNNER_TEMP/rec-$mode-$run" ./build/keepers-hour/keepers-hour $flag > /dev/null
+              (cd "$RUNNER_TEMP/rec-$mode-$run" && sha256sum frame-*.ppm) > "$mode-$run.sum"
+            done
+            test "$(wc -l < "$mode-a.sum")" -eq 6
+            diff "$mode-a.sum" "$mode-b.sum"
+            test "$(cut -d' ' -f1 "$mode-a.sum" | uniq | wc -l)" -eq 6 || { echo "$mode: a frame repeats the one before"; exit 1; }
           done
-          (cd "$RUNNER_TEMP/rec-a" && sha256sum frame-*.ppm) > a.sum
-          (cd "$RUNNER_TEMP/rec-b" && sha256sum frame-*.ppm) > b.sum
-          test "$(wc -l < a.sum)" -eq 6
-          diff a.sum b.sum
-          test "$(head -n1 a.sum | cut -d' ' -f1)" != "$(tail -n1 a.sum | cut -d' ' -f1)"
       - name: the packaged copies run in place
         shell: bash
         run: |

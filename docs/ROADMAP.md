@@ -15,7 +15,7 @@ first.
 | 64-bit ladder (BRender 1.4) | 21 of 21 under CTest | 21 of 21 under CTest | `modern/ladder64`, Release, Ninja on Linux |
 | Period ladder (BRender 1.3.2) | 21 of 21, Win32 only | not applicable | CI job `brender-native` |
 | Downloads | brview 0.1.1 and The Keeper's Hour 0.3.1 zips | none before this roadmap | GitHub releases |
-| Frame recorder determinism | two runs give the same bytes (CI) | software renderer: same bytes; OpenGL under Mesa llvmpipe: not deterministic | `KEEPERS_RECORD` twice, frame hashes compared |
+| Frame recorder determinism | two runs give the same bytes (CI) | software renderer: same bytes; OpenGL under Mesa llvmpipe: not deterministic (fixed later the same day, item 3) | `KEEPERS_RECORD` twice, frame hashes compared |
 
 The Linux build needed no source change. Two packaging faults kept it from
 shipping: the programs carried a run path into the build tree, and the
@@ -61,16 +61,25 @@ Done when: options persist; a test draws one room at three resolutions and
 checks the aspect and the pixel scale; screenshots go in the README. Met for
 the game.
 
-### 3. Deterministic capture on every driver
+### 3. Deterministic capture on every driver (shipped)
 
-Under Mesa llvmpipe the OpenGL readback in `kh_frame_write` sometimes returns
-the previous frame (two runs: frames 2 to 5 differ, up to 233 levels per
-channel; the software renderer gives identical bytes). Find whether the cause
-is in the game's frame order or in the 1.4 OpenGL driver's buffer ring, fix it
-here or report it upstream with a reproducer, and then run the recorder check
-on OpenGL on Linux as well.
+Under Mesa llvmpipe the OpenGL readback in `kh_frame_write` sometimes returned
+the previous frame. Measured on 16 October 2026, four recordings of 15 frames:
+every run repeated a frame and no two runs matched. With `glFinish` before the
+readback, the same four runs gave 15 distinct frames, identical across runs.
+Five 30-frame runs then gave 30 distinct frames each, identical across runs.
+The game now finishes the OpenGL frame before each capture (capture only, so
+play is not slowed), and CI records twice on both renderers on Linux and
+fails if any frame repeats the one before it.
 
-Done when: the Linux CI records twice on OpenGL with identical bytes.
+Not settled: why the readback ran ahead of the draws. BRender 1.4's OpenGL
+driver keeps its uniform rings mapped (`GL_MAP_UNSYNCHRONIZED_BIT`, not
+persistent) while it issues draws; as we read the GL specification, a draw
+that reads a buffer mapped without the persistent bit is an error. That is
+a candidate, not a finding. A report to
+BlazingRenderer with this reproducer is for the author to decide.
+
+Done when: the Linux CI records twice on OpenGL with identical bytes. Met.
 
 ### 4. Packaging people expect
 

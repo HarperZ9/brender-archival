@@ -120,3 +120,14 @@ def test_display_options_are_checked_on_frames_on_both_systems():
         # the controls are part of the claim: each must have failed
         assert record["measured"]["blocks_uniform_pixel1_control"] <= 0.80
         assert record["measured"]["horplus_control_fov70"] < 0.90
+
+
+def test_the_recorder_is_checked_on_opengl_for_stale_frames():
+    ci = _workflow("ci.yml")
+    linux = ci[ci.index("\n  linux:"):]
+    assert "for mode in software opengl" in linux
+    assert "a frame repeats the one before" in linux
+    assert "repeats the one before: nothing moved, or a stale readback" in ci
+    capture = (ROOT / "games" / "keepers-hour" / "src" / "kh_capture.c").read_text(encoding="utf-8")
+    assert 'SDL_GL_GetProcAddress("glFinish")' in capture
+    assert capture.index("gl_finish();") < capture.index("kh_frame_write(")
