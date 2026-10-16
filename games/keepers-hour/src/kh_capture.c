@@ -46,6 +46,23 @@ static float game_time(void) { return C.drawn < WARMUP ? 0.0f : (float)(C.drawn 
 float kh_capture_clock(void) { return C.clock0 + game_time(); }
 float kh_capture_yaw(void) { return C.yaw0 + C.yaw_speed * game_time(); }
 
+/* Wait for OpenGL to finish the frame before reading it back. Measured on
+ * 16 October 2026 under Mesa llvmpipe: without this, the readback sometimes
+ * returned the previous frame (four runs of 15 frames: repeated frames in every
+ * run, no two runs alike); with it, all four runs gave the same 15 distinct
+ * frames. Capture only, so play is not slowed. */
+static void gl_finish(void)
+{
+    static void (*fn)(void);
+    static int looked;
+    if (!looked) {
+        fn = (void (*)(void))SDL_GL_GetProcAddress("glFinish");
+        looked = 1;
+    }
+    if (fn)
+        fn();
+}
+
 int kh_capture_frame(br_pixelmap *pm, int hw_accel, int *problems)
 {
     char path[1100];
@@ -57,6 +74,8 @@ int kh_capture_frame(br_pixelmap *pm, int hw_accel, int *problems)
         snprintf(path, sizeof(path), "%s", C.shot);
     else
         snprintf(path, sizeof(path), "%s/frame-%05d.ppm", C.dir, C.written);
+    if (hw_accel)
+        gl_finish();
     *problems += kh_frame_write(pm, path, hw_accel) != 0;
     return ++C.written >= C.total;
 }
