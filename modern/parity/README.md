@@ -3,11 +3,11 @@
 The question is whether BRender 1.4, the modern 64-bit engine the downloads
 use, draws the same pixels as Argonaut's BRender 1.3.2 from 1998.
 
-**Answer on 16 October 2026: not measurable yet. The 1998 side, as this
-repository builds it, does not draw these scenes correctly, so it cannot
-serve as the reference.** The instrument is built, its controls work, and the
-modern rasteriser is measured against itself across compilers. Those results
-follow.
+**Answer on 16 October 2026, for the untextured scenes measured here: almost.
+Silhouettes match to a coverage IoU of 0.9993 or better, 90.7% to 100% of
+pixels are identical, and the mean difference is under 0.2 levels. The 1998
+build gives the same bytes on every run.** Texturing is not measured: the
+period build's textured path is still open.
 
 ## The instrument
 
@@ -15,13 +15,19 @@ follow.
 buffer: a sphere, a torus and the teapot from the 1998 sample models, unlit,
 lit flat and lit smooth (Gouraud), plus a control. Everything except the
 rasteriser is shared: model, camera, transform, material, light and buffer.
-Each side copies the renderer setup of its own ladder rung, which is known to
-render.
+Each side copies the renderer setup of its own ladder rung.
 
 | Side | Engine | Built by |
 |---|---|---|
-| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the materialized harness |
+| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the harness from engine-revival 0.4.0 |
 | modern | BRender 1.4 (BlazingRenderer): softrend + softprim, 64-bit | `modern/CMakeLists.txt` (target `parity-scene`) |
+
+BRender's 1998 rasterisers are x86 assembly. The period build replaces the
+ones these scenes use (`RawTriangle_PIZ2_RGB_888` and
+`RawTriangle_PIZ2I_RGB_888` in `tt24_piz.asm`) with engine-revival 0.4.0's
+line-by-line C port. The port keeps the assembly's fixed-point setup, its
+edge stepping, its truncating divides and its depth test. So "period" means
+the 1998 algorithm, run through a C port, not the 1998 binary.
 
 `parity_compare.py` compares two runs scene by scene, over the pixels either
 side drew:
@@ -37,55 +43,70 @@ measure cannot tell scenes apart.
 
 ## Results, 16 October 2026
 
-| Comparison | Scenes identical | Lowest coverage IoU | Worst channel difference | Control |
+| Comparison | Scenes identical | Lowest coverage IoU | Lowest identical | Highest MAD | Control |
+|---|---|---|---|---|---|
+| period 1.3.2, two runs (Win32) | 6 of 6 | 1.0 | 1.0 | 0 | fails, as required |
+| modern 1.4, two runs (Linux) | 6 of 6 | 1.0 | 1.0 | 0 | fails, as required |
+| modern Windows MSVC against modern Linux GCC | 3 of 6 | 1.0 | 0.9998 | 0.0 | fails, as required |
+| modern (Linux) against period | 1 of 6 | 0.9993 | 0.907 | 0.174 | fails, as required (0.60) |
+| modern (Windows) against period | 1 of 6 | 0.9993 | 0.907 | 0.174 | fails, as required |
+
+| Scene, modern against period | Coverage IoU | Identical | MAD | Max |
 |---|---|---|---|---|
-| modern, Linux GCC, two runs | 6 of 6 | 1.0 | 0 | fails, as required (0.60) |
-| modern, Windows MSVC against Linux GCC | 3 of 6 | 1.0 | 1 level, on at most 0.02% of pixels | fails, as required |
-| period 1.3.2 build, two runs | 3 of 6 (the three that draw nothing) | 0.9985 | 255 | cannot fail: the period build draws no flat scene |
-| modern against period | 0 of 6 | 0.0 | 255 | fails, as required (modern side) |
+| sphere-flat (unlit) | 0.9998 | 0.9998 | 0.032 | 199 |
+| sphere-lit (flat lit) | 0.9998 | 0.9583 | 0.065 | 159 |
+| sphere-smooth (Gouraud) | 0.9998 | 0.9070 | 0.072 | 153 |
+| torus-flat | 1.0 | 1.0 | 0.0 | 0 |
+| torus-smooth | 1.0 | 0.9348 | 0.035 | 15 |
+| teapot-smooth | 0.9993 | 0.9215 | 0.174 | 91 |
+
+The two engines draw the same silhouettes. The unlit torus is the same to the
+byte. The 1998 edge rule draws a few pixels more along some edges (6 on the
+sphere, 6 on the teapot). Pixels more than 20 levels apart number 6 on the
+unlit and smooth spheres, all of them on those edges; 36 on the flat-lit
+sphere and 20 on the teapot, 6 of each on edges and the rest inside. The
+Gouraud scenes differ by small rounding over larger areas (MAD under 0.2
+levels), which fits the 1998 16.16 fixed-point stepping against 1.4's own
+arithmetic. These are measured differences, not a judgement that either side
+is wrong.
 
 Evidence: `evidence/*.json` and `evidence/period-left-modern-right-2026-10-16.png`
 (period on the left, modern on the right).
 
-What the period numbers show:
+### Before the port (same day, kept for the record)
 
-- **The flat and unlit paths draw nothing.** The sphere-flat, sphere-lit and
-  torus-flat scenes are black.
-- **The Gouraud path draws, but wrongly.** Shading saturates to white. There
-  are holes where the depth test drops faces, and coverage IoU against the
-  modern side is 0.60 to 0.76.
-- **It is not deterministic.** Two runs differ on 0.04% to 0.25% of the
-  drawn pixels.
-- **The kernels are not Argonaut's.** The period build replaces BRender's
-  x86 assembly kernels with C ports written in this project (in
-  `engine-revival`'s harness, `compat/brender-pentprim-c-port.c`), and most of
-  those ports are stubs. The port prints a record for every vertex it
-  draws, and in the first run all 2,128 records had a screen x of zero.
-  That fits the vertex layout mismatch already recorded for
-  the textured path.
+The first measurement, before engine-revival 0.4.0, found the period build
+unusable as a reference:
 
-So the gap measures this project's unfinished C ports, not Argonaut's 1998
-rasteriser. No parity claim is made in either direction.
+- the flat and unlit scenes drew nothing;
+- the Gouraud scenes saturated to white with holes (coverage IoU 0.60 to
+  0.76);
+- runs differed on up to 0.25% of pixels.
 
-What the modern numbers show: BRender 1.4's software rasteriser is
-deterministic and draws the same coverage on Windows (MSVC) and on Linux
-(GCC). Its Gouraud colours differ by one level on a handful of pixels, which
-fits floating-point differences between the compilers.
+The cause was in the C port, not in the 1998 engine. The port redefined
+BRender's component slots (`C_SX` and the rest) as 0 to 8 with `#ifndef`,
+which shadowed the real enum, so its kernels read the wrong vertex data. The
+Gouraud kernel also interpolated the wrong slot, shifted colour by 8 bits
+instead of 16, and inverted the depth test. Those records are in this
+repository's history at commit `cb238d7`.
 
 ## CI
 
-- Every change runs the modern scenes twice on Windows and twice on Linux and
-  requires identical bytes.
-- It then compares Windows against Linux within the bounds measured above:
-  coverage IoU 1.0, at least 99.9% identical pixels, at most 1 level. These
-  bounds were set after measuring, so they are calibrated, not predicted.
+Every change:
 
-The period comparison is not in CI. It becomes a CI gate when the period
-build draws these scenes.
+- runs the period scenes twice (Win32) and the modern scenes twice on Windows
+  and on Linux, and requires identical bytes each time;
+- compares modern Windows against modern Linux within coverage IoU 1.0, at
+  least 99.9% identical pixels and at most 1 level;
+- compares modern against period within coverage IoU 0.999, at least 90%
+  identical pixels and a MAD of at most 0.25.
 
-## Next
+All bounds were set from the measurements above, so they are calibrated, not
+predicted.
 
-Fix the period C ports until the period side draws all seven scenes,
-deterministically. Start with the vertex layout the rung prints. Then rerun
-`modern against period`. The harness and its ports live in `engine-revival`,
-so that work is a change there.
+## Not measured yet
+
+- Textured scenes: the period build's textured path does not apply the
+  texture yet.
+- Palette (8-bit) and 15/16-bit targets: only RGB_888 is ported.
+- OpenGL against software.

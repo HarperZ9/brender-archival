@@ -35,7 +35,7 @@
 void *BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
 void *BR_EXPORT BrDrv1PentPrimBegin(char *arguments);
 br_error BR_PUBLIC_ENTRY BrV1dbRendererBegin(struct br_device_pixelmap *destination, struct br_renderer *renderer);
-#define DEPTH_CLEAR 0 /* as the period rung clears it; 0xFFFF and 0xFFFFFFFF draw nothing there */
+#define DEPTH_CLEAR 0xFFFFFFFF /* far: tt24_piz.asm draws where z < *zbuf */
 #else
 struct br_device *BR_EXPORT BrDrv1SoftPrimBegin(const char *arguments);
 struct br_device *BR_EXPORT BrDrv1SoftRendBegin(const char *arguments);

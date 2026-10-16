@@ -1,7 +1,7 @@
 """Compare two sets of parity scenes, pixel by pixel.
 
     python modern/parity/parity_compare.py <dir-a> <dir-b> [--label NAME] [--out result.json]
-        [--require-identical] [--bounds MIN_IOU MIN_IDENTICAL MAX_DIFF]
+        [--require-identical] [--bounds MIN_IOU MIN_IDENTICAL MAX_DIFF [MAX_MAD]]
 
 Each directory holds the PPMs that parity-scene writes (one per scene). For
 every scene this reports, over the pixels either side drew (the union of the
@@ -21,7 +21,8 @@ does not fail reports ok = false.
 --require-identical makes the exit status 1 unless every scene is
 byte-identical, which is the claim for two runs of one deterministic build.
 --bounds makes it 1 unless every scene has at least MIN_IOU coverage IoU, at
-least MIN_IDENTICAL identical pixels and no channel off by more than MAX_DIFF.
+least MIN_IDENTICAL identical pixels, no channel off by more than MAX_DIFF and,
+when given, a mean absolute difference of at most MAX_MAD.
 Without it, the numbers are reported and only the control decides the exit
 status. Standard library only.
 """
@@ -85,9 +86,10 @@ def main(argv: list[str]) -> int:
     if "--bounds" in argv:
         i = argv.index("--bounds")
         min_iou, min_same, max_diff = float(argv[i + 1]), float(argv[i + 2]), int(argv[i + 3])
-        result["bounds"] = {"min_coverage_iou": min_iou, "min_identical": min_same, "max_diff": max_diff}
+        max_mad = float(argv[i + 4]) if len(argv) > i + 4 and not argv[i + 4].startswith("--") else 255.0
+        result["bounds"] = {"min_coverage_iou": min_iou, "min_identical": min_same, "max_diff": max_diff, "max_mad": max_mad}
         result["within_bounds"] = all(m["coverage_iou"] >= min_iou and m["identical"] >= min_same and m["max"] <= max_diff
-                                      for m in result["scenes"].values())
+                                      and m["mad"] <= max_mad for m in result["scenes"].values())
         result["ok"] = result["ok"] and result["within_bounds"]
     text = json.dumps(result, indent=2)
     print(text)

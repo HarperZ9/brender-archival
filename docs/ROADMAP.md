@@ -106,37 +106,32 @@ Not done:
 Done when: each channel installs the current release on a clean machine in CI
 (or on a recorded manual run where CI cannot reach). AppImage: met in CI.
 
-### 5. Renderer parity, measured (instrument built; the 1998 side is not ready)
+### 5. Renderer parity, measured (untextured: met)
 
-The game's `tools/parity.py` compares the OpenGL and software stills by edge
-correlation, because the two drivers shade differently. Pixel parity is the
-stronger claim and holds only where both paths are deterministic and use the
-same arithmetic.
+`modern/parity/` (see its README) draws one set of scenes on the 1998
+rasteriser and on BRender 1.4's, and compares them pixel by pixel with a
+control that must fail.
 
-Built on 16 October 2026, in `modern/parity/` (see its README):
+Measured on 16 October 2026, after engine-revival 0.4.0 ported the 1998
+kernels (`tt24_piz.asm`) line by line:
 
-- one scene program compiled against both engines;
-- a pixel comparison with a wrong-pose control that must fail;
-- CI checks on the modern side.
+- The 1998 build gives the same bytes on every run.
+- Against BRender 1.4, on six untextured scenes (unlit, flat lit and
+  Gouraud): coverage IoU is 0.9993 or better, 90.7% to 100% of pixels are
+  identical, and the mean difference is under 0.2 levels.
+- CI checks every change: determinism on all three builds, and both
+  comparisons within the measured bounds.
 
-Measured:
+The first measurement the same day found the 1998 build unusable: flat
+scenes were empty, Gouraud was saturated and full of holes, and runs varied.
+The cause was the C port shadowing BRender's component slots. That record is
+kept in the parity README.
 
-- BRender 1.4's software rasteriser gives the same bytes on every run, and
-  the same coverage on Windows (MSVC) and Linux (GCC). At most 0.02% of
-  pixels are off by one level.
-- The period 1.3.2 build is not a usable reference yet. Its flat paths draw
-  nothing, and its Gouraud path saturates and drops faces (coverage IoU 0.60
-  to 0.76 against 1.4). It also varies between runs. Its kernels are this
-  project's C ports of Argonaut's assembly, most of them stubs, so the gap
-  measures those ports, not the 1998 engine. No parity claim is made.
-
-Next: fix the period C ports in `engine-revival` until all seven scenes draw
-deterministically, then rerun the comparison and gate it in CI. OpenGL
-against software, with stated bounds, follows.
+Still open: textured scenes (the period textured path does not apply the
+texture yet), 8-bit and 15/16-bit targets, and OpenGL against software.
 
 Done when: a parity record (JSON) for each pair is committed and CI
-recomputes it. Met for modern Windows against modern Linux; not met for the
-period comparison.
+recomputes it. Met for untextured RGB_888.
 
 ### 6. Modern GPU backends
 
