@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased: pixel parity instrument
+
+- `modern/parity/`: `parity-scene.c` draws seven untextured scenes on either engine. It is built 64-bit by `modern/CMakeLists.txt` and 32-bit against the period harness by `parity/period/CMakeLists.txt`. `parity_compare.py` reports coverage IoU, identical pixels, MAD and the largest difference per scene, with a control that must fail.
+- Measured on 16 October 2026 (`modern/parity/evidence/`):
+  - BRender 1.4's software rasteriser is deterministic, and Windows MSVC against Linux GCC gives identical coverage, with at most 0.02% of pixels one level apart.
+  - The period 1.3.2 build is not yet a usable reference: its flat paths draw nothing, its Gouraud path saturates and drops faces, and it varies between runs. No parity claim is made.
+- CI runs the modern scenes twice on Windows and on Linux (identical bytes required), and a new `parity` job compares Windows against Linux within the measured bounds.
+- The winget and Scoop manifests follow The Keeper's Hour 0.4.1 and brview 0.1.3.
+
 ## Unreleased: packaging
 
 - `packaging/appimage/build-appimage.sh` builds an AppImage from a staged release folder, with the AppImage type2 runtime (release 20251108) pinned by SHA-256 and checked before use. CI builds both AppImages and runs them headless; `release-keepers.yml` and `release-brview.yml` attach `*-x86_64.AppImage` with a SHA-256 after the same smoke run.

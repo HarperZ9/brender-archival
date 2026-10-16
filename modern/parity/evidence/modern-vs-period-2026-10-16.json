@@ -1,0 +1,68 @@
+{
+  "label": "BRender 1.4 software against the period 1.3.2 build",
+  "scenes": {
+    "sphere-flat": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "mad": 159.333,
+      "max": 199,
+      "drawn_a": 29636,
+      "drawn_b": 0
+    },
+    "sphere-lit": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "mad": 115.089,
+      "max": 198,
+      "drawn_a": 29636,
+      "drawn_b": 0
+    },
+    "sphere-smooth": {
+      "coverage_iou": 0.6696,
+      "identical": 0.0,
+      "mad": 128.236,
+      "max": 255,
+      "drawn_a": 29636,
+      "drawn_b": 19940
+    },
+    "teapot-smooth": {
+      "coverage_iou": 0.7618,
+      "identical": 0.0,
+      "mad": 141.256,
+      "max": 255,
+      "drawn_a": 8786,
+      "drawn_b": 6899
+    },
+    "torus-flat": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "mad": 159.333,
+      "max": 199,
+      "drawn_a": 17943,
+      "drawn_b": 0
+    },
+    "torus-smooth": {
+      "coverage_iou": 0.6044,
+      "identical": 0.0,
+      "mad": 123.3,
+      "max": 255,
+      "drawn_a": 17943,
+      "drawn_b": 10957
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6027,
+    "identical": 0.6027,
+    "mad": 63.301,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11946,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true
+}

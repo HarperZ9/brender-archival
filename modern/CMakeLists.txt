@@ -91,5 +91,20 @@ foreach(f IN LISTS BRVIEW_DAT)
   install(FILES "${BRENDER132_SOURCE_DIR}/dat/${f}" DESTINATION dat)
 endforeach()
 
+# The parity scenes on BRender 1.4's software rasteriser, compared with the
+# same scenes on BRender 1.3.2 (parity/period) by parity/parity_compare.py.
+# A measuring tool: built with the rest, never installed.
+add_executable(parity-scene parity/parity-scene.c)
+target_link_libraries(parity-scene PRIVATE BRender::DDI BRender::Drivers::SoftRend BRender::Drivers::SoftPrim BRender::Drivers::SDL3Dev)
+if(MSVC)
+  target_compile_definitions(parity-scene PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+if(WIN32)
+  add_custom_command(TARGET parity-scene POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:parity-scene>)
+else()
+  set_target_properties(parity-scene PROPERTIES BUILD_WITH_INSTALL_RPATH ON INSTALL_RPATH "$ORIGIN")
+endif()
+
 # The showcase game's first playable slice.
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../games/keepers-hour" keepers-hour)

@@ -106,18 +106,37 @@ Not done:
 Done when: each channel installs the current release on a clean machine in CI
 (or on a recorded manual run where CI cannot reach). AppImage: met in CI.
 
-### 5. Renderer parity, measured
+### 5. Renderer parity, measured (instrument built; the 1998 side is not ready)
 
 The game's `tools/parity.py` compares the OpenGL and software stills by edge
 correlation, because the two drivers shade differently. Pixel parity is the
 stronger claim and holds only where both paths are deterministic and use the
-same arithmetic. First target: BRender 1.3.2's period rasteriser (Win32)
-against BRender 1.4's softprim on the ladder scenes, with the per-pixel
-difference, the count of differing pixels and a wrong-scene control that
-must fail. Then OpenGL against software, scene by scene, with stated bounds.
+same arithmetic.
 
-Done when: a parity record (JSON, with digests) for each pair is committed and
-CI recomputes it.
+Built on 16 October 2026, in `modern/parity/` (see its README):
+
+- one scene program compiled against both engines;
+- a pixel comparison with a wrong-pose control that must fail;
+- CI checks on the modern side.
+
+Measured:
+
+- BRender 1.4's software rasteriser gives the same bytes on every run, and
+  the same coverage on Windows (MSVC) and Linux (GCC). At most 0.02% of
+  pixels are off by one level.
+- The period 1.3.2 build is not a usable reference yet. Its flat paths draw
+  nothing, and its Gouraud path saturates and drops faces (coverage IoU 0.60
+  to 0.76 against 1.4). It also varies between runs. Its kernels are this
+  project's C ports of Argonaut's assembly, most of them stubs, so the gap
+  measures those ports, not the 1998 engine. No parity claim is made.
+
+Next: fix the period C ports in `engine-revival` until all seven scenes draw
+deterministically, then rerun the comparison and gate it in CI. OpenGL
+against software, with stated bounds, follows.
+
+Done when: a parity record (JSON) for each pair is committed and CI
+recomputes it. Met for modern Windows against modern Linux; not met for the
+period comparison.
 
 ### 6. Modern GPU backends
 
