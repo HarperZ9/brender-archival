@@ -19,7 +19,7 @@
 #include "kh_audio.h"
 #include "kh_boot.h"
 #include "kh_capture.h"
-#include "kh_display.h"
+#include "brdisplay.h"
 #include "kh_game.h"
 #include "kh_save.h"
 #include "kh_tex.h"
@@ -102,7 +102,7 @@ static br_error game_init(br_demo *demo)
     SDL_InitSubSystem(SDL_INIT_GAMEPAD);
     G.smoke = SDL_getenv("KEEPERS_SMOKE") != NULL;
     kh_capture_init();
-    kh_display_init();
+    brd_display_init("KEEPERS");
     if (kh_boot_load(&G.script) != 0)
         return BRE_FAIL;
     kh_options_load(&G.opt, kh_options_path());
@@ -118,7 +118,7 @@ static br_error game_init(br_demo *demo)
     c->yon_z = BR_SCALAR(60);
     demo->order_table->min_z = c->hither_z;
     demo->order_table->max_z = c->yon_z;
-    kh_display_apply(demo, G.opt.fov, G.opt.vsync);
+    brd_display_apply(demo, G.opt.fov, G.opt.vsync);
     kh_world_build(&G.world, demo->world);
     enter(kh_room_find(room && kh_room_find(room) >= 0 ? room : "lamp"), -1);
     if (SDL_getenv("KEEPERS_OPEN"))
@@ -198,7 +198,7 @@ static void game_render(br_demo *demo)
     br_pixelmap *pm = demo->colour_buffer;
     br_colour ink = kh_px(pm, 236, 230, 216), accent = kh_px(pm, 232, 180, 92), panel = kh_px(pm, 14, 13, 18);
     kh_text_via_memory(!demo->hw_accel);
-    kh_display_render(demo, G.opt.pixel);
+    brd_display_render(demo, G.opt.pixel);
     if (kh_capture_active()) {
         if (kh_capture_ui()) {
             hud(pm, ink, accent);
@@ -221,16 +221,16 @@ static void game_render(br_demo *demo)
 static void game_event(br_demo *demo, const SDL_Event *e)
 {
     kh_input_event(e);
-    kh_display_apply(demo, G.opt.fov, G.opt.vsync); /* an options change takes effect at once */
+    brd_display_apply(demo, G.opt.fov, G.opt.vsync); /* an options change takes effect at once */
 }
 
 static void game_resize(br_demo *demo, br_uint_16 width, br_uint_16 height)
 {
     BrDemoDefaultOnResize(demo, width, height);
-    kh_display_release(); /* the small buffers are remade for the new size on the next frame */
+    brd_display_release(); /* the small buffers are remade for the new size on the next frame */
 }
 
-static void game_destroy(br_demo *demo) { (void)demo; kh_display_release(); kh_audio_close(); }
+static void game_destroy(br_demo *demo) { (void)demo; brd_display_release(); kh_audio_close(); }
 
 static const br_demo_dispatch dispatch = {
     .init = game_init, .process_event = game_event, .update = game_update,

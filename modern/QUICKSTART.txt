@@ -26,6 +26,8 @@ Controls
   Space             spin on or off
   R                 reset the view
   H or F1           hide the help
+  [ and ]           pixel size 1 to 6 (a coarser, period look)
+  - and =           field of view       V   vsync on or off
   Alt+Enter         fullscreen     Esc   quit
 
 Gamepad

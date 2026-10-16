@@ -9,6 +9,11 @@
  *   brview model.dat       view one model (optionally: texture.pix)
  *   brview --force-software   draw with the software rasteriser instead of OpenGL
  *
+ * [ and ] change the pixel size, - and = the field of view, V turns vsync on
+ * or off; they are saved in the user's preferences folder. BRVIEW_PIXEL and
+ * BRVIEW_FOV set them for one run, and BRVIEW_SHOT=<file.ppm> writes one
+ * still of the first model, without spin, and quits.
+ *
  * SPDX-License-Identifier: MIT
  */
 #include <math.h>
@@ -19,6 +24,7 @@
 #include <SDL3/SDL_main.h> /* the platform entry point: WinMain for a window-only program */
 #include <brender.h>
 #include "brdemo.h"
+#include "brdisplay.h"
 #include "brview_scenes.h"
 
 typedef struct viewer {
@@ -32,6 +38,7 @@ typedef struct viewer {
     br_boolean   dragging, panning;
     SDL_Gamepad *pad;
     char         title[128];
+    int          pixel, fov, vsync; /* display options, saved */
 } viewer;
 
 static viewer V;
@@ -39,6 +46,50 @@ static viewer V;
 /* BRVIEW_SMOKE=1: load every scene once, draw one frame of each, then quit.
  * The exit code is the number of scenes that failed to load. */
 static int smoke_mode, smoke_failures;
+
+/* BRVIEW_SHOT=<file.ppm>: draw the first model without spin and write one
+ * still after the renderer settles. */
+static const char *shot_path;
+static int shot_frames;
+
+static const char *options_path(void)
+{
+    static char path[1024];
+    char *dir;
+    if (path[0] == '\0' && (dir = SDL_GetPrefPath("HarperZ9", "brview")) != NULL) {
+        SDL_snprintf(path, sizeof(path), "%soptions.cfg", dir);
+        SDL_free(dir);
+    }
+    return path[0] ? path : NULL;
+}
+
+/* Checks and stills use the defaults, never a player's saved options. */
+static void options_load(void)
+{
+    char word[32];
+    int v;
+    FILE *f;
+    V.pixel = 1;
+    V.fov = 50;
+    V.vsync = 1;
+    if (smoke_mode || shot_path || options_path() == NULL || (f = fopen(options_path(), "r")) == NULL)
+        return;
+    while (fscanf(f, "%31s %d", word, &v) == 2) {
+        if (strcmp(word, "pixel") == 0 && v >= BRD_PIXEL_MIN && v <= BRD_PIXEL_MAX) V.pixel = v;
+        else if (strcmp(word, "fov") == 0 && v >= BRD_FOV_MIN && v <= BRD_FOV_MAX) V.fov = v;
+        else if (strcmp(word, "vsync") == 0 && (v == 0 || v == 1)) V.vsync = v;
+    }
+    fclose(f);
+}
+
+static void options_save(void)
+{
+    FILE *f;
+    if (smoke_mode || shot_path || options_path() == NULL || (f = fopen(options_path(), "w")) == NULL)
+        return;
+    fprintf(f, "pixel %d\nfov %d\nvsync %d\n", V.pixel, V.fov, V.vsync);
+    fclose(f);
+}
 
 static void reset_view(void)
 {
@@ -80,7 +131,7 @@ static br_error viewer_init(br_demo *demo)
     demo->camera = BrActorAdd(demo->world, BrActorAllocate(BR_ACTOR_CAMERA, NULL));
     camera_data = demo->camera->type_data;
     camera_data->type = BR_CAMERA_PERSPECTIVE_FOV;
-    camera_data->field_of_view = BR_ANGLE_DEG(50);
+    camera_data->field_of_view = BR_ANGLE_DEG(50); /* then the saved option, below */
     camera_data->hither_z = BR_SCALAR(0.05);
     camera_data->yon_z = BR_SCALAR(100);
     demo->order_table->min_z = camera_data->hither_z;
@@ -96,7 +147,10 @@ static br_error viewer_init(br_demo *demo)
     V.material = BrMaterialAllocate("brview");
     V.textured = BR_TRUE;
     V.help = BR_TRUE;
-    V.spin = BR_TRUE;
+    V.spin = shot_path == NULL;
+    brd_display_init("BRVIEW");
+    options_load();
+    brd_display_apply(demo, V.fov, V.vsync);
 
     if (demo->args->pos_argc > 0)
         BrViewSceneSetCustom(demo->args->pos_argv[0], demo->args->pos_argc > 1 ? demo->args->pos_argv[1] : NULL);
@@ -113,6 +167,11 @@ static void on_key(br_demo *demo, SDL_Keycode key)
     case SDLK_SPACE: V.spin = !V.spin; break;
     case SDLK_H: case SDLK_F1: V.help = !V.help; break;
     case SDLK_T: V.textured = !V.textured; load_scene(demo, V.scene); break;
+    case SDLK_LEFTBRACKET: V.pixel = SDL_clamp(V.pixel - 1, BRD_PIXEL_MIN, BRD_PIXEL_MAX); options_save(); break;
+    case SDLK_RIGHTBRACKET: V.pixel = SDL_clamp(V.pixel + 1, BRD_PIXEL_MIN, BRD_PIXEL_MAX); options_save(); break;
+    case SDLK_MINUS: V.fov = SDL_clamp(V.fov - BRD_FOV_STEP, BRD_FOV_MIN, BRD_FOV_MAX); options_save(); break;
+    case SDLK_EQUALS: V.fov = SDL_clamp(V.fov + BRD_FOV_STEP, BRD_FOV_MIN, BRD_FOV_MAX); options_save(); break;
+    case SDLK_V: V.vsync = !V.vsync; options_save(); break;
     case SDLK_ESCAPE: { SDL_Event quit = {.type = SDL_EVENT_QUIT}; SDL_PushEvent(&quit); } break;
     default: break;
     }
@@ -152,6 +211,7 @@ static void viewer_event(br_demo *demo, const SDL_Event *evt)
     case SDL_EVENT_GAMEPAD_BUTTON_DOWN: on_button(demo, evt->gbutton.button); break;
     default: break;
     }
+    brd_display_apply(demo, V.fov, V.vsync); /* a changed option takes effect at once */
 }
 
 static float stick(SDL_GamepadAxis axis)
@@ -177,6 +237,10 @@ static void viewer_update(br_demo *demo, br_scalar dt)
         smoke_step(demo);
         return;
     }
+    if (shot_path) {
+        place_camera(demo);
+        return;
+    }
     {
     const bool *keys = SDL_GetKeyboardState(NULL);
     float s = BrScalarToFloat(dt);
@@ -200,19 +264,41 @@ static void viewer_render(br_demo *demo)
         "Drag: orbit   Right drag: pan   Wheel or Q/E: zoom   WASD/arrows: orbit",
         "Tab/N, P: next, previous model   T: texture on/off   Space: spin   R: reset",
         "Gamepad: left stick orbit, triggers zoom, A/X next/previous, B spin, Y texture",
-        "H or F1: hide this help   Alt+Enter: fullscreen   Esc: quit",
+        "[ ]: pixel size   - =: field of view   V: vsync   H or F1: hide this help",
+        "Alt+Enter: fullscreen   Esc: quit",
     };
     br_int_32 x = -demo->colour_buffer->origin_x + 8;
     br_int_32 y = demo->colour_buffer->height - demo->colour_buffer->origin_y - 8;
     int i, line = BrPixelmapTextHeight(demo->colour_buffer, BrFontProp7x9) + 3;
 
-    BrDemoDefaultRender(demo);
+    brd_display_render(demo, V.pixel);
+    if (shot_path) {
+        if (++shot_frames == 20) { /* the renderer settles first */
+            SDL_Event quit = {.type = SDL_EVENT_QUIT};
+            if (brd_frame_write_ppm(demo->colour_buffer, demo->palette, shot_path, demo->hw_accel) != 0) smoke_failures++;
+            SDL_PushEvent(&quit);
+        }
+        return;
+    }
     BrPixelmapTextF(demo->colour_buffer, x, -demo->colour_buffer->origin_y + 20, demo->text_colour, BrFontProp7x9,
-                    "%s  (%d of %d)", V.title, V.scene + 1, BrViewSceneCount());
+                    "%s  (%d of %d)   pixel %d  fov %d  vsync %s", V.title, V.scene + 1, BrViewSceneCount(),
+                    brd_display_pixel(V.pixel), brd_display_fov(V.fov), V.vsync ? "on" : "off");
     if (!V.help)
         return;
     for (i = 0; i < (int)BR_ASIZE(help); i++)
         BrPixelmapText(demo->colour_buffer, x, y - (int)(BR_ASIZE(help) - i) * line, demo->text_colour, BrFontProp7x9, help[i]);
+}
+
+static void viewer_resize(br_demo *demo, br_uint_16 width, br_uint_16 height)
+{
+    BrDemoDefaultOnResize(demo, width, height);
+    brd_display_release(); /* remade for the new size on the next frame */
+}
+
+static void viewer_destroy(br_demo *demo)
+{
+    brd_display_release();
+    BrDemoDefaultDestroy(demo);
 }
 
 static const br_demo_dispatch dispatch = {
@@ -220,19 +306,34 @@ static const br_demo_dispatch dispatch = {
     .process_event = viewer_event,
     .update = viewer_update,
     .render = viewer_render,
-    .on_resize = BrDemoDefaultOnResize,
-    .destroy = BrDemoDefaultDestroy,
+    .on_resize = viewer_resize,
+    .destroy = viewer_destroy,
 };
 
 int main(int argc, char **argv)
 {
     int ret;
     smoke_mode = SDL_getenv("BRVIEW_SMOKE") != NULL;
+    shot_path = SDL_getenv("BRVIEW_SHOT");
     {
         br_demo_run_args args;
         BrDemoDefaultArgs(&args);
         args.title = "brview: BRender on a modern PC";
-        if (BrDemoParseArgs(&args, argc, argv) != 0)
+        /* The software rasteriser draws in 24-bit colour unless --software-bpp
+         * is given, as in the game: brdemo's 8-bit default has no palette for
+         * stills, and the scenes are true-colour. */
+        char *used[64];
+        int i, n = 0, given = 0;
+        for (i = 0; i < argc && i < 60; i++)
+            given |= strcmp(argv[i], "--software-bpp") == 0;
+        for (i = 0; i < argc && i < 60; i++) {
+            used[n++] = argv[i];
+            if (i == 0 && !given) { /* before any model path, so it parses as an option */
+                used[n++] = "--software-bpp";
+                used[n++] = "24";
+            }
+        }
+        if (BrDemoParseArgs(&args, n, used) != 0)
             return 1;
         args.no_stats = 1;
         BrLogSetLevel(args.verbose);

@@ -11,7 +11,7 @@
 
 #include "kh_tex.h"
 #include "kh_audio.h"
-#include "kh_display.h"
+#include "brdisplay.h"
 #include "kh_options.h"
 
 static const char *action_names[KH_ACT_COUNT] = {"Walk forward", "Walk back", "Step left", "Step right", "Talk, continue, choose", "Leave a conversation"};
@@ -67,8 +67,8 @@ int kh_options_load(kh_options *o, const char *path)
     while (fscanf(f, "%31s %d", word, &v) == 2) {
         if (strcmp(word, "volume") == 0 && v >= 0 && v <= 10) o->volume = v;
         else if (strcmp(word, "look") == 0 && v >= 1 && v <= 10) o->look = v;
-        else if (strcmp(word, "pixel") == 0 && v >= KH_PIXEL_MIN && v <= KH_PIXEL_MAX) o->pixel = v;
-        else if (strcmp(word, "fov") == 0 && v >= KH_FOV_MIN && v <= KH_FOV_MAX && v % KH_FOV_STEP == 0) o->fov = v;
+        else if (strcmp(word, "pixel") == 0 && v >= BRD_PIXEL_MIN && v <= BRD_PIXEL_MAX) o->pixel = v;
+        else if (strcmp(word, "fov") == 0 && v >= BRD_FOV_MIN && v <= BRD_FOV_MAX && v % BRD_FOV_STEP == 0) o->fov = v;
         else if (strcmp(word, "vsync") == 0 && (v == 0 || v == 1)) o->vsync = v;
         for (a = 0; a < KH_ACT_COUNT; a++)
             if (strcmp(word, action_ids[a]) == 0 && v > 0 && v < SDL_SCANCODE_COUNT) o->keys[a] = (SDL_Scancode)v;
@@ -100,9 +100,9 @@ static void change(kh_options *o, int delta)
     } else if (o->row == ROW_LOOK) {
         o->look = SDL_clamp(o->look + delta, 1, 10);
     } else if (o->row == ROW_PIXEL) {
-        o->pixel = SDL_clamp(o->pixel + delta, KH_PIXEL_MIN, KH_PIXEL_MAX);
+        o->pixel = SDL_clamp(o->pixel + delta, BRD_PIXEL_MIN, BRD_PIXEL_MAX);
     } else if (o->row == ROW_FOV) {
-        o->fov = SDL_clamp(o->fov + delta * KH_FOV_STEP, KH_FOV_MIN, KH_FOV_MAX);
+        o->fov = SDL_clamp(o->fov + delta * BRD_FOV_STEP, BRD_FOV_MIN, BRD_FOV_MAX);
     } else if (o->row == ROW_VSYNC) {
         o->vsync = !o->vsync;
     }
