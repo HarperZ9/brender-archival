@@ -4,7 +4,8 @@
         [--require-identical] [--bounds MIN_IOU MIN_IDENTICAL MAX_DIFF [MAX_MAD]]
         [--only TEXT] [--skip TEXT]
 
-Each directory holds the PPMs that parity-scene writes (one per scene). For
+Each directory holds the PPMs that parity-scene writes (one per scene, and
+for an 8-bit scene a PGM of its palette indices beside it). For
 every scene this reports, over the pixels either side drew (the union of the
 two coverage masks):
 
@@ -25,7 +26,8 @@ byte-identical, which is the claim for two runs of one deterministic build.
 least MIN_IDENTICAL identical pixels, no channel off by more than MAX_DIFF and,
 when given, a mean absolute difference of at most MAX_MAD.
 Without it, the numbers are reported and only the control decides the exit
-status. --only and --skip keep or drop the scenes whose names contain TEXT,
+status. --only and --skip keep or drop the scenes whose names contain TEXT
+(a comma-separated list: any one of them),
 so one class of scene can be held to its own bounds. Standard library only.
 """
 from __future__ import annotations
@@ -43,22 +45,37 @@ def read_ppm(path: Path):
     w, h = (int(v) for v in size.split())
     if magic != b"P6" or maxval != b"255" or len(pixels) != w * h * 3:
         raise SystemExit(f"{path}: not a {w}x{h} binary PPM")
-    return w, h, pixels
+    index = None
+    pgm = path.with_suffix(".pgm")
+    if pgm.exists():
+        magic, size, maxval, index = pgm.read_bytes().split(b"\n", 3)
+        if magic != b"P5" or maxval != b"255" or len(index) != w * h:
+            raise SystemExit(f"{pgm}: not a {w}x{h} binary PGM")
+    return w, h, pixels, index
 
 
 def compare(a, b) -> dict:
-    (wa, ha, pa), (wb, hb, pb) = a, b
+    """An 8-bit scene has a .pgm of palette indices beside its .ppm. When both
+    sides have one, a pixel is drawn when its index is not 0 and identical
+    when the indices are equal. MAD and max are always in the PPM's colours."""
+    (wa, ha, pa, ia), (wb, hb, pb, ib) = a, b
     if (wa, ha) != (wb, hb):
         raise SystemExit("size mismatch")
+    indexed = ia is not None and ib is not None
+
+    def drawn(p, idx, k):
+        return idx[k] != 0 if indexed else p[3 * k:3 * k + 3] != b"\0\0\0"
+
     both = either = same = 0
     total = peak = 0
-    for i in range(0, len(pa), 3):
-        da, db = pa[i:i + 3] != b"\0\0\0", pb[i:i + 3] != b"\0\0\0"
+    for k in range(wa * ha):
+        i = 3 * k
+        da, db = drawn(pa, ia, k), drawn(pb, ib, k)
         if not (da or db):
             continue
         either += 1
         both += da and db
-        same += pa[i:i + 3] == pb[i:i + 3]
+        same += (ia[k] == ib[k]) if indexed else (pa[i:i + 3] == pb[i:i + 3])
         for c in range(3):
             d = abs(pa[i + c] - pb[i + c])
             total += d
@@ -68,8 +85,9 @@ def compare(a, b) -> dict:
         "identical": round(same / either, 4) if either else 1.0,
         "mad": round(total / (3 * either), 3) if either else 0.0,
         "max": peak,
-        "drawn_a": sum(1 for i in range(0, len(pa), 3) if pa[i:i + 3] != b"\0\0\0"),
-        "drawn_b": sum(1 for i in range(0, len(pb), 3) if pb[i:i + 3] != b"\0\0\0"),
+        "drawn_a": sum(1 for k in range(wa * ha) if drawn(pa, ia, k)),
+        "drawn_b": sum(1 for k in range(wa * ha) if drawn(pb, ib, k)),
+        "by_index": indexed,
     }
 
 
@@ -81,9 +99,11 @@ def main(argv: list[str]) -> int:
     if not scenes or sorted(p.stem for p in b.glob("*.ppm") if not p.stem.startswith("control-")) != scenes:
         raise SystemExit("the two directories do not hold the same scenes")
     if "--only" in argv:
-        scenes = [s for s in scenes if argv[argv.index("--only") + 1] in s]
+        keep = argv[argv.index("--only") + 1].split(",")
+        scenes = [s for s in scenes if any(k in s for k in keep)]
     if "--skip" in argv:
-        scenes = [s for s in scenes if argv[argv.index("--skip") + 1] not in s]
+        drop = argv[argv.index("--skip") + 1].split(",")
+        scenes = [s for s in scenes if not any(d in s for d in drop)]
     if not scenes:
         raise SystemExit("no scene left after --only/--skip")
     result = {"label": label, "scenes": {s: compare(read_ppm(a / f"{s}.ppm"), read_ppm(b / f"{s}.ppm")) for s in scenes}}
