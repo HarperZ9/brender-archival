@@ -28,6 +28,8 @@ Controls
   H or F1           hide the help
   [ and ]           pixel size 1 to 6 (a coarser, period look)
   - and =           field of view       V   vsync on or off
+  8                 period look: 256 colours through BRender's 8-bit path
+                    (software renderer; brview starts on it when it is on)
   Alt+Enter         fullscreen     Esc   quit
 
 Gamepad
