@@ -110,7 +110,7 @@ Not done:
 Done when: each channel installs the current release on a clean machine in CI
 (or on a recorded manual run where CI cannot reach). AppImage: met in CI.
 
-### 5. Renderer parity, measured (untextured and unlit textured: met)
+### 5. Renderer parity, measured (24-bit and 8-bit, untextured and textured: met)
 
 `modern/parity/` (see its README) draws one set of scenes on the 1998
 rasteriser and on BRender 1.4's, and compares them pixel by pixel with a
@@ -118,7 +118,8 @@ control that must fail.
 
 Measured on 16 October 2026, after engine-revival ported the 1998 kernels
 line by line (`tt24_piz.asm` in 0.4.0, `t_piza.asm` under Argonaut's
-`awtmz.c` setup in 0.5.0):
+`awtmz.c` setup in 0.5.0, `zb8.asm`, `fti8_piz.asm` and `fpsetup.asm` in
+0.6.0):
 
 - The 1998 build gives the same bytes on every run.
 - **Untextured** (unlit, flat lit and Gouraud): coverage IoU 0.9993 or
@@ -126,6 +127,13 @@ line by line (`tt24_piz.asm` in 0.4.0, `t_piza.asm` under Argonaut's
   levels.
 - **Textured** (unlit): coverage IoU 0.9992 or better, 95.7% to 99.7% of
   pixels identical, mean difference at most 1.09 levels.
+- **8-bit through the palette** (untextured, textured and lit textured):
+  coverage IoU 0.9983 or better, 96.4% to 99.9% of pixels on the same
+  palette index, mean difference at most 0.43 levels.
+- **24-bit lit textured**: a 1998 defect. The kernel reads its 3-byte shade
+  table at a 4-byte stride and draws garbage. Laid at that stride (period
+  side only, as a measurement), the scenes match: coverage IoU 0.9998 or
+  better, 97.9% and 99.5% identical.
 - CI checks every change: determinism on all three builds, and both scene
   classes within their measured bounds. The 1998 renderer rung now gates on
   a textured frame.
@@ -134,12 +142,12 @@ The first measurement that day found the 1998 build unusable. The C port
 shadowed BRender's component slots, its Gouraud and depth logic were wrong,
 and its texture setup was missing. The parity README keeps that record.
 
-Still open: lit textured scenes (an 8-bit texture with a shade table),
-perspective-correct texturing, 8-bit and 15/16-bit targets, and OpenGL
+Still open: perspective-correct texturing, 15/16-bit targets, and OpenGL
 against software.
 
 Done when: a parity record (JSON) for each pair is committed and CI
-recomputes it. Met for RGB_888 untextured and unlit textured.
+recomputes it. Met for RGB_888 untextured, textured and lit textured (the
+last through the stride measurement) and for INDEX_8.
 
 ### 6. Modern GPU backends
 
