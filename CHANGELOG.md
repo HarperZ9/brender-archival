@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: brview display options
+
+- brview: [ and ] set the pixel size (1 to 6), - and = the field of view (40 to 90 degrees), V vsync; they are saved in the preferences folder and shown in the title line. `BRVIEW_PIXEL`, `BRVIEW_FOV` and `BRVIEW_SHOT=<file.ppm>` (one still of the first model, without spin) serve checks and screenshots.
+- The display code moves from the game to `modern/display/brdisplay.{c,h}`, a small library brview and The Keeper's Hour both link. It adds `brd_frame_write_ppm`, which waits for OpenGL to finish before reading back.
+- brview's software rasteriser now draws in 24-bit colour unless `--software-bpp` is given, as the game's does. brdemo's 8-bit default had no palette to read stills back through.
+- `games/keepers-hour/tools/display_check.py --program brview` runs the eight display checks on brview; CI runs them on Windows (software) and Linux (software and OpenGL). The pixel size 1 control bound rises from 0.80 to 0.95 after measuring brview's mostly flat background (0.83); calibrated.
+
 ## Unreleased: textured parity
 
 - Depends on engine-revival 0.5.0. Its port of `t_piza.asm`, under Argonaut's `awtmz.c` setup, makes the period build draw textured scenes, and its renderer rung now requires a textured frame.

@@ -113,6 +113,8 @@ def test_display_options_are_checked_on_frames_on_both_systems():
     windows, linux = ci[ci.index("\n  brview:"):ci.index("\n  linux:")], ci[ci.index("\n  linux:"):]
     assert "tools/display_check.py build/keepers-hour/Release/keepers-hour.exe" in windows
     assert "tools/display_check.py build/keepers-hour/keepers-hour --opengl" in linux
+    assert "display_check.py build/Release/brview.exe --program brview" in windows
+    assert "display_check.py build/brview --program brview --opengl" in linux
     evidence = ROOT / "games" / "keepers-hour" / "evidence"
     for name in ("display-software-2026-10-16.json", "display-opengl-llvmpipe-2026-10-16.json"):
         record = json.loads((evidence / name).read_text(encoding="utf-8"))
@@ -131,3 +133,17 @@ def test_the_recorder_is_checked_on_opengl_for_stale_frames():
     capture = (ROOT / "games" / "keepers-hour" / "src" / "kh_capture.c").read_text(encoding="utf-8")
     assert 'SDL_GL_GetProcAddress("glFinish")' in capture
     assert capture.index("gl_finish();") < capture.index("kh_frame_write(")
+
+
+def test_brview_and_the_game_share_one_display_module():
+    cmake = (ROOT / "modern" / "CMakeLists.txt").read_text(encoding="utf-8")
+    game = (ROOT / "games" / "keepers-hour" / "CMakeLists.txt").read_text(encoding="utf-8")
+    assert "add_library(brdisplay STATIC display/brdisplay.c" in cmake
+    assert "target_link_libraries(brview PRIVATE brdemo brdisplay)" in cmake
+    assert "target_link_libraries(keepers-hour PRIVATE brdemo brdisplay)" in game
+    brview = (ROOT / "modern" / "viewer" / "brview.c").read_text(encoding="utf-8")
+    for needle in ('brd_display_init("BRVIEW")', "brd_display_render(demo, V.pixel)", "SDLK_LEFTBRACKET", "SDLK_V"):
+        assert needle in brview, needle
+    for name in ("software", "opengl-llvmpipe"):
+        record = json.loads((ROOT / "modern" / "viewer" / "evidence" / f"display-{name}-2026-10-16.json").read_text(encoding="utf-8"))
+        assert record["ok"] and record["measured"]["program"] == "brview" and len(record["checks"]) == 8, name

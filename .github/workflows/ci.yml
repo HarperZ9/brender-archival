@@ -214,6 +214,8 @@ jobs:
         run: |
           python games/keepers-hour/tools/display_check.py build/keepers-hour/Release/keepers-hour.exe
           if ($LASTEXITCODE -ne 0) { throw "a display check failed" }
+          python games/keepers-hour/tools/display_check.py build/Release/brview.exe --program brview
+          if ($LASTEXITCODE -ne 0) { throw "a brview display check failed" }
       # The parity scenes on BRender 1.4's software rasteriser (modern/parity).
       - name: the parity scenes are deterministic on Windows
         shell: pwsh
@@ -294,6 +296,8 @@ jobs:
         run: |
           python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour
           python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour --opengl
+          python games/keepers-hour/tools/display_check.py build/brview --program brview
+          python games/keepers-hour/tools/display_check.py build/brview --program brview --opengl
       # Both renderers. A stale OpenGL readback shows up as a frame that
       # repeats the one before it, so no two neighbouring frames may match.
       - name: the frame recorder is deterministic and the lamp moves, on both renderers

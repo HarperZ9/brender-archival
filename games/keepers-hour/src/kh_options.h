@@ -13,7 +13,7 @@ typedef enum kh_action { KH_ACT_FORWARD, KH_ACT_BACK, KH_ACT_LEFT, KH_ACT_RIGHT,
 typedef struct kh_options {
     int          volume;               /* 0 to 10 */
     int          look;                 /* 1 to 10: how fast the view turns */
-    int          pixel;                /* 1 to 6: screen pixels per scene pixel (kh_display.h) */
+    int          pixel;                /* 1 to 6: screen pixels per scene pixel (brdisplay.h) */
     int          fov;                  /* 40 to 90 degrees, vertical, in steps of 5 */
     int          vsync;                /* 0 or 1: wait for the display (OpenGL only) */
     SDL_Scancode keys[KH_ACT_COUNT];

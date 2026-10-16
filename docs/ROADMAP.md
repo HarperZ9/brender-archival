@@ -54,8 +54,12 @@ view is vertical, so widescreen is Hor+. `games/keepers-hour/tools/display_check
 checks it on frames at 4:3, 16:9 and 21:9 with failing controls, on both
 renderers, in CI on Windows and Linux.
 
-Not done: the same settings in brview, and a period mode through BRender's
-8-bit palette path (the pixel size gives the coarse look, not the palette).
+brview has the same settings since 16 October 2026 ([ and ] pixel size,
+- and = field of view, V vsync, saved), from one display module shared with
+the game (`modern/display`), checked by the same tool in CI.
+
+Not done: a period mode through BRender's 8-bit palette path (the pixel size
+gives the coarse look, not the palette).
 
 Done when: options persist; a test draws one room at three resolutions and
 checks the aspect and the pixel scale; screenshots go in the README. Met for

@@ -27,8 +27,20 @@ in the folder, and the program finds it there through a `$ORIGIN` run path.
 | Space | spin on or off |
 | R | reset the view |
 | H or F1 | hide the help |
+| [ and ] | pixel size, 1 to 6 (a coarser, period look) |
+| - and = | field of view, 40 to 90 degrees |
+| V | vsync on or off |
 | Alt+Enter | fullscreen |
 | Gamepad | left stick orbit, triggers zoom, A next, X previous, B spin, Y texture, Start reset |
+
+The pixel size draws the model that many times coarser and scales it up with
+whole, square pixels; the text stays sharp. The field of view is vertical,
+so a wider window shows more to the sides. Both are saved, with vsync, in
+your preferences folder.
+
+| Pixel size 1 | Pixel size 4 |
+|---|---|
+| ![a model at pixel size 1](media/brview-pixel-1.png) | ![the same model at pixel size 4](media/brview-pixel-4.png) |
 
 ```
 brview.exe                    cycle through the bundled models
