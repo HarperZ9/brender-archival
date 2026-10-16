@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased: the 1998 rasteriser, measured
+
+- Depends on engine-revival 0.4.0. Its C port of BRender's `tt24_piz.asm` kernels makes the period build draw the flat and Gouraud scenes, and deterministically. The renderer rung now fails CTest when its render is invalid.
+- `modern/parity/`: the period side clears depth to far, as the 1998 kernels expect. New evidence for 16 October 2026: two period runs are byte-identical, and against BRender 1.4 coverage IoU is 0.9993 or better on all six scenes, with 90.7% to 100% of pixels identical and MAD under 0.2 levels. `parity_compare.py --bounds` takes an optional mean-difference limit.
+- CI: the `brender-native` job runs the period scenes twice and requires identical bytes, and the `parity` job compares modern against period within the measured bounds.
+
 ## Unreleased: pixel parity instrument
 
 - `modern/parity/`: `parity-scene.c` draws seven untextured scenes on either engine. It is built 64-bit by `modern/CMakeLists.txt` and 32-bit against the period harness by `parity/period/CMakeLists.txt`. `parity_compare.py` reports coverage IoU, identical pixels, MAD and the largest difference per scene, with a control that must fail.

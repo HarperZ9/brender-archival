@@ -92,6 +92,28 @@ jobs:
           $listed = (ctest --test-dir $build -C Debug -N | Select-String 'Total Tests: (\d+)').Matches[0].Groups[1].Value
           if ($listed -ne $env:EXPECTED_RUNGS) { throw "ladder lists $listed rungs, expected $env:EXPECTED_RUNGS" }
           ctest --test-dir $build -C Debug --output-on-failure
+      # The parity scenes on the period build (modern/parity/period), twice:
+      # the 1998 render must give the same bytes on every run before any
+      # comparison with BRender 1.4 means anything.
+      - name: the period parity scenes are deterministic
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $src = Join-Path $env:RUNNER_TEMP 'brender-src'
+          $harness = Join-Path $env:RUNNER_TEMP 'brender-harness'
+          $build = Join-Path $env:RUNNER_TEMP 'parity-period'
+          cmake -S modern/parity/period -B $build -A Win32 "-DBRENDER_HARNESS_DIR=$harness" "-DBRENDER_SOURCE_DIR=$src"
+          cmake --build $build --config Debug --parallel --target parity_scene_period
+          foreach ($run in 'a', 'b') {
+            New-Item -ItemType Directory -Force "parity-period-$run" | Out-Null
+            & "$build/Debug/parity_scene_period.exe" "$src/dat" "parity-period-$run" 2>$null | Out-Null
+          }
+          python modern/parity/parity_compare.py parity-period-a parity-period-b --label "period, two runs" --require-identical
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-period
+          path: parity-period-a
 
   # The same 21 programs against BRender 1.4 from BlazingRenderer/BRender
   # (MIT), built 64-bit. modern/ladder64/make_ladder64.py documents the two
@@ -359,7 +381,7 @@ jobs:
   # identical, at most 0.02% of pixels off by one level), so they are
   # calibrated, not predicted; modern/parity/evidence holds the record.
   parity:
-    needs: [brview, linux]
+    needs: [brview, linux, brender-native]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -373,3 +395,13 @@ jobs:
           path: parity-linux
       - name: the two builds draw the same scenes within the recorded bounds
         run: python3 modern/parity/parity_compare.py parity-windows parity-linux --label "windows against linux" --bounds 1.0 0.999 1
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-period
+          path: parity-period
+      # The 1998 rasteriser (BRender 1.3.2, engine-revival 0.4.0's port of
+      # tt24_piz.asm) against BRender 1.4. Bounds from the first measurement
+      # after the port (16 October 2026: coverage IoU 0.9993 or better, 90.7%
+      # or more identical, mean difference under 0.18 levels); calibrated.
+      - name: the 1998 and modern rasterisers draw the same scenes within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period" --bounds 0.999 0.90 255 0.25

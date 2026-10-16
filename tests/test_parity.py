@@ -61,21 +61,32 @@ def test_a_control_that_matches_makes_the_run_fail(tmp_path):
 def test_the_evidence_matches_the_readme():
     def load(name):
         return json.loads((EVIDENCE / f"{name}-2026-10-16.json").read_text(encoding="utf-8"))
-    linux = load("modern-linux-two-runs")
-    assert linux["all_identical"] and linux["ok"]
+    for name in ("modern-linux-two-runs", "period-two-runs"):
+        record = load(name)
+        assert record["all_identical"] and record["ok"] and record["control"]["fails_as_required"], name
     cross = load("modern-windows-vs-linux")
     assert cross["within_bounds"] and all(m["coverage_iou"] == 1.0 and m["max"] <= 1 for m in cross["scenes"].values())
-    period = load("modern-vs-period")
-    scenes = period["scenes"]
-    assert all(scenes[s]["drawn_b"] == 0 for s in ("sphere-flat", "sphere-lit", "torus-flat"))
-    assert all(0.6 <= scenes[s]["coverage_iou"] <= 0.77 for s in ("sphere-smooth", "torus-smooth", "teapot-smooth"))
-    assert not period["all_identical"]
-    rerun = load("period-two-runs")
-    assert not rerun["all_identical"] and not rerun["control"]["fails_as_required"]
+    for name in ("modern-vs-period", "modern-windows-vs-period"):
+        record = load(name)
+        scenes = record["scenes"]
+        assert len(scenes) == 6 and record["within_bounds"] and record["control"]["fails_as_required"], name
+        assert min(m["coverage_iou"] for m in scenes.values()) == 0.9993
+        assert min(m["identical"] for m in scenes.values()) == 0.907
+        assert max(m["mad"] for m in scenes.values()) < 0.2
+        assert all(m["drawn_b"] > 0 for m in scenes.values()), "every period scene draws"
 
 
 def test_ci_gates_the_modern_side_on_both_systems():
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert ci.count("--require-identical") >= 2
     parity = ci[ci.index("\n  parity:"):]
-    assert "needs: [brview, linux]" in parity and "--bounds 1.0 0.999 1" in parity
+    assert "needs: [brview, linux, brender-native]" in parity and "--bounds 1.0 0.999 1" in parity
+    assert "parity-linux parity-period" in parity and "--bounds 0.999 0.90 255 0.25" in parity
+    native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
+    assert "parity-period-a parity-period-b" in native and "--require-identical" in native
+
+
+def test_a_mean_difference_bound_can_fail_a_run(tmp_path):
+    a, b = _dir(tmp_path, "a"), _dir(tmp_path, "b", shift=1)
+    assert _run(str(a), str(b), "--bounds", "1.0", "0.0", "255", "1.0")[0] == 0
+    assert _run(str(a), str(b), "--bounds", "1.0", "0.0", "255", "0.5")[0] == 1
