@@ -48,7 +48,12 @@ typedef struct scene {
     int         angle;   /* model turn about Y, degrees */
     br_uint_32  flags;   /* material flags */
     int         light;   /* add a directional light */
-    const char *texture; /* a period .pix, expanded to RGB_888 through std.pal, or NULL */
+    const char *texture; /* a period .pix, or NULL: expanded to RGB_888 through std.pal,
+                            except in the 8-bit scenes and the lit 24-bit textured ones,
+                            which keep the 8-bit map and light it through a shade table */
+    int         index8;  /* draw into an INDEX_8 buffer (the std.pal palette) */
+    const char *shade;   /* shade table: "shade.tab" as is (8-bit), or expanded to RGB_888 */
+    int         base, range; /* the material's palette ramp, for the untextured 8-bit scenes */
 } scene;
 
 /* Untextured scenes, then unlit textured ones (RGB_888 maps, the period
@@ -65,37 +70,123 @@ static const scene scenes[] = {
     {"sphere-textured", "sph32.dat", 35, 0, 0, "earth.pix"},
     {"sphere-textured-turned", "sph32.dat", 160, 0, 0, "earth.pix"},
     {"torus-textured", "torus.dat", 60, 0, 0, "rosewood.pix"},
+    /* lit textured, 24-bit: the 8-bit map lit through shade.tab expanded to
+     * RGB_888 (period kernel TrapezoidRenderPIZ2TIA_RGB_888) */
+    {"sphere-textured-lit", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, "shade.tab"},
+    {"torus-textured-lit", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 0, "shade.tab"},
+    /* 8-bit: the palette path, drawn into INDEX_8 through std.pal ramps and
+     * shade.tab (period kernels in zb8.asm and fti8_piz.asm) */
+    {"sphere-flat-index8", "sph32.dat", 35, 0, 0, NULL, 1, NULL, 176, 31},
+    {"sphere-lit-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, NULL, 1, NULL, 160, 31},
+    {"sphere-smooth-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 1, NULL, 160, 31},
+    {"torus-smooth-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 1, NULL, 128, 31},
+    {"teapot-smooth-index8", "teapot.dat", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 1, NULL, 224, 31},
+    {"sphere-textured-index8", "sph32.dat", 35, 0, 0, "earth.pix", 1, NULL},
+    {"torus-textured-index8", "torus.dat", 60, 0, 0, "rosewood.pix", 1, NULL},
+    {"sphere-textured-lit-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 1, "shade.tab"},
+    {"torus-textured-lit-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 1, "shade.tab"},
     {"control-torus-turned", "torus.dat", 85, 0, 0, NULL},
 };
 
-static int dump_ppm(const br_pixelmap *pm, const char *path)
+/* An 8-bit buffer is written through the palette, so both sides' frames
+ * compare in the same colours; the raw indices go to <scene>.pgm as well. */
+static int dump_ppm(const br_pixelmap *pm, const br_pixelmap *pal, const char *path)
 {
     FILE *f = fopen(path, "wb");
-    int x, y;
-    if (f == NULL) return 0;
+    int x, y, index8 = pm->type == BR_PMT_INDEX_8;
+    if (f == NULL || (index8 && pal == NULL)) {
+        if (f) fclose(f);
+        return 0;
+    }
     fprintf(f, "P6\n%d %d\n255\n", (int)pm->width, (int)pm->height);
     for (y = 0; y < (int)pm->height; y++) {
         const unsigned char *row = (const unsigned char *)pm->pixels + (long)y * pm->row_bytes;
         for (x = 0; x < (int)pm->width; x++) {
+            const unsigned char *bgr = index8 ? (const unsigned char *)pal->pixels + (long)row[x] * pal->row_bytes : row + x * 3;
             unsigned char rgb[3];
-            rgb[0] = row[x * 3 + 2]; rgb[1] = row[x * 3 + 1]; rgb[2] = row[x * 3 + 0];
+            rgb[0] = bgr[2]; rgb[1] = bgr[1]; rgb[2] = bgr[0];
             fwrite(rgb, 1, 3, f);
         }
     }
     fclose(f);
+    if (index8) {
+        char raw[1024];
+        size_t n = strlen(path);
+        snprintf(raw, sizeof(raw), "%.*s.pgm", (int)(n > 4 ? n - 4 : n), path);
+        if ((f = fopen(raw, "wb")) == NULL) return 0;
+        fprintf(f, "P5\n%d %d\n255\n", (int)pm->width, (int)pm->height);
+        for (y = 0; y < (int)pm->height; y++)
+            fwrite((const unsigned char *)pm->pixels + (long)y * pm->row_bytes, 1, (size_t)pm->width, f);
+        fclose(f);
+    }
     return 1;
 }
 
 static long count_lit(const br_pixelmap *pm)
 {
     long total = 0;
-    int x, y;
+    int x, y, bpp = pm->type == BR_PMT_INDEX_8 ? 1 : 3;
     for (y = 0; y < (int)pm->height; y++) {
         const unsigned char *row = (const unsigned char *)pm->pixels + (long)y * pm->row_bytes;
         for (x = 0; x < (int)pm->width; x++)
-            total += (row[x * 3] | row[x * 3 + 1] | row[x * 3 + 2]) != 0;
+            total += bpp == 1 ? row[x] != 0 : (row[x * 3] | row[x * 3 + 1] | row[x * 3 + 2]) != 0;
     }
     return total;
+}
+
+/* The 8-bit map as stored, registered under its own name. */
+static br_pixelmap *load_texture8(const char *dat, const char *name)
+{
+    char path[1024];
+    br_pixelmap *tex;
+    snprintf(path, sizeof(path), "%s/%s", dat, name);
+    if ((tex = BrPixelmapLoad(path)) == NULL || tex->type != BR_PMT_INDEX_8) return NULL;
+    tex->identifier = (char *)name;
+    BrMapAdd(tex);
+    BrMapUpdate(tex, BR_MAPU_ALL);
+    return tex;
+}
+
+/* shade.tab as stored (8-bit), or each entry expanded through std.pal into
+ * an RGB_888 table of the same shape, for a 24-bit target. */
+static br_pixelmap *load_shade(const char *dat, const char *name, const br_pixelmap *pal, int rgb)
+{
+    char path[1024];
+    br_pixelmap *tab, *out;
+    int x, y, stride4 = 0;
+    snprintf(path, sizeof(path), "%s/%s", dat, name);
+    if ((tab = BrPixelmapLoad(path)) == NULL || tab->type != BR_PMT_INDEX_8) return NULL;
+    out = tab;
+    if (rgb) {
+        /* The 1998 kernel for this table (TrapezoidRenderPIZ2TIA_RGB_888)
+         * reads entry n at byte 4n of a table whose entries are 3 bytes, so
+         * from the 48th row on it reads past the table. The table gets spare
+         * zeroed rows below it, so that read stays in memory this program
+         * owns and gives the same bytes every run; both sides see a table of
+         * tab->height rows. */
+        int rows = (tab->height * 4 + 2) / 3;
+        if (pal == NULL || (out = BrPixelmapAllocate(BR_PMT_RGB_888, tab->width, rows, NULL, BR_PMAF_NORMAL)) == NULL)
+            return NULL;
+        memset(out->pixels, 0, (size_t)out->row_bytes * (size_t)rows);
+        out->height = tab->height;
+        /* PARITY_SHADE4=1 lays entry n at byte 4n instead, the stride the
+         * 1998 kernel reads: an experiment for the period side only (see
+         * README), which shows the stride is the whole difference. */
+        stride4 = getenv("PARITY_SHADE4") != NULL;
+        for (y = 0; y < (int)tab->height; y++) {
+            const unsigned char *src = (const unsigned char *)tab->pixels + (long)y * tab->row_bytes;
+            for (x = 0; x < (int)tab->width; x++) {
+                const unsigned char *entry = (const unsigned char *)pal->pixels + (long)src[x] * pal->row_bytes;
+                long at = stride4 ? ((long)y * tab->width + x) * 4 : (long)y * out->row_bytes + x * 3;
+                unsigned char *dst = (unsigned char *)out->pixels + at;
+                dst[0] = entry[0]; dst[1] = entry[1]; dst[2] = entry[2];
+            }
+        }
+    }
+    out->identifier = (char *)(rgb ? "shade-rgb" : name);
+    BrTableAdd(out);
+    BrTableUpdate(out, BR_TABU_ALL);
+    return out;
 }
 
 /* Load a period texture and expand it through std.pal into RGB_888, the
@@ -158,7 +249,7 @@ static void place_model(br_actor *actor, const br_model *model, int angle)
 int main(int argc, char **argv)
 {
     const char *dat = argc > 1 ? argv[1] : ".", *out = argc > 2 ? argv[2] : ".";
-    br_pixelmap *colour, *depth;
+    br_pixelmap *colour, *depth, *colour8, *palette;
     br_actor *world, *camera_actor, *light_actor;
     br_camera *camera;
     int i, failed = 0;
@@ -179,6 +270,7 @@ int main(int argc, char **argv)
     }
     colour = BrPixelmapAllocate(BR_PMT_RGB_888, W, H, NULL, BR_PMAF_NORMAL);
     depth = BrPixelmapAllocate(BR_PMT_DEPTH_16, W, H, NULL, BR_PMAF_NORMAL);
+    colour8 = BrPixelmapAllocate(BR_PMT_INDEX_8, W, H, NULL, BR_PMAF_NORMAL);
 #else
     /* the setup of the 1.4 renderer rung (ladder64/softrend-render-14.c) */
     {
@@ -189,13 +281,19 @@ int main(int argc, char **argv)
         if (BrDevBeginVar(&screen, "SDL3", BRT_WIDTH_I32, W, BRT_HEIGHT_I32, H, BR_NULL_TOKEN) != BRE_OK) return 5;
         colour = BrPixelmapMatchTyped(screen, BR_PMMATCH_OFFSCREEN, BR_PMT_RGB_888);
         depth = colour ? BrPixelmapMatch(colour, BR_PMMATCH_DEPTH_16) : NULL;
+        colour8 = BrPixelmapMatchTyped(screen, BR_PMMATCH_OFFSCREEN, BR_PMT_INDEX_8);
         if (colour == NULL || depth == NULL) return 5;
         BrRendererBegin(colour, NULL, NULL, primitive_heap, sizeof(primitive_heap));
     }
 #endif
-    if (colour == NULL || depth == NULL) return 5;
-    colour->origin_x = depth->origin_x = W / 2;
-    colour->origin_y = depth->origin_y = H / 2;
+    if (colour == NULL || depth == NULL || colour8 == NULL) return 5;
+    colour->origin_x = depth->origin_x = colour8->origin_x = W / 2;
+    colour->origin_y = depth->origin_y = colour8->origin_y = H / 2;
+    {
+        char path[1024];
+        snprintf(path, sizeof(path), "%s/std.pal", dat);
+        if ((palette = BrPixelmapLoad(path)) == NULL) return 6;
+    }
 
     world = BrActorAllocate(BR_ACTOR_NONE, NULL);
     camera_actor = BrActorAdd(world, BrActorAllocate(BR_ACTOR_CAMERA, NULL));
@@ -233,7 +331,16 @@ int main(int argc, char **argv)
         material->kd = BrFloatToScalar(0.85f);
         material->ks = BrFloatToScalar(0.0f);
         material->flags = sc->flags;
-        if (sc->texture != NULL && (material->colour_map = load_texture(dat, sc->texture)) == NULL) {
+        material->index_base = (br_uint_8)sc->base;
+        material->index_range = (br_uint_8)sc->range;
+        if (sc->shade != NULL && (material->index_shade = load_shade(dat, sc->shade, palette, !sc->index8)) == NULL) {
+            printf("{\"scene\":\"%s\",\"error\":\"shade table %s did not load\"}\n", sc->name, sc->shade);
+            BrActorRemove(actor);
+            failed++;
+            continue;
+        }
+        if (sc->texture != NULL
+            && (material->colour_map = sc->index8 || sc->shade ? load_texture8(dat, sc->texture) : load_texture(dat, sc->texture)) == NULL) {
             printf("{\"scene\":\"%s\",\"error\":\"texture %s did not load\"}\n", sc->name, sc->texture);
             BrActorRemove(actor);
             failed++;
@@ -248,15 +355,18 @@ int main(int argc, char **argv)
 #if !PARITY_PERIOD
         BrRendererFrameBegin();
 #endif
-        BrPixelmapFill(colour, 0);
-        BrPixelmapFill(depth, DEPTH_CLEAR);
-        BrZbSceneRender(world, camera_actor, colour, depth);
+        {
+            br_pixelmap *target = sc->index8 ? colour8 : colour;
+            BrPixelmapFill(target, 0);
+            BrPixelmapFill(depth, DEPTH_CLEAR);
+            BrZbSceneRender(world, camera_actor, target, depth);
 #if !PARITY_PERIOD
-        BrRendererFrameEnd();
+            BrRendererFrameEnd();
 #endif
-        lit = count_lit(colour);
-        snprintf(path, sizeof(path), "%s/%s.ppm", out, sc->name);
-        if (!dump_ppm(colour, path)) failed++;
+            lit = count_lit(target);
+            snprintf(path, sizeof(path), "%s/%s.ppm", out, sc->name);
+            if (!dump_ppm(target, palette, path)) failed++;
+        }
         printf("{\"scene\":\"%s\",\"model\":\"%s\",\"flags\":%u,\"light\":%d,\"lit_pixels\":%ld}\n", sc->name, sc->model,
                (unsigned)sc->flags, sc->light, lit);
         BrActorRemove(actor); /* one model in the world at a time */

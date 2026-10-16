@@ -110,10 +110,31 @@ jobs:
             & "$build/Debug/parity_scene_period.exe" "$src/dat" "parity-period-$run" 2>$null | Out-Null
           }
           python modern/parity/parity_compare.py parity-period-a parity-period-b --label "period, two runs" --require-identical
+      # The 1998 kernel for 24-bit lit textured triangles (t_piza.asm,
+      # TrapezoidRenderPIZ2TIA_RGB_888) reads its RGB_888 shade table at a
+      # 4-byte stride. PARITY_SHADE4=1 lays the table out at that stride, on
+      # the period side only, so the rest of the kernel can be measured.
+      - name: the period scenes with the shade table at the 1998 kernel's stride are deterministic
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $src = Join-Path $env:RUNNER_TEMP 'brender-src'
+          $build = Join-Path $env:RUNNER_TEMP 'parity-period'
+          $env:PARITY_SHADE4 = '1'
+          foreach ($run in 'a', 'b') {
+            New-Item -ItemType Directory -Force "parity-period-shade4-$run" | Out-Null
+            & "$build/Debug/parity_scene_period.exe" "$src/dat" "parity-period-shade4-$run" 2>$null | Out-Null
+          }
+          python modern/parity/parity_compare.py parity-period-shade4-a parity-period-shade4-b --label "period, shade table at stride 4, two runs" --require-identical
       - uses: actions/upload-artifact@v4
         with:
           name: parity-period
           path: parity-period-a
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-period-shade4
+          path: parity-period-shade4-a
 
   # The same 21 programs against BRender 1.4 from BlazingRenderer/BRender
   # (MIT), built 64-bit. modern/ladder64/make_ladder64.py documents the two
@@ -404,11 +425,30 @@ jobs:
           name: parity-period
           path: parity-period
       # The 1998 rasteriser (BRender 1.3.2 through engine-revival's line-by-line
-      # ports of tt24_piz.asm and t_piza.asm) against BRender 1.4. Bounds from
-      # the first measurements (16 October 2026), so calibrated, not predicted:
-      # untextured IoU >= 0.9993, >= 90.7% identical, MAD <= 0.18; textured
-      # IoU >= 0.9992, >= 95.6% identical, MAD <= 1.09.
+      # ports of tt24_piz.asm, t_piza.asm, zb8.asm and fti8_piz.asm) against
+      # BRender 1.4. Bounds from the first measurements (16 October 2026), so
+      # calibrated, not predicted: 24-bit untextured IoU >= 0.9993, >= 90.7%
+      # identical, MAD <= 0.18; 24-bit textured IoU >= 0.9992, >= 95.6%
+      # identical, MAD <= 1.09; 8-bit untextured IoU >= 0.9986, >= 98.3% of
+      # indices identical, MAD <= 0.26; 8-bit textured IoU >= 0.9983, >= 96.4%,
+      # MAD <= 0.43. The 24-bit lit textured scenes are reported, not bounded:
+      # the 1998 kernel reads its shade table at the wrong stride (README).
       - name: the 1998 and modern rasterisers draw the same untextured scenes within the recorded bounds
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, untextured" --skip textured --bounds 0.999 0.90 255 0.25
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, untextured" --skip textured,index8 --bounds 0.999 0.90 255 0.25
       - name: the 1998 and modern rasterisers draw the same textured scenes within the recorded bounds
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, textured" --only textured --bounds 0.999 0.95 255 1.2
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, textured" --only textured --skip lit,index8 --bounds 0.999 0.95 255 1.2
+      - name: the 1998 and modern rasterisers draw the same 8-bit untextured scenes within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit untextured" --only index8 --skip textured --bounds 0.998 0.98 255 0.3
+      - name: the 1998 and modern rasterisers draw the same 8-bit textured scenes within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit textured" --only textured-index8,textured-lit-index8 --bounds 0.998 0.96 255 0.5
+      - name: the 24-bit lit textured scenes, reported
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 24-bit lit textured (1998 stride defect)" --only textured-lit --skip index8
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-period-shade4
+          path: parity-period-shade4
+      # With the table at the stride the 1998 kernel reads (PARITY_SHADE4=1),
+      # the same scenes match. Measured 16 October 2026: IoU >= 0.9998,
+      # >= 97.9% identical, MAD <= 0.272.
+      - name: the 24-bit lit textured scenes match once the shade table sits at the 1998 kernel's stride
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period-shade4 --label "modern against period, 24-bit lit textured, shade table at stride 4" --only textured-lit --skip index8 --bounds 0.999 0.97 255 0.3

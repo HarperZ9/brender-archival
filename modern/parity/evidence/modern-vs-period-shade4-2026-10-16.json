@@ -1,0 +1,46 @@
+{
+  "label": "BRender 1.4 software (Linux GCC) against the period build with the RGB_888 shade table laid at a 4-byte stride (PARITY_SHADE4=1), CI run 38979266555",
+  "scenes": {
+    "sphere-textured-lit": {
+      "coverage_iou": 0.9998,
+      "identical": 0.9789,
+      "mad": 0.272,
+      "max": 240,
+      "drawn_a": 29636,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "torus-textured-lit": {
+      "coverage_iou": 1.0,
+      "identical": 0.995,
+      "mad": 0.037,
+      "max": 35,
+      "drawn_a": 17702,
+      "drawn_b": 17702,
+      "by_index": false
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6027,
+    "identical": 0.6027,
+    "mad": 63.301,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11946,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true,
+  "bounds": {
+    "min_coverage_iou": 0.999,
+    "min_identical": 0.97,
+    "max_diff": 255,
+    "max_mad": 0.3
+  },
+  "within_bounds": true
+}

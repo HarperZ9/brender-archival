@@ -70,17 +70,30 @@ def test_the_evidence_matches_the_readme():
     for name in ("modern-vs-period", "modern-windows-vs-period"):
         record = load(name)
         scenes = record["scenes"]
-        assert len(scenes) == 9 and record["control"]["fails_as_required"], name
-        plain = {k: m for k, m in scenes.items() if "textured" not in k}
-        textured = {k: m for k, m in scenes.items() if "textured" in k}
-        assert len(plain) == 6 and len(textured) == 3
+        assert len(scenes) == 20 and record["control"]["fails_as_required"], name
+        rgb = {k: m for k, m in scenes.items() if "index8" not in k}
+        plain = {k: m for k, m in rgb.items() if "textured" not in k}
+        textured = {k: m for k, m in rgb.items() if "textured" in k and "lit" not in k}
+        lit = {k: m for k, m in rgb.items() if "textured-lit" in k}
+        index8 = {k: m for k, m in scenes.items() if "index8" in k}
+        assert (len(plain), len(textured), len(lit), len(index8)) == (6, 3, 2, 9)
         assert min(m["coverage_iou"] for m in plain.values()) == 0.9993
         assert min(m["identical"] for m in plain.values()) == 0.907
         assert max(m["mad"] for m in plain.values()) < 0.2
         assert min(m["coverage_iou"] for m in textured.values()) == 0.9992
         assert min(m["identical"] for m in textured.values()) == 0.9565
         assert max(m["mad"] for m in textured.values()) == 1.085
+        assert min(m["coverage_iou"] for m in index8.values()) == 0.9983
+        assert min(m["identical"] for m in index8.values()) == 0.9642
+        assert max(m["mad"] for m in index8.values()) == 0.427
+        # The 1998 stride defect: as shipped, the 24-bit lit textured scenes do not match.
+        assert max(m["coverage_iou"] for m in lit.values()) < 0.7 and max(m["identical"] for m in lit.values()) < 0.01
         assert all(m["drawn_b"] > 0 for m in scenes.values()), "every period scene draws"
+    shade4 = load("modern-vs-period-shade4")
+    assert sorted(shade4["scenes"]) == ["sphere-textured-lit", "torus-textured-lit"]
+    assert shade4["ok"] and shade4["within_bounds"] and shade4["control"]["fails_as_required"]
+    assert min(m["coverage_iou"] for m in shade4["scenes"].values()) == 0.9998
+    assert min(m["identical"] for m in shade4["scenes"].values()) == 0.9789
 
 
 def test_ci_gates_the_modern_side_on_both_systems():
@@ -88,8 +101,11 @@ def test_ci_gates_the_modern_side_on_both_systems():
     assert ci.count("--require-identical") >= 2
     parity = ci[ci.index("\n  parity:"):]
     assert "needs: [brview, linux, brender-native]" in parity and "--bounds 1.0 0.999 1" in parity
-    assert "--skip textured --bounds 0.999 0.90 255 0.25" in parity
-    assert "--only textured --bounds 0.999 0.95 255 1.2" in parity
+    assert "--skip textured,index8 --bounds 0.999 0.90 255 0.25" in parity
+    assert "--only textured --skip lit,index8 --bounds 0.999 0.95 255 1.2" in parity
+    assert "PARITY_SHADE4" in ci and "--only textured-lit --skip index8 --bounds 0.999 0.97 255 0.3" in parity
+    assert "--only index8 --skip textured --bounds 0.998 0.98 255 0.3" in parity
+    assert "--only textured-index8,textured-lit-index8 --bounds 0.998 0.96 255 0.5" in parity
     native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
     assert "parity-period-a parity-period-b" in native and "--require-identical" in native
 
@@ -106,3 +122,31 @@ def test_only_and_skip_select_a_class_of_scene(tmp_path):
     _, skip = _run(str(a), str(b), "--skip", "textured")
     assert sorted(only["scenes"]) == ["sphere-textured", "sphere-textured-turned", "torus-textured"]
     assert len(skip["scenes"]) == 6 and not any("textured" in k for k in skip["scenes"])
+
+
+def test_only_and_skip_take_comma_lists(tmp_path):
+    a, b = _dir(tmp_path, "a"), _dir(tmp_path, "b")
+    _, both = _run(str(a), str(b), "--only", "sphere-flat,torus")
+    assert sorted(both["scenes"]) == ["sphere-flat", "torus-flat", "torus-smooth", "torus-textured"]
+    _, rest = _run(str(a), str(b), "--skip", "textured,smooth")
+    assert sorted(rest["scenes"]) == ["sphere-flat", "sphere-lit", "torus-flat"]
+
+
+def _pgm(path: Path, indices: bytes) -> None:
+    path.write_bytes(b"P5\n320 240\n255\n" + indices)
+
+
+def test_eight_bit_scenes_compare_by_palette_index(tmp_path):
+    """Two indices that the palette shows in the same colour are still two
+    indices: an 8-bit scene matches only when the indices match."""
+    a, b = _dir(tmp_path, "a"), _dir(tmp_path, "b")
+    ia = bytearray(320 * 240)
+    ia[1000:2000] = bytes([7]) * 1000
+    ib = bytearray(ia)
+    ib[1500:1600] = bytes([8]) * 100
+    _pgm(a / "sphere-flat.pgm", bytes(ia))
+    _pgm(b / "sphere-flat.pgm", bytes(ib))
+    _, result = _run(str(a), str(b), "--only", "sphere-flat")
+    scene = result["scenes"]["sphere-flat"]
+    assert scene["by_index"] and scene["drawn_a"] == 1000 and scene["identical"] == 0.9
+    assert scene["mad"] == 0.0  # the PPMs (colours) are the same

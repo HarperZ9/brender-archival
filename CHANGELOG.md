@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: 8-bit and lit textured parity
+
+- Depends on engine-revival 0.6.0. Its line-by-line ports of `zb8.asm`, `fti8_piz.asm` and the `fpsetup.asm` float setup make the period build draw into 8-bit buffers through BRender's own palette path.
+- `modern/parity/`: nine 8-bit scenes (five untextured, two textured, two lit textured through `shade.tab`) and two 24-bit lit textured scenes. Measured 16 October 2026 against BRender 1.4: the 8-bit scenes reach coverage IoU 0.9983 or better, with 96.4% to 99.9% of pixels on the same palette index and MAD at most 0.43.
+- A 1998 defect, recorded: BRender 1.3.2's 24-bit lit textured kernel (`TrapezoidRenderPIZ2TIA_RGB_888` in `t_piza.asm`) reads its 3-byte RGB_888 shade table at a 4-byte stride, so it draws those scenes as stripes (coverage IoU 0.48 and 0.66). With the table laid at the stride the kernel reads (`PARITY_SHADE4=1`, period side only) the scenes match: coverage IoU 0.9998 or better, 97.9% and 99.5% identical. The period build keeps the 1998 behaviour.
+- CI: the period scenes also run twice with the table at stride 4 (identical bytes required); the 8-bit classes and the stride 4 lit textured scenes are gated within their measured bounds; the 24-bit lit textured scenes as shipped are reported.
+
 ## Unreleased: brview display options
 
 - brview: [ and ] set the pixel size (1 to 6), - and = the field of view (40 to 90 degrees), V vsync; they are saved in the preferences folder and shown in the title line. `BRVIEW_PIXEL`, `BRVIEW_FOV` and `BRVIEW_SHOT=<file.ppm>` (one still of the first model, without spin) serve checks and screenshots.
