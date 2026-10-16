@@ -45,17 +45,21 @@ version they reference).
 Done when: a `keepers-v*` and a `brview-v*` release carry Linux tarballs
 built by CI after the packaged smoke passes.
 
-### 2. Display: resolution, widescreen and a period look
+### 2. Display: resolution, widescreen and a period look (game shipped)
 
-What a player sees first. The window already resizes and the camera aspect
-follows it (BlazingRenderer's demo layer), and the default frame is 1280 x 720.
-Missing: a render scale (draw at a lower resolution and scale up with whole
-pixels), a period mode (320 x 200 or 640 x 480 with BRender's 8-bit palette
-path), field-of-view and vsync settings in the F2 options, and the same in
-brview.
+Shipped in The Keeper's Hour on 16 October 2026: pixel size 1 to 6 (the scene
+drawn coarser and scaled up with whole, square pixels, text kept sharp), field
+of view 40 to 90 degrees, and vsync, in the F2 options and saved. The field of
+view is vertical, so widescreen is Hor+. `games/keepers-hour/tools/display_check.py`
+checks it on frames at 4:3, 16:9 and 21:9 with failing controls, on both
+renderers, in CI on Windows and Linux.
+
+Not done: the same settings in brview, and a period mode through BRender's
+8-bit palette path (the pixel size gives the coarse look, not the palette).
 
 Done when: options persist; a test draws one room at three resolutions and
-checks the aspect and the pixel scale; screenshots go in the README.
+checks the aspect and the pixel scale; screenshots go in the README. Met for
+the game.
 
 ### 3. Deterministic capture on every driver
 

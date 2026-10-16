@@ -22,6 +22,7 @@ Controls
   Pick a reply            1 to 6, or Up/Down then E   D-pad, then A
   Leave a conversation    Esc                   B
   Options, remap keys     F2                    Back
+    (also pixel size 1 to 6 for a chunky period look, field of view, vsync)
   Fullscreen              Alt+Enter
   After dawn              R begins again        Start
 

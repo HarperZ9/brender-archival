@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased: display options
+
+- The Keeper's Hour: pixel size 1 to 6, field of view 40 to 90 degrees and vsync in the F2 options, saved with the others. Pixel size draws the scene into a smaller offscreen buffer and scales it up with whole pixels (nearest neighbour), then draws the text and panels at full resolution. `kh_display.c` holds it. `KEEPERS_PIXEL` and `KEEPERS_FOV` override the two for one run.
+- `tools/display_check.py` checks eight claims on frames, each with a control: whole pixels at size 4, the same scene at sizes 1 and 4, Hor+ at 4:3, 16:9 and 21:9, and that the field of view changes the picture. CI runs it on Windows and on Linux (software and OpenGL). Evidence: `games/keepers-hour/evidence/display-*-2026-10-16.json`.
+- The options smoke line is now `keepers options: rebind, display and save ok`: the self-check sets pixel size, field of view and vsync through the menu and reads them back.
+
 ## Unreleased: Linux
 
 - brview and The Keeper's Hour build, run and package on 64-bit Linux. No source change was needed; the programs now load SDL3 from their own folder through a `$ORIGIN` run path, and the install step copies it as `libSDL3.so.0`, the name the loader looks for. The Windows programs are unchanged.

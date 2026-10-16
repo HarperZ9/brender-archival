@@ -1,4 +1,5 @@
-/* The Keeper's Hour: options (volume, look speed) and key remapping, saved
+/* The Keeper's Hour: options (volume, look speed, pixel size, field of view,
+ * vsync) and key remapping, saved
  * to the player's preferences folder.
  * SPDX-License-Identifier: MIT */
 #ifndef KH_OPTIONS_H
@@ -12,6 +13,9 @@ typedef enum kh_action { KH_ACT_FORWARD, KH_ACT_BACK, KH_ACT_LEFT, KH_ACT_RIGHT,
 typedef struct kh_options {
     int          volume;               /* 0 to 10 */
     int          look;                 /* 1 to 10: how fast the view turns */
+    int          pixel;                /* 1 to 6: screen pixels per scene pixel (kh_display.h) */
+    int          fov;                  /* 40 to 90 degrees, vertical, in steps of 5 */
+    int          vsync;                /* 0 or 1: wait for the display (OpenGL only) */
     SDL_Scancode keys[KH_ACT_COUNT];
     int          open;                 /* the options screen is showing */
     int          row;                  /* highlighted row */
