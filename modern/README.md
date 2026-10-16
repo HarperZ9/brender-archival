@@ -1,15 +1,20 @@
 # BRender on a modern PC
 
-Run Argonaut's 1990s BRender engine on a 64-bit Windows PC, open its period
+Run Argonaut's 1990s BRender engine on a 64-bit Windows or Linux PC, open its period
 sample models in a viewer, and check that the restored engine still does what
 the 1998 one did.
 
 ## Get the viewer
 
-Download `brview-<version>-windows-x64.zip` from the
-[releases page](https://github.com/HarperZ9/brender-archival/releases), unzip
-it and double-click `brview.exe`. Nothing to install. The zip carries its
-SHA-256 beside it.
+Download `brview-<version>-windows-x64.zip` or
+`brview-<version>-linux-x64.tar.gz` from the
+[releases page](https://github.com/HarperZ9/brender-archival/releases), unpack
+it and run `brview.exe` (Windows) or `./brview` (Linux). Nothing to install.
+Each download carries its SHA-256 beside it.
+
+On Linux the viewer needs a desktop with OpenGL 3.3 (X11 or Wayland) and
+glibc 2.38 or newer: Ubuntu 24.04, Debian 13, Fedora 39 or later. SDL3 ships
+in the folder, and the program finds it there through a `$ORIGIN` run path.
 
 | Input | Action |
 |---|---|
@@ -64,6 +69,17 @@ cmake --build build --config Release
 build\Release\brview.exe
 ```
 
+On Debian or Ubuntu, `scripts/linux-build-deps.sh` installs the compiler,
+the shader tools and the X11, Wayland and audio headers SDL3 needs (CI runs
+the same script):
+
+```
+bash scripts/linux-build-deps.sh
+cmake -S modern -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+./build/brview
+```
+
 To build against a local BlazingRenderer checkout, add
 `-DBLAZINGRENDERER_SOURCE_DIR=<checkout>`.
 
@@ -83,7 +99,9 @@ ctest --test-dir ladder64-build -C Release
 ```
 
 Result on 10 October 2026: **21 of 21 pass** on x64 (Visual Studio 18 2026,
-SDL3 3.4.16, BlazingRenderer `ed5e7a91`). CI runs it on every change.
+SDL3 3.4.16, BlazingRenderer `ed5e7a91`). Result on 16 October 2026: **21 of
+21 pass** on Linux x64 (GCC 13, Ninja, Ubuntu 24.04). CI runs both on every
+change; on Linux, drop `-A x64` and add `-G Ninja -DCMAKE_BUILD_TYPE=Release`.
 
 Two documented differences between 1.3.2 and 1.4 are bridged, and nothing else:
 

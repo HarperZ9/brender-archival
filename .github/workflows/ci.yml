@@ -202,3 +202,96 @@ jobs:
             if ((Get-FileHash $a[$i].FullName).Hash -ne (Get-FileHash $b[$i].FullName).Hash) { throw "frame $i differs between runs" }
           }
           if ((Get-FileHash $a[0].FullName).Hash -eq (Get-FileHash $a[5].FullName).Hash) { throw "the first and last frames are the same: nothing moved" }
+
+  # The same programs on 64-bit Linux: brview, the game and the 21-step
+  # ladder, built with GCC and Ninja from the pins in modern/CMakeLists.txt.
+  # The packaged copies must find libSDL3.so.0 beside themselves ($ORIGIN),
+  # with nothing installed system-wide.
+  linux:
+    runs-on: ubuntu-24.04
+    env:
+      BRENDER_COMMIT: d88d0ed41122664b9781015b517db64353e16f19
+      BLAZINGRENDERER_COMMIT: ed5e7a911e394b58803dca681a34f1864431f9d7
+      EXPECTED_RUNGS: "21"
+      SDL_VIDEODRIVER: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: build dependencies
+        run: bash scripts/linux-build-deps.sh
+      - name: build brview and the game
+        run: |
+          cmake -S modern -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel 4
+      - name: every bundled model loads
+        shell: bash
+        run: |
+          out=$(BRVIEW_SMOKE=1 ./build/brview 2>&1)
+          echo "$out"
+          grep -q 'brview smoke: 8 scenes, 0 failed to load, run ok' <<<"$out"
+      - name: the game opens every room, node and ending
+        shell: bash
+        run: |
+          out=$(cd build/keepers-hour && KEEPERS_SMOKE=1 ./keepers-hour 2>&1)
+          echo "$out"
+          grep -Eq 'keepers smoke: 5 rooms entered, [0-9]+ nodes opened, 0 problems, run ok' <<<"$out"
+          grep -q 'keepers endings: 3 of 3 reached, save ok' <<<"$out"
+          grep -Eq 'keepers audio: peak 0\.[0-9]+, rms 0\.[0-9]+, 0 clipped samples' <<<"$out"
+          grep -q 'keepers options: rebind and save ok' <<<"$out"
+      # The software rasteriser is the deterministic path here. Under Mesa's
+      # llvmpipe the OpenGL readback sometimes returns the previous frame,
+      # so this check records with --force-software (see docs/ROADMAP.md).
+      - name: the frame recorder is deterministic and the lamp moves
+        shell: bash
+        env:
+          KEEPERS_SECONDS: "0.2"
+          KEEPERS_YAW_SPEED: "30"
+        run: |
+          for run in a b; do
+            KEEPERS_RECORD="$RUNNER_TEMP/rec-$run" ./build/keepers-hour/keepers-hour --force-software > /dev/null
+          done
+          (cd "$RUNNER_TEMP/rec-a" && sha256sum frame-*.ppm) > a.sum
+          (cd "$RUNNER_TEMP/rec-b" && sha256sum frame-*.ppm) > b.sum
+          test "$(wc -l < a.sum)" -eq 6
+          diff a.sum b.sum
+          test "$(head -n1 a.sum | cut -d' ' -f1)" != "$(tail -n1 a.sum | cut -d' ' -f1)"
+      - name: the packaged copies run in place
+        shell: bash
+        run: |
+          cmake --install build --prefix stage/brview --component Unspecified
+          cmake --install build --prefix stage --component keepers
+          test ! -e stage/brview/keepers-hour
+          for exe in stage/brview/brview stage/keepers-hour/keepers-hour; do
+            ldd "$exe" | grep -q "libSDL3.so.0 => $PWD/$(dirname "$exe")/libSDL3.so.0"
+          done
+          cd "$RUNNER_TEMP"
+          out=$(BRVIEW_SMOKE=1 "$GITHUB_WORKSPACE/stage/brview/brview" 2>&1)
+          grep -q '0 failed to load, run ok' <<<"$out"
+          out=$(KEEPERS_SMOKE=1 "$GITHUB_WORKSPACE/stage/keepers-hour/keepers-hour" 2>&1)
+          grep -q '3 of 3 reached, save ok' <<<"$out"
+      - name: fetch the pinned sources for the ladder
+        shell: bash
+        run: |
+          for pair in "brender-src https://github.com/foone/BRender-v1.3.2.git $BRENDER_COMMIT" \
+                      "blazingrenderer https://github.com/BlazingRenderer/BRender.git $BLAZINGRENDERER_COMMIT"; do
+            set -- $pair
+            git init -q "$RUNNER_TEMP/$1"
+            git -C "$RUNNER_TEMP/$1" remote add origin "$2"
+            git -C "$RUNNER_TEMP/$1" fetch -q --depth 1 origin "$3"
+            git -C "$RUNNER_TEMP/$1" checkout -q FETCH_HEAD
+            test "$(git -C "$RUNNER_TEMP/$1" rev-parse HEAD)" = "$3"
+          done
+      - name: build the ladder 64-bit and run it
+        shell: bash
+        run: |
+          python -m pip install -e .
+          engine-revival materialize-brender-harness --source-root "$RUNNER_TEMP/brender-src" --output-root "$RUNNER_TEMP/harness"
+          python modern/ladder64/make_ladder64.py "$RUNNER_TEMP/harness" "$RUNNER_TEMP/ladder64"
+          cmake -S "$RUNNER_TEMP/ladder64" -B "$RUNNER_TEMP/ladder64-build" -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            "-DBLAZINGRENDERER_SOURCE_DIR=$RUNNER_TEMP/blazingrenderer" "-DBRENDER_SOURCE_DIR=$RUNNER_TEMP/brender-src"
+          cmake --build "$RUNNER_TEMP/ladder64-build" --parallel 4
+          listed=$(ctest --test-dir "$RUNNER_TEMP/ladder64-build" -N | sed -n 's/^Total Tests: //p')
+          test "$listed" = "$EXPECTED_RUNGS" || { echo "ladder lists $listed rungs, expected $EXPECTED_RUNGS"; exit 1; }
+          ctest --test-dir "$RUNNER_TEMP/ladder64-build" --output-on-failure

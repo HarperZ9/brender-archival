@@ -1,7 +1,8 @@
 name: release-brview
 
-# Builds brview for 64-bit Windows and attaches the zip and its SHA-256 to a
-# GitHub release. Runs when a tag brview-v* is pushed.
+# Builds brview for 64-bit Windows and 64-bit Linux and attaches the zip, the
+# tarball and their SHA-256 files to a GitHub release. Runs when a tag
+# brview-v* is pushed.
 on:
   push:
     tags: ["brview-v*"]
@@ -28,7 +29,7 @@ jobs:
         run: |
           cmake -S modern -B build -A x64
           cmake --build build --config Release --parallel
-          cmake --install build --config Release --prefix stage/brview
+          cmake --install build --config Release --prefix stage/brview --component Unspecified
       - name: licences and quickstart
         shell: pwsh
         run: |
@@ -57,3 +58,42 @@ jobs:
           $hash = (Get-FileHash $name -Algorithm SHA256).Hash.ToLower()
           [IO.File]::WriteAllText((Join-Path $PWD "$name.sha256"), "$hash  $name`n")
           gh release upload $env:GITHUB_REF_NAME $name "$name.sha256" --clobber
+
+  linux-x64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: build dependencies
+        run: bash scripts/linux-build-deps.sh
+      - name: build
+        run: |
+          cmake -S modern -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel 4 --target brview
+          cmake --install build --prefix stage/brview --component Unspecified
+      - name: licences and quickstart
+        run: |
+          cp modern/QUICKSTART.txt stage/brview/
+          mkdir stage/brview/licences
+          cp LICENSE stage/brview/licences/brview-MIT.txt
+          cp LICENSES/MIT-BRender.txt stage/brview/licences/BRender-1.3.2-MIT.txt
+          cp LICENSES/MIT-BlazingRenderer.txt stage/brview/licences/BlazingRenderer-MIT.txt
+          cp LICENSES/Zlib-SDL3.txt stage/brview/licences/SDL3-Zlib.txt
+      - name: the packaged viewer runs in place
+        shell: bash
+        env:
+          SDL_VIDEODRIVER: offscreen
+          BRVIEW_SMOKE: "1"
+        run: |
+          ldd stage/brview/brview | grep -q "libSDL3.so.0 => $PWD/stage/brview/libSDL3.so.0"
+          out=$(cd "$RUNNER_TEMP" && "$GITHUB_WORKSPACE/stage/brview/brview" 2>&1)
+          echo "$out"
+          grep -q '0 failed to load, run ok' <<<"$out"
+      - name: tar, hash and publish
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name="brview-${GITHUB_REF_NAME#brview-v}-linux-x64.tar.gz"
+          tar -czf "$name" -C stage brview
+          sha256sum "$name" > "$name.sha256"
+          gh release upload "$GITHUB_REF_NAME" "$name" "$name.sha256" --clobber

@@ -6,8 +6,11 @@ minutes. Walk the tower, talk to what is in it, listen to the four voices in
 the keeper's head, and decide what happens to the light at dawn.
 
 Run it
-  Double-click keepers-hour.exe. No install is needed.
-  keepers-hour.exe --force-software draws with BRender's own 1990s-style
+  Windows: double-click keepers-hour.exe. No install is needed.
+  Linux: run ./keepers-hour from the unpacked folder. It needs a desktop
+  with OpenGL 3.3 (X11 or Wayland) and glibc 2.38 or newer (Ubuntu 24.04,
+  Debian 13, Fedora 39 or later). SDL3 is in the folder; nothing to install.
+  keepers-hour --force-software draws with BRender's own 1990s-style
   software rasteriser instead of OpenGL.
   The night is saved each time you change room. Next time you start, you
   can carry on or begin again.
@@ -25,7 +28,7 @@ Controls
 A skill check shows its sums: the voice's rating plus two dice against a
 target. Failing a check opens a different line, never a dead end.
 
-Licences (in licences\)
+Licences (in licences/)
   Code: MIT, Zain Dana Harper.
   Words and art: CC BY 4.0, Zain Dana Harper. Reuse them with credit:
   "The Keeper's Hour by Zain Dana Harper, CC BY 4.0."

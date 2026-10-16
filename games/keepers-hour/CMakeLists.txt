@@ -12,11 +12,10 @@ if(MSVC)
 endif()
 add_custom_command(TARGET keepers-hour POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/data/night.txt" "$<TARGET_FILE_DIR:keepers-hour>/data/night.txt"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/data/art" "$<TARGET_FILE_DIR:keepers-hour>/data/art"
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:keepers-hour>)
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/data/art" "$<TARGET_FILE_DIR:keepers-hour>/data/art")
 
 # The packaged game: the program, SDL3, the script, and nothing else.
 install(TARGETS keepers-hour RUNTIME DESTINATION keepers-hour COMPONENT keepers)
-install(FILES $<TARGET_FILE:SDL3::SDL3> DESTINATION keepers-hour COMPONENT keepers)
+brview_sdl3_beside(keepers-hour keepers-hour keepers)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/data/night.txt" DESTINATION keepers-hour/data COMPONENT keepers)
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/art" DESTINATION keepers-hour/data COMPONENT keepers)

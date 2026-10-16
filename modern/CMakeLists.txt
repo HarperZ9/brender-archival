@@ -47,6 +47,30 @@ if(NOT BRENDER132_SOURCE_DIR)
   set(BRENDER132_SOURCE_DIR "${brender132_SOURCE_DIR}")
 endif()
 
+# Every program loads SDL3 from its own folder, so an unzipped or untarred
+# release runs in place on Windows and on Linux. On Windows that is SDL3.dll
+# beside the .exe. On Linux the loader looks for the soname file
+# (libSDL3.so.0) and the program carries a $ORIGIN run path to find it.
+# brview_sdl3_beside(<target> <install dir> <install component or "">)
+function(brview_sdl3_beside target destination component)
+  set(comp "")
+  if(component)
+    set(comp COMPONENT ${component})
+  endif()
+  if(WIN32)
+    add_custom_command(TARGET ${target} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:${target}>)
+    install(FILES $<TARGET_FILE:SDL3::SDL3> DESTINATION ${destination} ${comp})
+  else()
+    set_target_properties(${target} PROPERTIES BUILD_WITH_INSTALL_RPATH ON INSTALL_RPATH "$ORIGIN")
+    add_custom_command(TARGET ${target} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL3::SDL3>
+              $<TARGET_FILE_DIR:${target}>/$<TARGET_SONAME_FILE_NAME:SDL3::SDL3>)
+    install(CODE "file(COPY_FILE \"$<TARGET_FILE:SDL3::SDL3>\"
+      \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${destination}/$<TARGET_SONAME_FILE_NAME:SDL3::SDL3>\")" ${comp})
+  endif()
+endfunction()
+
 # WIN32: a window-only program, so no console window opens beside it.
 add_executable(brview WIN32 viewer/brview.c viewer/brview_scenes.c viewer/brview_scenes.h)
 target_link_libraries(brview PRIVATE brdemo)
@@ -61,11 +85,8 @@ foreach(f IN LISTS BRVIEW_DAT)
   add_custom_command(TARGET brview POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${BRENDER132_SOURCE_DIR}/dat/${f}" "$<TARGET_FILE_DIR:brview>/dat/${f}")
 endforeach()
-add_custom_command(TARGET brview POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL3::SDL3> $<TARGET_FILE_DIR:brview>)
-
 install(TARGETS brview RUNTIME DESTINATION .)
-install(FILES $<TARGET_FILE:SDL3::SDL3> DESTINATION .)
+brview_sdl3_beside(brview . "")
 foreach(f IN LISTS BRVIEW_DAT)
   install(FILES "${BRENDER132_SOURCE_DIR}/dat/${f}" DESTINATION dat)
 endforeach()

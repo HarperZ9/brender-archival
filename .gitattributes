@@ -1,2 +1,3 @@
 docs/art/* text eol=lf
 docs/art/*.svg -linguist-detectable
+*.sh text eol=lf
