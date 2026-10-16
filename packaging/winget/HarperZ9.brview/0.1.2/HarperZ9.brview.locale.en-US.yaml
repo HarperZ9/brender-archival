@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+
+PackageIdentifier: HarperZ9.brview
+PackageVersion: 0.1.2
+PackageLocale: en-US
+Publisher: Zain Dana Harper
+PublisherUrl: https://github.com/HarperZ9
+PackageName: brview
+PackageUrl: https://github.com/HarperZ9/brender-archival/tree/main/modern
+License: MIT
+LicenseUrl: https://github.com/HarperZ9/brender-archival/blob/main/LICENSE
+ShortDescription: "A viewer for Argonaut's 1998 BRender sample models, on the modern 64-bit BRender."
+Description: "Opens the sample models that shipped with BRender 1.3.2 (Argonaut Software, 1998, MIT) and your own .dat models in a window, with mouse, keyboard and gamepad controls and OpenGL or BRender's software rasteriser."
+Tags:
+- 3d
+- viewer
+- brender
+- retro
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

@@ -81,14 +81,30 @@ BlazingRenderer with this reproducer is for the author to decide.
 
 Done when: the Linux CI records twice on OpenGL with identical bytes. Met.
 
-### 4. Packaging people expect
+### 4. Packaging people expect (prepared; submission waits for the author)
 
-AppImage for Linux, a winget manifest and a Scoop manifest for Windows, an
-itch.io page for the game, and a macOS build if BlazingRenderer's macOS path
-holds (unmeasured). Signed checksums on every artefact.
+Prepared on 16 October 2026, in `packaging/` (see its README):
+
+- **AppImage** for both programs. It is built from the staged release folder
+  with a pinned, hash-checked AppImage runtime, run headless in CI with
+  `--appimage-extract-and-run`, and attached to every release from the next
+  tag on.
+- **winget** manifests for both programs (schema 1.6.0; `winget validate`
+  passes) and **Scoop** manifests with `checkver` and `autoupdate`. Both are
+  generated from the hash the release workflow published, so they can only
+  name a build that passed the packaged smoke run.
+- An **itch.io** page draft for the game.
+
+Not done:
+
+- No submission to winget-pkgs, a Scoop bucket or itch.io. Those are
+  third-party services, and the author decides.
+- No install test through winget or Scoop. winget needs local manifests
+  enabled or a submission; Scoop is not installed here.
+- No macOS build and no signed checksums.
 
 Done when: each channel installs the current release on a clean machine in CI
-(or on a recorded manual run where CI cannot reach).
+(or on a recorded manual run where CI cannot reach). AppImage: met in CI.
 
 ### 5. Renderer parity, measured
 

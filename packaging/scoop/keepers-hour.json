@@ -1,0 +1,27 @@
+{
+    "version": "0.4.0",
+    "description": "A short, talkative game about the last night of a lighthouse, built on Argonaut's 1990s BRender engine.",
+    "homepage": "https://github.com/HarperZ9/brender-archival/tree/main/games/keepers-hour",
+    "license": "MIT,CC-BY-4.0",
+    "url": "https://github.com/HarperZ9/brender-archival/releases/download/keepers-v0.4.0/keepers-hour-0.4.0-windows-x64.zip",
+    "hash": "5ae66b70ab2567030fc549726091f05f592893047799a11947ae8ad9a581ff50",
+    "extract_dir": "keepers-hour",
+    "bin": "keepers-hour.exe",
+    "shortcuts": [
+        [
+            "keepers-hour.exe",
+            "The Keeper's Hour"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/HarperZ9/brender-archival",
+        "regex": "keepers-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/HarperZ9/brender-archival/releases/download/keepers-v$version/keepers-hour-$version-windows-x64.zip",
+        "hash": {
+            "url": "$url.sha256"
+        },
+        "extract_dir": "keepers-hour"
+    }
+}

@@ -101,3 +101,11 @@ jobs:
           tar -czf "$name" -C stage keepers-hour
           sha256sum "$name" > "$name.sha256"
           gh release upload "$GITHUB_REF_NAME" "$name" "$name.sha256" --clobber
+          # the AppImage: the same staged folder, smoke-run before upload
+          python3 packaging/appimage/ppm_to_png.py games/keepers-hour/data/art/painting-tower.ppm icon.png
+          img="keepers-hour-${GITHUB_REF_NAME#keepers-v}-x86_64.AppImage"
+          bash packaging/appimage/build-appimage.sh stage/keepers-hour keepers-hour "The Keeper's Hour" icon.png "$img"
+          out=$(cd "$RUNNER_TEMP" && KEEPERS_SMOKE=1 SDL_VIDEODRIVER=offscreen "$GITHUB_WORKSPACE/$img" --appimage-extract-and-run 2>&1)
+          grep -q '0 problems, run ok' <<<"$out"
+          sha256sum "$img" > "$img.sha256"
+          gh release upload "$GITHUB_REF_NAME" "$img" "$img.sha256" --clobber

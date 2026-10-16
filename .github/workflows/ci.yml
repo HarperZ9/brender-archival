@@ -287,6 +287,20 @@ jobs:
           grep -q '0 failed to load, run ok' <<<"$out"
           out=$(KEEPERS_SMOKE=1 "$GITHUB_WORKSPACE/stage/keepers-hour/keepers-hour" 2>&1)
           grep -q '3 of 3 reached, save ok' <<<"$out"
+      # The AppImages are built from the same staged folders and run without
+      # FUSE (--appimage-extract-and-run), from outside the build tree.
+      - name: the AppImages run
+        shell: bash
+        run: |
+          python3 packaging/appimage/ppm_to_png.py games/keepers-hour/data/art/painting-tower.ppm keepers.png
+          bash packaging/appimage/build-appimage.sh stage/keepers-hour keepers-hour "The Keeper's Hour" keepers.png keepers.AppImage
+          bash packaging/appimage/build-appimage.sh stage/brview brview "brview" docs/brand/mark-512.png brview.AppImage
+          cd "$RUNNER_TEMP"
+          out=$(KEEPERS_SMOKE=1 "$GITHUB_WORKSPACE/keepers.AppImage" --appimage-extract-and-run 2>&1)
+          grep -q '3 of 3 reached, save ok' <<<"$out"
+          grep -q '0 problems, run ok' <<<"$out"
+          out=$(BRVIEW_SMOKE=1 "$GITHUB_WORKSPACE/brview.AppImage" --appimage-extract-and-run 2>&1)
+          grep -q '0 failed to load, run ok' <<<"$out"
       - name: fetch the pinned sources for the ladder
         shell: bash
         run: |

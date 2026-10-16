@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: packaging
+
+- `packaging/appimage/build-appimage.sh` builds an AppImage from a staged release folder, with the AppImage type2 runtime (release 20251108) pinned by SHA-256 and checked before use. CI builds both AppImages and runs them headless; `release-keepers.yml` and `release-brview.yml` attach `*-x86_64.AppImage` with a SHA-256 after the same smoke run.
+- `packaging/update_manifests.py` writes winget (schema 1.6.0) and Scoop manifests from the SHA-256 a release published. Committed for The Keeper's Hour 0.4.0 and brview 0.1.2; `winget validate` passes. Not submitted.
+- `packaging/itch/keepers-hour.md`: an itch.io page draft. Not published.
+- `scripts/linux-build-deps.sh` adds `squashfs-tools` and `curl`.
+
 ## Unreleased: deterministic OpenGL capture
 
 - The Keeper's Hour finishes the OpenGL frame (`glFinish`) before each captured frame is read back. Under Mesa llvmpipe the readback sometimes returned the previous frame; four 15-frame recordings repeated a frame in every run, and with the fix five 30-frame recordings gave 30 distinct frames, identical across runs. Play is not affected: only captures wait.

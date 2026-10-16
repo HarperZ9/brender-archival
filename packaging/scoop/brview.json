@@ -1,0 +1,27 @@
+{
+    "version": "0.1.2",
+    "description": "A viewer for Argonaut's 1998 BRender sample models, on the modern 64-bit BRender.",
+    "homepage": "https://github.com/HarperZ9/brender-archival/tree/main/modern",
+    "license": "MIT",
+    "url": "https://github.com/HarperZ9/brender-archival/releases/download/brview-v0.1.2/brview-0.1.2-windows-x64.zip",
+    "hash": "25d198c975ba4c677dbf9e2fb7a9badad9783b8595d942acb3ea097c92850ea5",
+    "extract_dir": "brview",
+    "bin": "brview.exe",
+    "shortcuts": [
+        [
+            "brview.exe",
+            "brview"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/HarperZ9/brender-archival",
+        "regex": "brview-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/HarperZ9/brender-archival/releases/download/brview-v$version/brview-$version-windows-x64.zip",
+        "hash": {
+            "url": "$url.sha256"
+        },
+        "extract_dir": "brview"
+    }
+}

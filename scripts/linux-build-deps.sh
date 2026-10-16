@@ -18,5 +18,5 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommend
   libwayland-dev wayland-protocols libdecor-0-dev \
   libegl-dev libgl-dev libgles-dev libdrm-dev libgbm-dev \
   libasound2-dev libpulse-dev libpipewire-0.3-dev \
-  libdbus-1-dev libudev-dev \
+  libdbus-1-dev libudev-dev squashfs-tools curl \
   libegl-mesa0 libgl1-mesa-dri
