@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+
+PackageIdentifier: HarperZ9.TheKeepersHour
+PackageVersion: 0.4.0
+PackageLocale: en-US
+Publisher: Zain Dana Harper
+PublisherUrl: https://github.com/HarperZ9
+PackageName: The Keeper's Hour
+PackageUrl: https://github.com/HarperZ9/brender-archival/tree/main/games/keepers-hour
+License: Code MIT; words and art CC BY 4.0
+LicenseUrl: https://github.com/HarperZ9/brender-archival/blob/main/LICENSE
+ShortDescription: "A short, talkative game about the last night of a lighthouse, built on Argonaut's 1990s BRender engine."
+Description: "The last night of a lighthouse on a coast the sea left years ago. Walk the tower, talk to what is in it, listen to the four voices in the keeper's head, and decide what happens to the light at dawn. About 25 minutes, three endings, keyboard, mouse and gamepad. Built on BRender 1.4 (BlazingRenderer, MIT), running 64-bit. Code MIT; words and art CC BY 4.0."
+Tags:
+- game
+- adventure
+- narrative
+- brender
+- retro
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

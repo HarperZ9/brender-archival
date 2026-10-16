@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
+
+PackageIdentifier: HarperZ9.TheKeepersHour
+PackageVersion: 0.4.0
+InstallerType: zip
+NestedInstallerType: portable
+NestedInstallerFiles:
+- RelativeFilePath: keepers-hour\keepers-hour.exe
+  PortableCommandAlias: keepers-hour
+Installers:
+- Architecture: x64
+  InstallerUrl: https://github.com/HarperZ9/brender-archival/releases/download/keepers-v0.4.0/keepers-hour-0.4.0-windows-x64.zip
+  InstallerSha256: 5AE66B70AB2567030FC549726091F05F592893047799A11947AE8AD9A581FF50
+ManifestType: installer
+ManifestVersion: 1.6.0

@@ -97,3 +97,10 @@ jobs:
           tar -czf "$name" -C stage brview
           sha256sum "$name" > "$name.sha256"
           gh release upload "$GITHUB_REF_NAME" "$name" "$name.sha256" --clobber
+          # the AppImage: the same staged folder, smoke-run before upload
+          img="brview-${GITHUB_REF_NAME#brview-v}-x86_64.AppImage"
+          bash packaging/appimage/build-appimage.sh stage/brview brview "brview" docs/brand/mark-512.png "$img"
+          out=$(cd "$RUNNER_TEMP" && BRVIEW_SMOKE=1 SDL_VIDEODRIVER=offscreen "$GITHUB_WORKSPACE/$img" --appimage-extract-and-run 2>&1)
+          grep -q '0 failed to load, run ok' <<<"$out"
+          sha256sum "$img" > "$img.sha256"
+          gh release upload "$GITHUB_REF_NAME" "$img" "$img.sha256" --clobber
