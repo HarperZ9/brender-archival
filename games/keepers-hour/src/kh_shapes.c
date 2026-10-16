@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: MIT */
 #include <math.h>
 
+#include "kh_period.h"
 #include "kh_shapes.h"
 
 br_material *kh_material(const char *name, int r, int g, int b, int smooth, int two_sided)
@@ -14,6 +15,7 @@ br_material *kh_material(const char *name, int r, int g, int b, int smooth, int 
     m->ks = BR_UFRACTION(0.10);
     m->power = BR_SCALAR(10);
     BrMaterialAdd(m);
+    kh_period_register(m, KH_PERIOD_LIT, r, g, b);
     return m;
 }
 
@@ -23,6 +25,7 @@ br_material *kh_glow(const char *name, int r, int g, int b)
     m->colour = BR_COLOUR_RGB(r, g, b);
     m->flags = BR_MATF_TWO_SIDED;
     BrMaterialAdd(m);
+    kh_period_register(m, KH_PERIOD_GLOW, r, g, b);
     return m;
 }
 

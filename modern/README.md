@@ -30,6 +30,7 @@ in the folder, and the program finds it there through a `$ORIGIN` run path.
 | [ and ] | pixel size, 1 to 6 (a coarser, period look) |
 | - and = | field of view, 40 to 90 degrees |
 | V | vsync on or off |
+| 8 | period look on or off: 256 colours through BRender's 8-bit path |
 | Alt+Enter | fullscreen |
 | Gamepad | left stick orbit, triggers zoom, A next, X previous, B spin, Y texture, Start reset |
 
@@ -41,6 +42,20 @@ your preferences folder.
 | Pixel size 1 | Pixel size 4 |
 |---|---|
 | ![a model at pixel size 1](media/brview-pixel-1.png) | ![the same model at pixel size 4](media/brview-pixel-4.png) |
+
+The period look draws the model into an 8-bit buffer through BRender's own
+palette path and shows it through `std.pal`: an untextured model climbs the
+palette ramp nearest its colour, and a textured one uses its 8-bit map lit
+through the first 37 rows of `shade.tab`, so full light keeps the map's
+colours instead of washing them out to white. It needs the software
+renderer; brview starts on it when the look was left on, and
+`BRVIEW_PERIOD=1` turns it on for one run. BRender 1.4's 8-bit kernels match
+the 1998 ones to 96.4% to 99.9% of pixels on the same palette index
+(`parity/README.md`).
+
+| True colour | Period look, 256 colours |
+|---|---|
+| ![a model in true colour](media/brview-pixel-1.png) | ![the same model in 256 colours](media/brview-period.png) |
 
 ```
 brview.exe                    cycle through the bundled models

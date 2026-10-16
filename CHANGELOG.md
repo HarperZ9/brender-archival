@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: the period look
+
+- The Keeper's Hour: a Period look option (F2) draws the rooms in 256 colours through BRender's own 8-bit palette path, on the software renderer. The game builds its palette from its own materials: ramps for lit surfaces, the glows and skies as they are, and 128 colours cut from the pictures, which become 8-bit maps lit through a shade table. Saved with the other options; `KEEPERS_PERIOD=1` for one run.
+- brview: the 8 key turns on the same look, through the 1998 `std.pal` and the first 37 rows of `shade.tab` (full light keeps a map's colours). Saved; `BRVIEW_PERIOD=1` for one run. brview and the game start on the software renderer when the look is on.
+- `modern/display`: `brd_display_render_period` draws into an INDEX_8 buffer at the chosen pixel size and shows it through a palette.
+- `display_check.py` checks the look on frames: 256 colours or fewer, the 8-bit path ran (the frame differs from true colour), and the same scene (mean difference at most 30 levels; measured 10.5 for the game and 24.0 for brview). In the game a control must fail: the true-colour frame has more than 256 colours. CI keeps the stills as artifacts.
+
 ## Unreleased: 8-bit and lit textured parity
 
 - Depends on engine-revival 0.6.0. Its line-by-line ports of `zb8.asm`, `fti8_piz.asm` and the `fpsetup.asm` float setup make the period build draw into 8-bit buffers through BRender's own palette path.

@@ -45,7 +45,7 @@ version they reference).
 Done when: a `keepers-v*` and a `brview-v*` release carry Linux tarballs
 built by CI after the packaged smoke passes.
 
-### 2. Display: resolution, widescreen and a period look (game shipped)
+### 2. Display: resolution, widescreen and a period look (met)
 
 Shipped in The Keeper's Hour on 16 October 2026: pixel size 1 to 6 (the scene
 drawn coarser and scaled up with whole, square pixels, text kept sharp), field
@@ -58,8 +58,14 @@ brview has the same settings since 16 October 2026 ([ and ] pixel size,
 - and = field of view, V vsync, saved), from one display module shared with
 the game (`modern/display`), checked by the same tool in CI.
 
-Not done: a period mode through BRender's 8-bit palette path (the pixel size
-gives the coarse look, not the palette).
+The period look (16 October 2026), in the game's F2 options and on brview's
+8 key: the scene drawn into an 8-bit buffer by BRender's own palette path and
+shown through its palette. The game builds a 256-colour palette from its own
+materials and maps (ramps for lit surfaces, median-cut colours for the
+pictures, a 64-row shade table); brview uses the 1998 `std.pal` and
+`shade.tab`. Software renderer only. `display_check.py` checks it draws in
+256 colours or fewer and shows the same scene, with controls. The 8-bit
+kernels are measured against the 1998 ones in item 5.
 
 Done when: options persist; a test draws one room at three resolutions and
 checks the aspect and the pixel scale; screenshots go in the README. Met for

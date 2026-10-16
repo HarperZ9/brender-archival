@@ -111,9 +111,9 @@ def test_the_brview_zip_holds_only_the_viewer():
 def test_display_options_are_checked_on_frames_on_both_systems():
     ci = _workflow("ci.yml")
     windows, linux = ci[ci.index("\n  brview:"):ci.index("\n  linux:")], ci[ci.index("\n  linux:"):]
-    assert "tools/display_check.py build/keepers-hour/Release/keepers-hour.exe" in windows
+    assert "tools/display_check.py build/keepers-hour/Release/keepers-hour.exe --stills stills-windows" in windows
     assert "tools/display_check.py build/keepers-hour/keepers-hour --opengl" in linux
-    assert "display_check.py build/Release/brview.exe --program brview" in windows
+    assert "display_check.py build/Release/brview.exe --program brview --stills stills-windows" in windows
     assert "display_check.py build/brview --program brview --opengl" in linux
     evidence = ROOT / "games" / "keepers-hour" / "evidence"
     for name in ("display-software-2026-10-16.json", "display-opengl-llvmpipe-2026-10-16.json"):

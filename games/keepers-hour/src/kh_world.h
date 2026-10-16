@@ -43,5 +43,7 @@ void kh_world_clamp(const kh_world *w, float *x, float *z);
 int  kh_world_talker_near(const kh_world *w, float x, float z, float dx, float dz);
 const kh_talker *kh_world_talker(const kh_world *w, int i);
 br_colour kh_world_sky(const kh_world *w, const br_pixelmap *target);
+/* The palette index of the room's sky, for the period look. */
+br_uint_8 kh_world_sky_index(const kh_world *w);
 
 #endif

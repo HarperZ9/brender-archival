@@ -1,5 +1,5 @@
 /* The Keeper's Hour: options (volume, look speed, pixel size, field of view,
- * vsync) and key remapping, saved
+ * vsync, period look) and key remapping, saved
  * to the player's preferences folder.
  * SPDX-License-Identifier: MIT */
 #ifndef KH_OPTIONS_H
@@ -16,6 +16,7 @@ typedef struct kh_options {
     int          pixel;                /* 1 to 6: screen pixels per scene pixel (brdisplay.h) */
     int          fov;                  /* 40 to 90 degrees, vertical, in steps of 5 */
     int          vsync;                /* 0 or 1: wait for the display (OpenGL only) */
+    int          period;               /* 0 or 1: 256 colours through BRender's 8-bit path */
     SDL_Scancode keys[KH_ACT_COUNT];
     int          open;                 /* the options screen is showing */
     int          row;                  /* highlighted row */
@@ -36,6 +37,9 @@ int  kh_options_held(const kh_options *o, kh_action a, const bool *keys);
 /* Rebind a key and change the volume by simulated key presses, save to a
  * scratch file and read it back. For the smoke run; returns the problems. */
 int kh_options_check(void);
+
+/* 0 when a change to the period look waits for the next start (OpenGL). */
+extern int kh_options_period_now;
 
 void kh_options_draw(const kh_options *o, br_pixelmap *pm, br_colour ink, br_colour accent, br_colour panel);
 

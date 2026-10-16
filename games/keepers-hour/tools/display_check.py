@@ -21,6 +21,14 @@ passes everything is caught.
    its middle 1280 columns. Control: a 960 x 720 frame at another field of
    view does not match.
 4. Field of view changes the picture: 40 and 90 degrees differ.
+5. The period look (software only) draws in 256 colours or fewer, through
+   BRender's 8-bit path, and shows the same scene. Controls: the period frame
+   is not the true-colour frame (the 8-bit path ran), and in the game the
+   true-colour frame of the same room uses more than 256 colours. brview's
+   first model, the earth map, measured 100 colours in true colour on
+   16 October 2026, so the count cannot be its control.
+
+--stills DIR keeps the period and true-colour stills (as PPM) for a look.
 
 The software rasteriser is the default because it gives the same bytes on
 every run. --opengl uses the OpenGL driver instead. Standard library only.
@@ -53,8 +61,15 @@ def read_ppm(path: Path):
 PREFIX = "KEEPERS"
 
 
-def still(exe: str, out: Path, width: int, height: int, pixel: int, fov: int, opengl: bool):
+PERIOD_COLOURS_MAX = 256     # an 8-bit frame
+PERIOD_SCENE_MAD_MAX = 30.0  # period against true colour, mean level difference. Measured 16 October
+# 2026: 10.5 (the game, lamp room) and 24.0 (brview, earth; its background
+# differs too). Calibrated, not predicted.
+
+
+def still(exe: str, out: Path, width: int, height: int, pixel: int, fov: int, opengl: bool, period: bool = False):
     env = dict(os.environ, **{f"{PREFIX}_SHOT": str(out), f"{PREFIX}_PIXEL": str(pixel), f"{PREFIX}_FOV": str(fov)})
+    env[f"{PREFIX}_PERIOD"] = "1" if period else "0"
     if PREFIX == "KEEPERS":
         env["KEEPERS_ROOM"] = "lamp"
     args = [exe, "-w", str(width), "-h", str(height)] + ([] if opengl else ["--force-software"])
@@ -91,6 +106,15 @@ def block_mean_mad(sharp, chunky, k: int) -> float:
     return diff / count
 
 
+def colours(img) -> int:
+    px = img[2]
+    return len({px[i:i + 3] for i in range(0, len(px), 3)})
+
+
+def mad(a, b) -> float:
+    return sum(abs(x - y) for x, y in zip(a[2], b[2])) / len(a[2])
+
+
 def middle_match(wide, narrow) -> float:
     ww, h, a = wide
     nw, _, b = narrow
@@ -119,6 +143,14 @@ def main(argv: list[str]) -> int:
         narrow_other = still(exe, t / "n70.ppm", 960, 720, 1, 70, opengl)
         fov40 = still(exe, t / "f40.ppm", 1280, 720, 1, 40, opengl)
         fov90 = still(exe, t / "f90.ppm", 1280, 720, 1, 90, opengl)
+        period = None if opengl else still(exe, t / "period.ppm", 1280, 720, 1, 55, opengl, period=True)
+        if "--stills" in argv:
+            keep = Path(argv[argv.index("--stills") + 1])
+            keep.mkdir(parents=True, exist_ok=True)
+            name = "brview" if PREFIX == "BRVIEW" else "keepers-hour"
+            for src, tag in ((t / "p1.ppm", "true-colour"), (t / "period.ppm", "period"), (t / "p4.ppm", "pixel4")):
+                if src.exists():
+                    (keep / f"{name}-{'opengl' if opengl else 'software'}-{tag}.ppm").write_bytes(src.read_bytes())
     m = {
         "program": "brview" if PREFIX == "BRVIEW" else "keepers-hour",
         "renderer": "opengl" if opengl else "software",
@@ -131,6 +163,10 @@ def main(argv: list[str]) -> int:
         "horplus_control_fov70": round(middle_match(sharp, narrow_other), 4),
         "fov40_differs_from_fov90": fov40[2] != fov90[2],
     }
+    if period is not None:
+        m["period_colours"] = colours(period)
+        m["true_colour_colours_control"] = colours(sharp)
+        m["period_vs_true_colour_mad"] = round(mad(period, sharp), 3)
     checks = {
         "whole_pixels": m["blocks_uniform_pixel4"] >= BLOCK_UNIFORM_MIN,
         "whole_pixels_control_fails": m["blocks_uniform_pixel1_control"] <= BLOCK_CONTROL_MAX,
@@ -141,6 +177,12 @@ def main(argv: list[str]) -> int:
         "horplus_control_fails": m["horplus_control_fov70"] < HORPLUS_CONTROL_MAX,
         "fov_changes_picture": m["fov40_differs_from_fov90"],
     }
+    if period is not None:
+        checks["period_is_256_colours"] = m["period_colours"] <= PERIOD_COLOURS_MAX
+        checks["period_path_used"] = period[2] != sharp[2]
+        if PREFIX == "KEEPERS":
+            checks["period_control_fails"] = m["true_colour_colours_control"] > PERIOD_COLOURS_MAX
+        checks["period_same_scene"] = 0 < m["period_vs_true_colour_mad"] <= PERIOD_SCENE_MAD_MAX
     result = {"measured": m, "checks": checks, "ok": all(checks.values())}
     text = json.dumps(result, indent=2)
     print(text)

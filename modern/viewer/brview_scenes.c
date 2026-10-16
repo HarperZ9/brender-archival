@@ -112,12 +112,95 @@ static void bounds(br_model **models, int n, br_vector3 *centre, float *radius)
     *radius = r > 0 ? r : 1.0f;
 }
 
-static void set_material(br_material *material, const scene *s, br_boolean textured)
+/* The ramps of std.pal (stdpal.txt): first index, length, and the diffuse
+ * colour each one climbs through, black at its foot and white at its top. */
+static const struct { int base, range, r, g, b; } ramps[] = {
+    {0, 63, 147, 147, 147}, {64, 31, 60, 60, 238}, {96, 31, 60, 238, 60}, {128, 31, 60, 238, 238},
+    {160, 31, 238, 60, 60}, {192, 31, 238, 60, 238}, {224, 31, 238, 238, 60},
+};
+
+/* The std.pal ramp nearest a colour's hue: grey for the pale ones. */
+static int ramp_for(int r, int g, int b)
 {
-    br_pixelmap *tex = (textured && s->texture) ? load_texture(s->texture) : NULL;
+    float m = (float)(r > g ? (r > b ? r : b) : (g > b ? g : b)), best = 1e9f;
+    int i, pick = 0;
+    if (m < 1) m = 1;
+    for (i = 0; i < (int)BR_ASIZE(ramps); i++) {
+        float rm = (float)(ramps[i].r > ramps[i].g ? (ramps[i].r > ramps[i].b ? ramps[i].r : ramps[i].b) : (ramps[i].g > ramps[i].b ? ramps[i].g : ramps[i].b));
+        float dr = r / m - ramps[i].r / rm, dg = g / m - ramps[i].g / rm, db = b / m - ramps[i].b / rm;
+        float d = dr * dr + dg * dg + db * db;
+        if (d < best) { best = d; pick = i; }
+    }
+    return pick;
+}
+
+/* shade.tab's rows run from black (0) through the map's own colours (rows
+ * 28 to 36 keep the most entries unchanged) to white (63). BRender lights a
+ * textured 8-bit surface across every row of its table, so full light would
+ * wash the map out toward white. The table here is shade.tab's first 37
+ * rows: full light lands on row 36 and a lit map keeps its colours, as it
+ * does in true colour. */
+#define SHADE_ROWS 37
+
+/* An 8-bit map as stored, and shade.tab, for the period look. */
+static br_pixelmap *load_texture8(const char *name)
+{
+    char path[1024];
+    br_pixelmap *tex;
+    resolve(name, path, sizeof(path));
+    if ((tex = BrPixelmapLoad(path)) == NULL || tex->type != BR_PMT_INDEX_8)
+        return NULL;
+    tex->identifier = BrResSprintf(tex, "%s-8bit", name);
+    return tex;
+}
+
+static br_pixelmap *shade_table(void)
+{
+    static br_pixelmap *shade;
+    char path[1024];
+    br_pixelmap *full;
+    int y;
+    if (shade == NULL) {
+        resolve("shade.tab", path, sizeof(path));
+        if ((full = BrPixelmapLoad(path)) == NULL || full->type != BR_PMT_INDEX_8 || full->height < SHADE_ROWS)
+            return NULL;
+        if ((shade = BrPixelmapAllocate(BR_PMT_INDEX_8, full->width, SHADE_ROWS, NULL, BR_PMAF_NORMAL)) != NULL) {
+            for (y = 0; y < SHADE_ROWS; y++)
+                memcpy((char *)shade->pixels + (long)y * shade->row_bytes, (char *)full->pixels + (long)y * full->row_bytes,
+                       (size_t)full->width);
+            shade->identifier = "shade.tab";
+            BrTableAdd(shade);
+        }
+        BrPixelmapFree(full);
+    }
+    return shade;
+}
+
+br_pixelmap *BrViewScenePalette(void)
+{
+    static br_pixelmap *palette;
+    char path[1024];
+    if (palette == NULL) {
+        resolve("std.pal", path, sizeof(path));
+        palette = BrPixelmapLoad(path);
+    }
+    return palette;
+}
+
+static void set_material(br_material *material, const scene *s, br_boolean textured, br_boolean period)
+{
+    br_pixelmap *tex = NULL;
+    int ramp = ramp_for(s->r, s->g, s->b);
+    if (textured && s->texture)
+        tex = period ? load_texture8(s->texture) : load_texture(s->texture);
     if (tex != NULL)
         BrMapAdd(tex);
     material->colour_map = tex;
+    /* 8-bit: an untextured surface climbs its std.pal ramp with the light; a
+     * textured one is lit through shade.tab, row by row */
+    material->index_base = (br_uint_8)(tex ? 0 : ramps[ramp].base);
+    material->index_range = (br_uint_8)(tex ? 63 : ramps[ramp].range);
+    material->index_shade = period && tex ? shade_table() : NULL;
     material->colour = BR_COLOUR_RGB(s->r, s->g, s->b);
     material->flags = BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE;
     material->ka = BR_UFRACTION(0.25);
@@ -127,7 +210,8 @@ static void set_material(br_material *material, const scene *s, br_boolean textu
     BrMaterialUpdate(material, BR_MATU_ALL);
 }
 
-br_error BrViewSceneLoad(int index, br_actor *parent, br_material *material, br_boolean textured, char *err, size_t err_len)
+br_error BrViewSceneLoad(int index, br_actor *parent, br_material *material, br_boolean textured, br_boolean period,
+                         char *err, size_t err_len)
 {
     const scene *s = get_scene(index);
     br_model *models[64];
@@ -145,7 +229,7 @@ br_error BrViewSceneLoad(int index, br_actor *parent, br_material *material, br_
         return BRE_FAIL;
     }
     bounds(models, n, &centre, &radius);
-    set_material(material, s, textured);
+    set_material(material, s, textured, period);
     for (i = 0; i < n; i++) {
         br_actor *a = BrActorAdd(parent, BrActorAllocate(BR_ACTOR_MODEL, NULL));
         BrModelAdd(models[i]);

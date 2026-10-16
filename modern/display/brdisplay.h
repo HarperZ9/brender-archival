@@ -33,6 +33,18 @@ void brd_display_apply(br_demo *demo, int fov_option, int vsync_option);
 /* Draw the scene at the current pixel size into demo->colour_buffer. */
 void brd_display_render(br_demo *demo, int pixel_option);
 
+/* The period look: the scene drawn by BRender's own 8-bit palette path into
+ * an INDEX_8 buffer (BrZbSceneRender into a 256-colour target, the kernels
+ * that 1990s games ran), then shown through `palette` at the same pixel size
+ * as brd_display_render. Materials must be set up for indexed colour first
+ * (index_base and index_range, 8-bit maps, index_shade). `clear` is the
+ * palette index behind the scene. The software renderer only: returns -1
+ * and draws nothing on OpenGL, which has no indexed target. */
+int  brd_display_render_period(br_demo *demo, int pixel_option, br_pixelmap *palette, br_uint_8 clear);
+
+/* 1 when the period look can be drawn here (the software renderer). */
+int  brd_display_period_available(const br_demo *demo);
+
 /* Free the small buffers; call when the window changes size and at exit. */
 void brd_display_release(void);
 

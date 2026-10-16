@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <SDL3/SDL.h>
+#include "kh_period.h"
 #include "kh_tex.h"
 
 #define KH_MAX_TEX 16
@@ -71,6 +72,7 @@ br_material *kh_tex_material(const char *name, int two_sided)
     m->ks = BR_UFRACTION(0.05);
     m->power = BR_SCALAR(8);
     BrMaterialAdd(m);
+    kh_period_register(m, KH_PERIOD_TEXTURED, 255, 255, 255);
     return m;
 }
 

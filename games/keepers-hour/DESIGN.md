@@ -133,6 +133,12 @@ The game stays small on purpose: one tower, one night, about 25 minutes.
   sharp. The field of view (40 to 90 degrees) is vertical, so wider windows
   see more to the sides (Hor+). `tools/display_check.py` checks all of this
   on frames, with controls, on both renderers; evidence in `evidence/display-*`.
+- **Period look (16 October 2026):** an option that draws the rooms in 256
+  colours through BRender's 8-bit palette path (`src/kh_period.c`). Every
+  material registers as it is made. The palette holds the glows and skies
+  (1 to 15), seven 16-step ramps chosen by hue for the lit surfaces (16 to
+  127), and 128 colours cut from the pictures' texels (128 to 255). Pictures
+  become 8-bit maps lit through a 64-row shade table built from that palette.
 - **Renderer parity:** `tools/parity.py` draws a still of every room on
   OpenGL and on the software rasteriser and compares them. The first bounds,
   set before measuring, also passed a wrong-room comparison, so they could not

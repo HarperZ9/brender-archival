@@ -7,6 +7,7 @@
  *   KEEPERS_SHOT=f    draw one still of the room into f (PPM) and quit
  *   KEEPERS_RECORD=d  write numbered frames at a fixed step (see kh_capture.h)
  *   KEEPERS_ROOM=r    start in room r      KEEPERS_OPEN=n   start in node n
+ *   KEEPERS_PERIOD=1  the period look (256 colours) for this run, on the software renderer
  * SPDX-License-Identifier: MIT */
 #include <math.h>
 #include <stdio.h>
@@ -21,10 +22,26 @@
 #include "kh_capture.h"
 #include "brdisplay.h"
 #include "kh_game.h"
+#include "kh_period.h"
 #include "kh_save.h"
 #include "kh_tex.h"
 
 kh_game G = {.keeper_z = 3.2f, .facing = 180.0f, .near_talker = -1};
+
+static int period_forced; /* KEEPERS_PERIOD=1: on for this run, whatever the options say */
+static int period_shown;  /* the look the materials are set up for */
+
+static int period_wanted(void) { return period_forced || G.opt.period; }
+
+/* Set the materials up for the look the player chose, if it can be drawn. */
+static void period_sync(br_demo *demo)
+{
+    int want = period_wanted() && brd_display_period_available(demo);
+    if (want != period_shown) {
+        kh_period_apply(want);
+        period_shown = want;
+    }
+}
 
 static void set_ambience(void)
 {
@@ -120,6 +137,10 @@ static br_error game_init(br_demo *demo)
     demo->order_table->max_z = c->yon_z;
     brd_display_apply(demo, G.opt.fov, G.opt.vsync);
     kh_world_build(&G.world, demo->world);
+    kh_options_period_now = brd_display_period_available(demo);
+    if (kh_period_build() != 0)
+        BrLogError("KEEPER", "the period look could not be built; it stays off");
+    period_sync(demo);
     enter(kh_room_find(room && kh_room_find(room) >= 0 ? room : "lamp"), -1);
     if (SDL_getenv("KEEPERS_OPEN"))
         kh_talk_open(&G.talk, SDL_getenv("KEEPERS_OPEN"));
@@ -165,6 +186,7 @@ static void game_update(br_demo *demo, br_scalar dt_s)
         kh_game_follow(go);
     }
     demo->clear_colour = kh_world_sky(&G.world, demo->colour_buffer);
+    period_sync(demo);
     kh_world_turn_lamp(&G.world, G.clock_s);
     G.world.keeper->t.type = BR_TRANSFORM_MATRIX34;
     BrMatrix34RotateY(&G.world.keeper->t.t.mat, BR_ANGLE_DEG(G.facing));
@@ -198,7 +220,8 @@ static void game_render(br_demo *demo)
     br_pixelmap *pm = demo->colour_buffer;
     br_colour ink = kh_px(pm, 236, 230, 216), accent = kh_px(pm, 232, 180, 92), panel = kh_px(pm, 14, 13, 18);
     kh_text_via_memory(!demo->hw_accel);
-    brd_display_render(demo, G.opt.pixel);
+    if (!period_shown || brd_display_render_period(demo, G.opt.pixel, kh_period_palette(), kh_world_sky_index(&G.world)) != 0)
+        brd_display_render(demo, G.opt.pixel);
     if (kh_capture_active()) {
         if (kh_capture_ui()) {
             hud(pm, ink, accent);
@@ -244,7 +267,13 @@ int main(int argc, char **argv)
     int ret, n;
     BrDemoDefaultArgs(&args);
     args.title = "The Keeper's Hour";
-    used = kh_boot_argv(argc, argv, &n);
+    period_forced = SDL_getenv("KEEPERS_PERIOD") != NULL && SDL_atoi(SDL_getenv("KEEPERS_PERIOD")) != 0;
+    {
+        kh_options saved;
+        SDL_zero(saved);
+        kh_options_load(&saved, kh_options_path());
+        used = kh_boot_argv(argc, argv, period_forced || saved.period, &n);
+    }
     if (BrDemoParseArgs(&args, n, used) != 0)
         return 1;
     args.no_stats = 1;

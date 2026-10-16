@@ -89,7 +89,7 @@ endif()
 
 set(BRVIEW_DAT
   sph32.dat earth.pix teapot.dat skull.dat argo.dat ship.dat duck.dat
-  torus.dat rosewood.pix terrain.dat std.pal)
+  torus.dat rosewood.pix terrain.dat std.pal shade.tab)
 foreach(f IN LISTS BRVIEW_DAT)
   add_custom_command(TARGET brview POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${BRENDER132_SOURCE_DIR}/dat/${f}" "$<TARGET_FILE_DIR:brview>/dat/${f}")
