@@ -1,0 +1,68 @@
+{
+  "label": "BRender 1.4 software, Linux GCC, two runs",
+  "scenes": {
+    "sphere-flat": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636
+    },
+    "sphere-lit": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636
+    },
+    "sphere-smooth": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636
+    },
+    "teapot-smooth": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 8786,
+      "drawn_b": 8786
+    },
+    "torus-flat": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17943,
+      "drawn_b": 17943
+    },
+    "torus-smooth": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17943,
+      "drawn_b": 17943
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6027,
+    "identical": 0.6027,
+    "mad": 63.301,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11946,
+    "fails_as_required": true
+  },
+  "all_identical": true,
+  "ok": true
+}

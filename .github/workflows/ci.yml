@@ -192,6 +192,23 @@ jobs:
         run: |
           python games/keepers-hour/tools/display_check.py build/keepers-hour/Release/keepers-hour.exe
           if ($LASTEXITCODE -ne 0) { throw "a display check failed" }
+      # The parity scenes on BRender 1.4's software rasteriser (modern/parity).
+      - name: the parity scenes are deterministic on Windows
+        shell: pwsh
+        env:
+          SDL_VIDEODRIVER: offscreen
+        run: |
+          foreach ($run in 'a', 'b') {
+            New-Item -ItemType Directory -Force "parity-windows-$run" | Out-Null
+            & build/Release/parity-scene.exe build/_deps/brender132-src/dat "parity-windows-$run" | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "parity-scene exited $LASTEXITCODE" }
+          }
+          python modern/parity/parity_compare.py parity-windows-a parity-windows-b --label "windows, two runs" --require-identical
+          if ($LASTEXITCODE -ne 0) { throw "the parity scenes differ between runs" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-windows
+          path: parity-windows-a
       - name: the frame recorder is deterministic and the lamp moves
         shell: pwsh
         env:
@@ -273,6 +290,17 @@ jobs:
             diff "$mode-a.sum" "$mode-b.sum"
             test "$(cut -d' ' -f1 "$mode-a.sum" | uniq | wc -l)" -eq 6 || { echo "$mode: a frame repeats the one before"; exit 1; }
           done
+      - name: the parity scenes are deterministic on Linux
+        run: |
+          for run in a b; do
+            mkdir -p "parity-linux-$run"
+            ./build/parity-scene build/_deps/brender132-src/dat "parity-linux-$run" > /dev/null
+          done
+          python modern/parity/parity_compare.py parity-linux-a parity-linux-b --label "linux, two runs" --require-identical
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-linux
+          path: parity-linux-a
       - name: the packaged copies run in place
         shell: bash
         run: |
@@ -325,3 +353,23 @@ jobs:
           listed=$(ctest --test-dir "$RUNNER_TEMP/ladder64-build" -N | sed -n 's/^Total Tests: //p')
           test "$listed" = "$EXPECTED_RUNGS" || { echo "ladder lists $listed rungs, expected $EXPECTED_RUNGS"; exit 1; }
           ctest --test-dir "$RUNNER_TEMP/ladder64-build" --output-on-failure
+
+  # BRender 1.4's software rasteriser, Windows MSVC against Linux GCC. The
+  # bounds were set from the first measurement (16 October 2026: coverage
+  # identical, at most 0.02% of pixels off by one level), so they are
+  # calibrated, not predicted; modern/parity/evidence holds the record.
+  parity:
+    needs: [brview, linux]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-windows
+          path: parity-windows
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-linux
+          path: parity-linux
+      - name: the two builds draw the same scenes within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-windows parity-linux --label "windows against linux" --bounds 1.0 0.999 1

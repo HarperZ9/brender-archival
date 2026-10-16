@@ -80,7 +80,7 @@
         {"key": "ladder targets", "value": "21 under CTest", "note": "Twenty in the generated CMake project plus the period-pipeline rung. The transcript in builds/ reports twenty-one passed and none failed."},
         {"key": "harness files", "value": "31 generated", "note": "Written by materialize-brender-harness: the CMake project, the compatibility C ports, and the smoke programs. No upstream file is copied."},
         {"key": "build settings", "value": "eight dirs", "note": "The FLOAT core is built from fw, host, std, pixelmap, dosio, v1db, math and fmt, under nine compile definitions led by BASED_FLOAT."},
-        {"key": "python tests", "value": "52 passing", "note": "pytest over tests/, covering the release media, the release packager, the project metadata, and every number on these three drawings. The package has its own tests in engine-revival."}
+        {"key": "python tests", "value": "57 passing", "note": "pytest over tests/, covering the release media, the release packager, the project metadata, and every number on these three drawings. The package has its own tests in engine-revival."}
       ]
     }
   ]

@@ -1,0 +1,68 @@
+{
+  "label": "period 1.3.2 build, two runs",
+  "scenes": {
+    "sphere-flat": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0
+    },
+    "sphere-lit": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0
+    },
+    "sphere-smooth": {
+      "coverage_iou": 0.9985,
+      "identical": 0.9982,
+      "mad": 0.377,
+      "max": 255,
+      "drawn_a": 19940,
+      "drawn_b": 19970
+    },
+    "teapot-smooth": {
+      "coverage_iou": 0.9996,
+      "identical": 0.9996,
+      "mad": 0.111,
+      "max": 255,
+      "drawn_a": 6899,
+      "drawn_b": 6902
+    },
+    "torus-flat": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0
+    },
+    "torus-smooth": {
+      "coverage_iou": 0.9985,
+      "identical": 0.9975,
+      "mad": 0.41,
+      "max": 255,
+      "drawn_a": 10957,
+      "drawn_b": 10974
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 1.0,
+    "identical": 1.0,
+    "mad": 0.0,
+    "max": 0,
+    "drawn_a": 0,
+    "drawn_b": 0,
+    "fails_as_required": false
+  },
+  "all_identical": false,
+  "ok": false
+}
