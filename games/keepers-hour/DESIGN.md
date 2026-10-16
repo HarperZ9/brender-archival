@@ -124,8 +124,15 @@ The game stays small on purpose: one tower, one night, about 25 minutes.
   once a sweep, radio crackle, a note per voice, dice, doors, a chord at dawn).
   raw-native's sound engine was not used: it is web-side, and this is a native
   C build. There are no sound files.
-- **Options:** F2 or the gamepad's Back button: volume, look speed and six
-  rebindable actions, saved in the player's preferences folder.
+- **Options:** F2 or the gamepad's Back button: volume, look speed, pixel
+  size, field of view, vsync and six rebindable actions, saved in the
+  player's preferences folder.
+- **Display (16 October 2026):** pixel size 1 to 6 draws the scene into a
+  buffer that many times smaller and scales it up with whole, square pixels;
+  the text and panels are drawn afterwards at full resolution, so they stay
+  sharp. The field of view (40 to 90 degrees) is vertical, so wider windows
+  see more to the sides (Hor+). `tools/display_check.py` checks all of this
+  on frames, with controls, on both renderers; evidence in `evidence/display-*`.
 - **Renderer parity:** `tools/parity.py` draws a still of every room on
   OpenGL and on the software rasteriser and compares them. The first bounds,
   set before measuring, also passed a wrong-room comparison, so they could not

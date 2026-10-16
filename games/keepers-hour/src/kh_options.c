@@ -1,6 +1,8 @@
-/* The Keeper's Hour: options (volume, look speed) and key remapping.
+/* The Keeper's Hour: options (volume, look speed, pixel size, field of view,
+ * vsync) and key remapping.
  *
- * Rows: Volume, Look speed, one row per action, Reset, Close. Up and Down move,
+ * Rows: Volume, Look speed, Pixel size, Field of view, Vsync, one row per
+ * action, Reset, Close. Up and Down move,
  * Left and Right change a value, Enter on an action waits for the next key and
  * binds it. Every change is saved at once.
  * SPDX-License-Identifier: MIT */
@@ -9,13 +11,17 @@
 
 #include "kh_tex.h"
 #include "kh_audio.h"
+#include "kh_display.h"
 #include "kh_options.h"
 
 static const char *action_names[KH_ACT_COUNT] = {"Walk forward", "Walk back", "Step left", "Step right", "Talk, continue, choose", "Leave a conversation"};
 static const char *action_ids[KH_ACT_COUNT] = {"forward", "back", "left", "right", "talk", "leave"};
 #define ROW_VOLUME 0
 #define ROW_LOOK   1
-#define ROW_KEYS   2
+#define ROW_PIXEL  2
+#define ROW_FOV    3
+#define ROW_VSYNC  4
+#define ROW_KEYS   5
 #define ROW_RESET  (ROW_KEYS + KH_ACT_COUNT)
 #define ROW_CLOSE  (ROW_RESET + 1)
 #define ROWS       (ROW_CLOSE + 1)
@@ -27,6 +33,9 @@ void kh_options_defaults(kh_options *o)
     memset(o, 0, sizeof(*o));
     o->volume = 6;
     o->look = 5;
+    o->pixel = 1;
+    o->fov = 55;
+    o->vsync = 1;
     memcpy(o->keys, keys, sizeof(keys));
     o->open = open;
     o->row = row;
@@ -58,6 +67,9 @@ int kh_options_load(kh_options *o, const char *path)
     while (fscanf(f, "%31s %d", word, &v) == 2) {
         if (strcmp(word, "volume") == 0 && v >= 0 && v <= 10) o->volume = v;
         else if (strcmp(word, "look") == 0 && v >= 1 && v <= 10) o->look = v;
+        else if (strcmp(word, "pixel") == 0 && v >= KH_PIXEL_MIN && v <= KH_PIXEL_MAX) o->pixel = v;
+        else if (strcmp(word, "fov") == 0 && v >= KH_FOV_MIN && v <= KH_FOV_MAX && v % KH_FOV_STEP == 0) o->fov = v;
+        else if (strcmp(word, "vsync") == 0 && (v == 0 || v == 1)) o->vsync = v;
         for (a = 0; a < KH_ACT_COUNT; a++)
             if (strcmp(word, action_ids[a]) == 0 && v > 0 && v < SDL_SCANCODE_COUNT) o->keys[a] = (SDL_Scancode)v;
     }
@@ -71,7 +83,7 @@ int kh_options_save(const kh_options *o, const char *path)
     int a;
     if (path == NULL || (f = fopen(path, "w")) == NULL)
         return -1;
-    fprintf(f, "volume %d\nlook %d\n", o->volume, o->look);
+    fprintf(f, "volume %d\nlook %d\npixel %d\nfov %d\nvsync %d\n", o->volume, o->look, o->pixel, o->fov, o->vsync);
     for (a = 0; a < KH_ACT_COUNT; a++)
         fprintf(f, "%s %d\n", action_ids[a], (int)o->keys[a]);
     return fclose(f) == 0 ? 0 : -1;
@@ -87,12 +99,19 @@ static void change(kh_options *o, int delta)
         kh_audio_volume(o->volume);
     } else if (o->row == ROW_LOOK) {
         o->look = SDL_clamp(o->look + delta, 1, 10);
+    } else if (o->row == ROW_PIXEL) {
+        o->pixel = SDL_clamp(o->pixel + delta, KH_PIXEL_MIN, KH_PIXEL_MAX);
+    } else if (o->row == ROW_FOV) {
+        o->fov = SDL_clamp(o->fov + delta * KH_FOV_STEP, KH_FOV_MIN, KH_FOV_MAX);
+    } else if (o->row == ROW_VSYNC) {
+        o->vsync = !o->vsync;
     }
 }
 
 static void activate(kh_options *o)
 {
     if (o->row >= ROW_KEYS && o->row < ROW_RESET) o->capturing = 1;
+    else if (o->row == ROW_VSYNC) o->vsync = !o->vsync;
     else if (o->row == ROW_RESET) { kh_options_defaults(o); kh_audio_volume(o->volume); }
     else if (o->row == ROW_CLOSE) o->open = 0;
 }
@@ -153,6 +172,9 @@ void kh_options_draw(const kh_options *o, br_pixelmap *pm, br_colour ink, br_col
     for (r = 0; r < ROWS; r++, y += step) {
         if (r == ROW_VOLUME) snprintf(row, sizeof(row), "Volume              < %d >", o->volume);
         else if (r == ROW_LOOK) snprintf(row, sizeof(row), "Look speed          < %d >", o->look);
+        else if (r == ROW_PIXEL) snprintf(row, sizeof(row), "Pixel size          < %d >%s", o->pixel, o->pixel == 1 ? "  sharp" : "");
+        else if (r == ROW_FOV) snprintf(row, sizeof(row), "Field of view       < %d >", o->fov);
+        else if (r == ROW_VSYNC) snprintf(row, sizeof(row), "Vsync               < %s >", o->vsync ? "on" : "off");
         else if (r < ROW_RESET)
             snprintf(row, sizeof(row), "%-24s %s", action_names[r - ROW_KEYS],
                      o->capturing && o->row == r ? "press a key..." : SDL_GetScancodeName(o->keys[r - ROW_KEYS]));
@@ -181,20 +203,35 @@ int kh_options_check(void)
     path_override = path;
     SDL_zero(o);
     kh_options_defaults(&o);
-    /* the way a player rebinds: F2, down twice to "Walk forward", Enter, then the new key */
+    /* the way a player sets them: F2; down to "Pixel size", up three; down to
+     * "Field of view", up two steps; down to "Vsync", Enter turns it off; down to
+     * "Walk forward", Enter, then the new key; back up to "Volume", up one; F2 */
     send_key(&o, SDL_SCANCODE_F2);
     send_key(&o, SDL_SCANCODE_DOWN);
+    send_key(&o, SDL_SCANCODE_DOWN);
+    send_key(&o, SDL_SCANCODE_RIGHT);
+    send_key(&o, SDL_SCANCODE_RIGHT);
+    send_key(&o, SDL_SCANCODE_RIGHT);
+    send_key(&o, SDL_SCANCODE_DOWN);
+    send_key(&o, SDL_SCANCODE_RIGHT);
+    send_key(&o, SDL_SCANCODE_RIGHT);
+    send_key(&o, SDL_SCANCODE_DOWN);
+    send_key(&o, SDL_SCANCODE_RETURN);
     send_key(&o, SDL_SCANCODE_DOWN);
     send_key(&o, SDL_SCANCODE_RETURN);
     send_key(&o, SDL_SCANCODE_Q);
     send_key(&o, SDL_SCANCODE_UP);
     send_key(&o, SDL_SCANCODE_UP);
-    send_key(&o, SDL_SCANCODE_RIGHT); /* volume up one */
+    send_key(&o, SDL_SCANCODE_UP);
+    send_key(&o, SDL_SCANCODE_UP);
+    send_key(&o, SDL_SCANCODE_UP);
+    send_key(&o, SDL_SCANCODE_RIGHT);
     send_key(&o, SDL_SCANCODE_F2);
-    ok = o.keys[KH_ACT_FORWARD] == SDL_SCANCODE_Q && o.volume == 7 && !o.open
-         && kh_options_load(&back, path) == 0 && back.keys[KH_ACT_FORWARD] == SDL_SCANCODE_Q && back.volume == 7;
+    ok = o.keys[KH_ACT_FORWARD] == SDL_SCANCODE_Q && o.volume == 7 && o.pixel == 4 && o.fov == 65 && o.vsync == 0 && !o.open
+         && kh_options_load(&back, path) == 0 && back.keys[KH_ACT_FORWARD] == SDL_SCANCODE_Q && back.volume == 7
+         && back.pixel == 4 && back.fov == 65 && back.vsync == 0;
     remove(path);
     path_override = NULL;
-    printf("keepers options: rebind and save %s\n", ok ? "ok" : "failed");
+    printf("keepers options: rebind, display and save %s\n", ok ? "ok" : "failed");
     return ok ? 0 : 1;
 }

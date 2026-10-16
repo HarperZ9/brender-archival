@@ -182,7 +182,16 @@ jobs:
           if ($out -notmatch 'keepers smoke: 5 rooms entered, \d+ nodes opened, 0 problems, run ok') { throw "unexpected game smoke result" }
           if ($out -notmatch 'keepers endings: 3 of 3 reached, save ok') { throw "an ending or the save round trip failed" }
           if ($out -notmatch 'keepers audio: peak 0\.\d+, rms 0\.\d+, 0 clipped samples') { throw "the mixer clipped or was silent" }
-          if ($out -notmatch 'keepers options: rebind and save ok') { throw "rebinding or saving options failed" }
+          if ($out -notmatch 'keepers options: rebind, display and save ok') { throw "rebinding or saving options failed" }
+      # Pixel size, widescreen and field of view, checked on frames: see
+      # games/keepers-hour/tools/display_check.py for the claims and controls.
+      - name: the display options do what they say
+        shell: pwsh
+        env:
+          SDL_VIDEODRIVER: offscreen
+        run: |
+          python games/keepers-hour/tools/display_check.py build/keepers-hour/Release/keepers-hour.exe
+          if ($LASTEXITCODE -ne 0) { throw "a display check failed" }
       - name: the frame recorder is deterministic and the lamp moves
         shell: pwsh
         env:
@@ -239,7 +248,11 @@ jobs:
           grep -Eq 'keepers smoke: 5 rooms entered, [0-9]+ nodes opened, 0 problems, run ok' <<<"$out"
           grep -q 'keepers endings: 3 of 3 reached, save ok' <<<"$out"
           grep -Eq 'keepers audio: peak 0\.[0-9]+, rms 0\.[0-9]+, 0 clipped samples' <<<"$out"
-          grep -q 'keepers options: rebind and save ok' <<<"$out"
+          grep -q 'keepers options: rebind, display and save ok' <<<"$out"
+      - name: the display options do what they say, on both renderers
+        run: |
+          python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour
+          python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour --opengl
       # The software rasteriser is the deterministic path here. Under Mesa's
       # llvmpipe the OpenGL readback sometimes returns the previous frame,
       # so this check records with --force-software (see docs/ROADMAP.md).

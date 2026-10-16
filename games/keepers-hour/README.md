@@ -46,7 +46,7 @@ On Linux: `bash scripts/linux-build-deps.sh`, then
 | Talk, continue, choose | E, Space, Enter or left click | A |
 | Pick a reply | 1 to 4, or Up and Down then E | D-pad, then A |
 | Leave a conversation | Esc | B |
-| Options and key remapping | F2 | Back |
+| Options: volume, look speed, pixel size, field of view, vsync, key remapping | F2 | Back |
 | Fullscreen | Alt+Enter | |
 | Quit | Esc outside a conversation | |
 
@@ -71,6 +71,28 @@ For writers: `KEEPERS_OPEN=lamp keepers-hour.exe` starts inside any node of
 [data/night.txt](data/night.txt), and `KEEPERS_ROOM=gallery` starts in any room. `KEEPERS_SMOKE=1` opens every node once and
 reports problems; CI runs it, and `tests/test_keepers_script.py` checks that
 every link resolves and every node can be reached.
+
+## Display
+
+The window resizes, and Alt+Enter switches to fullscreen. The field of view
+is vertical, so a wider screen shows more of the room to the sides rather
+than cutting off the top and bottom. F2 sets:
+
+- **Pixel size**, 1 to 6: the room is drawn that many times coarser and
+  scaled up with whole, square pixels, for a period look. Text stays sharp.
+- **Field of view**, 40 to 90 degrees (default 55).
+- **Vsync**, on or off (OpenGL).
+
+| Pixel size 1 | Pixel size 4 |
+|---|---|
+| ![the lamp room at pixel size 1](media/lamp-room-pixel-1.png) | ![the lamp room at pixel size 4](media/lamp-room-pixel-4.png) |
+
+`tools/display_check.py` draws the lamp room headless and checks the claims on
+frames: whole pixels at size 4 (a control at size 1 must fail), the same
+scene at both sizes, Hor+ at 4:3, 16:9 and 21:9 (a control at another field
+of view must fail), and that the field of view changes the picture. CI runs it
+on Windows and on Linux, on the software rasteriser and on OpenGL.
+`KEEPERS_PIXEL` and `KEEPERS_FOV` set the two for one run without saving them.
 
 ## Licence
 

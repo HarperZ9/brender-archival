@@ -1,5 +1,6 @@
 """The modern build and its CI agree on what they pin and what they expect."""
 
+import json
 import re
 from pathlib import Path
 
@@ -67,7 +68,7 @@ def test_linux_builds_run_the_same_checks_as_windows():
     for line in (
         "brview smoke: 8 scenes, 0 failed to load, run ok",
         "keepers endings: 3 of 3 reached, save ok",
-        "keepers options: rebind and save ok",
+        "keepers options: rebind, display and save ok",
         "--component Unspecified",
         'test "$listed" = "$EXPECTED_RUNGS"',
     ):
@@ -105,3 +106,17 @@ def test_releases_publish_a_linux_tarball_after_a_packaged_smoke():
 
 def test_the_brview_zip_holds_only_the_viewer():
     assert "--prefix stage/brview --component Unspecified" in _workflow("release-brview.yml")
+
+
+def test_display_options_are_checked_on_frames_on_both_systems():
+    ci = _workflow("ci.yml")
+    windows, linux = ci[ci.index("\n  brview:"):ci.index("\n  linux:")], ci[ci.index("\n  linux:"):]
+    assert "tools/display_check.py build/keepers-hour/Release/keepers-hour.exe" in windows
+    assert "tools/display_check.py build/keepers-hour/keepers-hour --opengl" in linux
+    evidence = ROOT / "games" / "keepers-hour" / "evidence"
+    for name in ("display-software-2026-10-16.json", "display-opengl-llvmpipe-2026-10-16.json"):
+        record = json.loads((evidence / name).read_text(encoding="utf-8"))
+        assert record["ok"] is True and len(record["checks"]) == 8, name
+        # the controls are part of the claim: each must have failed
+        assert record["measured"]["blocks_uniform_pixel1_control"] <= 0.80
+        assert record["measured"]["horplus_control_fov70"] < 0.90
