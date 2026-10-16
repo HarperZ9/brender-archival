@@ -1,7 +1,8 @@
 name: release-keepers
 
-# Builds The Keeper's Hour for 64-bit Windows and attaches the zip and its
-# SHA-256 to the GitHub release of a keepers-v* tag.
+# Builds The Keeper's Hour for 64-bit Windows and 64-bit Linux and attaches
+# the zip, the tarball and their SHA-256 files to the GitHub release of a
+# keepers-v* tag.
 on:
   push:
     tags: ["keepers-v*"]
@@ -59,3 +60,44 @@ jobs:
           $hash = (Get-FileHash $name -Algorithm SHA256).Hash.ToLower()
           [IO.File]::WriteAllText((Join-Path $PWD "$name.sha256"), "$hash  $name`n")
           gh release upload $env:GITHUB_REF_NAME $name "$name.sha256" --clobber
+
+  linux-x64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: build dependencies
+        run: bash scripts/linux-build-deps.sh
+      - name: build
+        run: |
+          cmake -S modern -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel 4 --target keepers-hour
+          cmake --install build --prefix stage --component keepers
+      - name: licences and quickstart
+        run: |
+          cp games/keepers-hour/QUICKSTART.txt games/keepers-hour/CREDITS.txt stage/keepers-hour/
+          mkdir stage/keepers-hour/licences
+          cp LICENSE stage/keepers-hour/licences/code-MIT.txt
+          cp LICENSES/CC-BY-4.0.txt stage/keepers-hour/licences/words-and-art-CC-BY-4.0.txt
+          cp LICENSES/MIT-BlazingRenderer.txt stage/keepers-hour/licences/BlazingRenderer-MIT.txt
+          cp LICENSES/MIT-BRender.txt stage/keepers-hour/licences/BRender-1.3.2-MIT.txt
+          cp LICENSES/Zlib-SDL3.txt stage/keepers-hour/licences/SDL3-Zlib.txt
+      - name: the packaged game runs in place
+        shell: bash
+        env:
+          SDL_VIDEODRIVER: offscreen
+          KEEPERS_SMOKE: "1"
+        run: |
+          ldd stage/keepers-hour/keepers-hour | grep -q "libSDL3.so.0 => $PWD/stage/keepers-hour/libSDL3.so.0"
+          out=$(cd "$RUNNER_TEMP" && "$GITHUB_WORKSPACE/stage/keepers-hour/keepers-hour" 2>&1)
+          echo "$out"
+          grep -q '0 problems, run ok' <<<"$out"
+          grep -q '3 of 3 reached, save ok' <<<"$out"
+      - name: tar, hash and publish
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name="keepers-hour-${GITHUB_REF_NAME#keepers-v}-linux-x64.tar.gz"
+          tar -czf "$name" -C stage keepers-hour
+          sha256sum "$name" > "$name.sha256"
+          gh release upload "$GITHUB_REF_NAME" "$name" "$name.sha256" --clobber

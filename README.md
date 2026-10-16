@@ -22,19 +22,23 @@ progress.
 
 ## Run BRender on a modern PC
 
-**brview** opens the 1998 sample models in a window on 64-bit Windows, with
-mouse, keyboard and gamepad controls. Download the zip from
-[releases](https://github.com/HarperZ9/brender-archival/releases), unzip it and run
-`brview.exe`. It is built on BRender 1.4 from
+**brview** opens the 1998 sample models in a window on 64-bit Windows and
+64-bit Linux, with mouse, keyboard and gamepad controls. Download the Windows
+zip or the Linux tarball from
+[releases](https://github.com/HarperZ9/brender-archival/releases), unpack it and
+run `brview.exe` or `./brview`. It is built on BRender 1.4 from
 [BlazingRenderer/BRender](https://github.com/BlazingRenderer/BRender), the maintained
 modern fork (MIT), and the same 21-step ladder passes against it 64-bit. How it
 is built, what is pinned and how to build it yourself:
 [modern/README.md](modern/README.md).
 
-**The Keeper's Hour** is a short original game on the same engine, with a Windows download on the releases page:
+**The Keeper's Hour** is a short original game on the same engine, with Windows and Linux downloads on the releases page:
 the last night of a lighthouse, told through conversation, with three endings. The
 source is in [games/keepers-hour](games/keepers-hour/README.md); code MIT, words
 and art CC BY 4.0.
+
+What comes next, in order, with the check for each step:
+[docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## BRender: rebuilt and rendering
 

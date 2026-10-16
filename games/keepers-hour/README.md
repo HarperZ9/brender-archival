@@ -19,9 +19,11 @@ to, 80 script nodes, and three endings at dawn, opened by what you found in the
 night. The night saves every time you change room, and the next start offers
 to carry on. Every skill check shows its sums.
 
-**Download for Windows:** `keepers-hour-<version>-windows-x64.zip` on the
-[releases page](https://github.com/HarperZ9/brender-archival/releases). Unzip
-and run `keepers-hour.exe`; the SHA-256 is beside the zip.
+**Download:** `keepers-hour-<version>-windows-x64.zip` for Windows or
+`keepers-hour-<version>-linux-x64.tar.gz` for Linux, on the
+[releases page](https://github.com/HarperZ9/brender-archival/releases). Unpack
+it and run `keepers-hour.exe` or `./keepers-hour`; the SHA-256 is beside each
+download. Linux needs OpenGL 3.3 (X11 or Wayland) and glibc 2.38 or newer.
 
 ## Build it
 
@@ -32,6 +34,10 @@ cmake -S modern -B build -A x64
 cmake --build build --config Release
 build\keepers-hour\Release\keepers-hour.exe
 ```
+
+On Linux: `bash scripts/linux-build-deps.sh`, then
+`cmake -S modern -B build -G Ninja -DCMAKE_BUILD_TYPE=Release`,
+`cmake --build build` and `./build/keepers-hour/keepers-hour`.
 
 | Action | Keyboard and mouse | Gamepad |
 |---|---|---|

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased: Linux
+
+- brview and The Keeper's Hour build, run and package on 64-bit Linux. No source change was needed; the programs now load SDL3 from their own folder through a `$ORIGIN` run path, and the install step copies it as `libSDL3.so.0`, the name the loader looks for. The Windows programs are unchanged.
+- CI job `linux` (ubuntu-24.04, GCC, Ninja) runs the brview and game smoke checks, the frame recorder twice on the software rasteriser with identical bytes, the packaged copies from outside the build tree, and the 21-step ladder (21 of 21).
+- `release-brview.yml` and `release-keepers.yml` add `*-linux-x64.tar.gz` with a SHA-256, published only after the packaged copy passes its smoke run. The brview package installs only the viewer's component (`--component Unspecified`), so it cannot pick up the game's files, which the game's install rules added to the default install after brview 0.1.1.
+- `scripts/linux-build-deps.sh`: the one Debian and Ubuntu package list CI, the releases and users share.
+- `docs/ROADMAP.md`: the measured state on Windows and Linux and the ordered road to a user-ready BRender. `docs/adr/0001`: proposed route for raw-native to read BRender content (convert to glTF first).
+- Known: under Mesa llvmpipe the OpenGL frame readback sometimes returns the previous frame, so the Linux recorder check uses the software rasteriser (roadmap item 3).
+
 ## 0.3.0 (unreleased)
 
 - The Keeper's Hour: KEEPERS_RECORD writes numbered frames at a fixed step of game time (KEEPERS_FPS, KEEPERS_SECONDS, KEEPERS_CLOCK, KEEPERS_YAW, KEEPERS_YAW_SPEED, KEEPERS_CAPTURE_UI), for the trailer; KEEPERS_CLOCK also sets the lamp angle of a KEEPERS_SHOT still. CI records twice headless and requires identical bytes and a moving picture.
