@@ -233,10 +233,15 @@ jobs:
         env:
           SDL_VIDEODRIVER: offscreen
         run: |
-          python games/keepers-hour/tools/display_check.py build/keepers-hour/Release/keepers-hour.exe
+          python games/keepers-hour/tools/display_check.py build/keepers-hour/Release/keepers-hour.exe --stills stills-windows
           if ($LASTEXITCODE -ne 0) { throw "a display check failed" }
-          python games/keepers-hour/tools/display_check.py build/Release/brview.exe --program brview
+          python games/keepers-hour/tools/display_check.py build/Release/brview.exe --program brview --stills stills-windows
           if ($LASTEXITCODE -ne 0) { throw "a brview display check failed" }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: display-stills-windows
+          path: stills-windows
       # The parity scenes on BRender 1.4's software rasteriser (modern/parity).
       - name: the parity scenes are deterministic on Windows
         shell: pwsh
@@ -315,10 +320,15 @@ jobs:
           grep -q 'keepers options: rebind, display and save ok' <<<"$out"
       - name: the display options do what they say, on both renderers
         run: |
-          python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour
+          python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour --stills stills-linux
           python games/keepers-hour/tools/display_check.py build/keepers-hour/keepers-hour --opengl
-          python games/keepers-hour/tools/display_check.py build/brview --program brview
+          python games/keepers-hour/tools/display_check.py build/brview --program brview --stills stills-linux
           python games/keepers-hour/tools/display_check.py build/brview --program brview --opengl
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: display-stills-linux
+          path: stills-linux
       # Both renderers. A stale OpenGL readback shows up as a frame that
       # repeats the one before it, so no two neighbouring frames may match.
       - name: the frame recorder is deterministic and the lamp moves, on both renderers

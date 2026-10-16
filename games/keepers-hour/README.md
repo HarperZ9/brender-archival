@@ -47,7 +47,7 @@ On Linux: `bash scripts/linux-build-deps.sh`, then
 | Talk, continue, choose | E, Space, Enter or left click | A |
 | Pick a reply | 1 to 4, or Up and Down then E | D-pad, then A |
 | Leave a conversation | Esc | B |
-| Options: volume, look speed, pixel size, field of view, vsync, key remapping | F2 | Back |
+| Options: volume, look speed, pixel size, field of view, vsync, period look, key remapping | F2 | Back |
 | Fullscreen | Alt+Enter | |
 | Quit | Esc outside a conversation | |
 
@@ -83,10 +83,19 @@ than cutting off the top and bottom. F2 sets:
   scaled up with whole, square pixels, for a period look. Text stays sharp.
 - **Field of view**, 40 to 90 degrees (default 55).
 - **Vsync**, on or off (OpenGL).
+- **Period look**, off or 256 colours: the rooms are drawn by BRender's own
+  8-bit palette path, as a mid-1990s PC game was. Lit surfaces step down
+  palette ramps and the pictures are 8-bit maps lit through a shade table.
+  It runs on the software renderer, so turning it on under OpenGL takes
+  effect at the next start. `KEEPERS_PERIOD=1` turns it on for one run.
 
 | Pixel size 1 | Pixel size 4 |
 |---|---|
 | ![the lamp room at pixel size 1](media/lamp-room-pixel-1.png) | ![the lamp room at pixel size 4](media/lamp-room-pixel-4.png) |
+
+| True colour | Period look, 256 colours |
+|---|---|
+| ![the lamp room in true colour](media/lamp-room-pixel-1.png) | ![the lamp room in 256 colours](media/lamp-room-period.png) |
 
 `tools/display_check.py` draws the lamp room headless and checks the claims on
 frames: whole pixels at size 4 (a control at size 1 must fail), the same

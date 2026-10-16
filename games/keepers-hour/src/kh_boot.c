@@ -48,19 +48,24 @@ int kh_boot_load(kh_script *s)
     return check_rooms(s);
 }
 
-/* The software renderer draws in 24-bit colour unless --software-bpp is given. */
-char **kh_boot_argv(int argc, char **argv, int *out_argc)
+/* The software renderer draws in 24-bit colour unless --software-bpp is given.
+ * The period look needs the software renderer, which is chosen at start, so
+ * `period` (the saved option or KEEPERS_PERIOD=1) adds --force-software. */
+char **kh_boot_argv(int argc, char **argv, int period, int *out_argc)
 {
     static char *used[64];
-    int i, given = 0;
-    for (i = 0; i < argc && i < 60; i++) {
+    int i, given = 0, forced = 0;
+    for (i = 0; i < argc && i < 58; i++) {
         used[i] = argv[i];
         given |= strcmp(argv[i], "--software-bpp") == 0;
+        forced |= strcmp(argv[i], "--force-software") == 0;
     }
     if (!given) {
         used[i++] = "--software-bpp";
         used[i++] = "24";
     }
+    if (period && !forced)
+        used[i++] = "--force-software";
     *out_argc = i;
     return used;
 }

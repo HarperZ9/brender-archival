@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "kh_period.h"
 #include "kh_shapes.h"
 #include "kh_tex.h"
 #include "kh_world.h"
@@ -174,6 +175,12 @@ int kh_world_talker_near(const kh_world *w, float x, float z, float dx, float dz
 }
 
 const kh_talker *kh_world_talker(const kh_world *w, int i) { return &w->rooms[w->current].talkers[i]; }
+
+br_uint_8 kh_world_sky_index(const kh_world *w)
+{
+    const kh_room *room = &kh_rooms[w->current];
+    return kh_period_index(room->sky[0], room->sky[1], room->sky[2]);
+}
 
 br_colour kh_world_sky(const kh_world *w, const br_pixelmap *target)
 {

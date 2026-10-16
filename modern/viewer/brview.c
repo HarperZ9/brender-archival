@@ -39,6 +39,8 @@ typedef struct viewer {
     SDL_Gamepad *pad;
     char         title[128];
     int          pixel, fov, vsync; /* display options, saved */
+    int          period;            /* 8: 256 colours through BRender's 8-bit path, saved */
+    int          period_shown;      /* the look the material is set up for */
 } viewer;
 
 static viewer V;
@@ -51,6 +53,9 @@ static int smoke_mode, smoke_failures;
  * still after the renderer settles. */
 static const char *shot_path;
 static int shot_frames;
+
+/* BRVIEW_PERIOD=1: the period look for this run (stills and checks too). */
+static int period_forced;
 
 static const char *options_path(void)
 {
@@ -72,12 +77,14 @@ static void options_load(void)
     V.pixel = 1;
     V.fov = 50;
     V.vsync = 1;
+    V.period = 0;
     if (smoke_mode || shot_path || options_path() == NULL || (f = fopen(options_path(), "r")) == NULL)
         return;
     while (fscanf(f, "%31s %d", word, &v) == 2) {
         if (strcmp(word, "pixel") == 0 && v >= BRD_PIXEL_MIN && v <= BRD_PIXEL_MAX) V.pixel = v;
         else if (strcmp(word, "fov") == 0 && v >= BRD_FOV_MIN && v <= BRD_FOV_MAX) V.fov = v;
         else if (strcmp(word, "vsync") == 0 && (v == 0 || v == 1)) V.vsync = v;
+        else if (strcmp(word, "period") == 0 && (v == 0 || v == 1)) V.period = v;
     }
     fclose(f);
 }
@@ -87,7 +94,7 @@ static void options_save(void)
     FILE *f;
     if (smoke_mode || shot_path || options_path() == NULL || (f = fopen(options_path(), "w")) == NULL)
         return;
-    fprintf(f, "pixel %d\nfov %d\nvsync %d\n", V.pixel, V.fov, V.vsync);
+    fprintf(f, "pixel %d\nfov %d\nvsync %d\nperiod %d\n", V.pixel, V.fov, V.vsync, V.period);
     fclose(f);
 }
 
@@ -112,7 +119,8 @@ static void load_scene(br_demo *demo, int index)
 {
     char err[160];
     V.scene = (index + BrViewSceneCount()) % BrViewSceneCount();
-    if (BrViewSceneLoad(V.scene, V.model_actor, V.material, V.textured, err, sizeof(err)) != BRE_OK) {
+    V.period_shown = (V.period || period_forced) && brd_display_period_available(demo);
+    if (BrViewSceneLoad(V.scene, V.model_actor, V.material, V.textured, V.period_shown, err, sizeof(err)) != BRE_OK) {
         BrLogError("BRVIEW", "%s", err);
         smoke_failures++;
     }
@@ -172,6 +180,7 @@ static void on_key(br_demo *demo, SDL_Keycode key)
     case SDLK_MINUS: V.fov = SDL_clamp(V.fov - BRD_FOV_STEP, BRD_FOV_MIN, BRD_FOV_MAX); options_save(); break;
     case SDLK_EQUALS: V.fov = SDL_clamp(V.fov + BRD_FOV_STEP, BRD_FOV_MIN, BRD_FOV_MAX); options_save(); break;
     case SDLK_V: V.vsync = !V.vsync; options_save(); break;
+    case SDLK_8: V.period = !V.period; options_save(); load_scene(demo, V.scene); break;
     case SDLK_ESCAPE: { SDL_Event quit = {.type = SDL_EVENT_QUIT}; SDL_PushEvent(&quit); } break;
     default: break;
     }
@@ -264,14 +273,15 @@ static void viewer_render(br_demo *demo)
         "Drag: orbit   Right drag: pan   Wheel or Q/E: zoom   WASD/arrows: orbit",
         "Tab/N, P: next, previous model   T: texture on/off   Space: spin   R: reset",
         "Gamepad: left stick orbit, triggers zoom, A/X next/previous, B spin, Y texture",
-        "[ ]: pixel size   - =: field of view   V: vsync   H or F1: hide this help",
+        "[ ]: pixel size   - =: field of view   V: vsync   8: period look (256 colours)   H or F1: hide this help",
         "Alt+Enter: fullscreen   Esc: quit",
     };
     br_int_32 x = -demo->colour_buffer->origin_x + 8;
     br_int_32 y = demo->colour_buffer->height - demo->colour_buffer->origin_y - 8;
     int i, line = BrPixelmapTextHeight(demo->colour_buffer, BrFontProp7x9) + 3;
 
-    brd_display_render(demo, V.pixel);
+    if (!V.period_shown || brd_display_render_period(demo, V.pixel, BrViewScenePalette(), 0) != 0)
+        brd_display_render(demo, V.pixel);
     if (shot_path) {
         if (++shot_frames == 20) { /* the renderer settles first */
             SDL_Event quit = {.type = SDL_EVENT_QUIT};
@@ -281,8 +291,10 @@ static void viewer_render(br_demo *demo)
         return;
     }
     BrPixelmapTextF(demo->colour_buffer, x, -demo->colour_buffer->origin_y + 20, demo->text_colour, BrFontProp7x9,
-                    "%s  (%d of %d)   pixel %d  fov %d  vsync %s", V.title, V.scene + 1, BrViewSceneCount(),
-                    brd_display_pixel(V.pixel), brd_display_fov(V.fov), V.vsync ? "on" : "off");
+                    "%s  (%d of %d)   pixel %d  fov %d  vsync %s%s", V.title, V.scene + 1, BrViewSceneCount(),
+                    brd_display_pixel(V.pixel), brd_display_fov(V.fov), V.vsync ? "on" : "off",
+                    V.period_shown ? "   period: 256 colours, BRender's 8-bit path"
+                    : V.period ? "   period: needs the software renderer (restart, or --force-software)" : "");
     if (!V.help)
         return;
     for (i = 0; i < (int)BR_ASIZE(help); i++)
@@ -315,6 +327,8 @@ int main(int argc, char **argv)
     int ret;
     smoke_mode = SDL_getenv("BRVIEW_SMOKE") != NULL;
     shot_path = SDL_getenv("BRVIEW_SHOT");
+    period_forced = SDL_getenv("BRVIEW_PERIOD") != NULL && SDL_atoi(SDL_getenv("BRVIEW_PERIOD")) != 0;
+    options_load(); /* to know before the window opens whether the period look wants the software renderer */
     {
         br_demo_run_args args;
         BrDemoDefaultArgs(&args);
@@ -323,15 +337,19 @@ int main(int argc, char **argv)
          * is given, as in the game: brdemo's 8-bit default has no palette for
          * stills, and the scenes are true-colour. */
         char *used[64];
-        int i, n = 0, given = 0;
-        for (i = 0; i < argc && i < 60; i++)
+        int i, n = 0, given = 0, forced = 0;
+        for (i = 0; i < argc && i < 58; i++) {
             given |= strcmp(argv[i], "--software-bpp") == 0;
-        for (i = 0; i < argc && i < 60; i++) {
+            forced |= strcmp(argv[i], "--force-software") == 0;
+        }
+        for (i = 0; i < argc && i < 58; i++) {
             used[n++] = argv[i];
             if (i == 0 && !given) { /* before any model path, so it parses as an option */
                 used[n++] = "--software-bpp";
                 used[n++] = "24";
             }
+            if (i == 0 && !forced && (period_forced || V.period)) /* the period look draws on the software renderer */
+                used[n++] = "--force-software";
         }
         if (BrDemoParseArgs(&args, n, used) != 0)
             return 1;
