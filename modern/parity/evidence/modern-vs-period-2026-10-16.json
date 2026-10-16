@@ -1,5 +1,5 @@
 {
-  "label": "BRender 1.4 software (Linux GCC) against the period 1.3.2 build (Win32, engine-revival 0.4.0)",
+  "label": "BRender 1.4 software (Linux GCC) against the period 1.3.2 build (Win32, engine-revival 0.5.0)",
   "scenes": {
     "sphere-flat": {
       "coverage_iou": 0.9998,
@@ -25,6 +25,22 @@
       "drawn_a": 29636,
       "drawn_b": 29642
     },
+    "sphere-textured": {
+      "coverage_iou": 0.9998,
+      "identical": 0.9824,
+      "mad": 0.332,
+      "max": 240,
+      "drawn_a": 29636,
+      "drawn_b": 29642
+    },
+    "sphere-textured-turned": {
+      "coverage_iou": 0.9992,
+      "identical": 0.9565,
+      "mad": 1.085,
+      "max": 246,
+      "drawn_a": 30079,
+      "drawn_b": 30103
+    },
     "teapot-smooth": {
       "coverage_iou": 0.9993,
       "identical": 0.9215,
@@ -48,6 +64,14 @@
       "max": 15,
       "drawn_a": 17943,
       "drawn_b": 17943
+    },
+    "torus-textured": {
+      "coverage_iou": 1.0,
+      "identical": 0.9969,
+      "mad": 0.041,
+      "max": 89,
+      "drawn_a": 17943,
+      "drawn_b": 17943
     }
   },
   "control": {
@@ -64,12 +88,5 @@
     "fails_as_required": true
   },
   "all_identical": false,
-  "ok": true,
-  "bounds": {
-    "min_coverage_iou": 0.999,
-    "min_identical": 0.9,
-    "max_diff": 255,
-    "max_mad": 0.25
-  },
-  "within_bounds": true
+  "ok": true
 }

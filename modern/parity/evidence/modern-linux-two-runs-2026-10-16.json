@@ -25,6 +25,22 @@
       "drawn_a": 29636,
       "drawn_b": 29636
     },
+    "sphere-textured": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636
+    },
+    "sphere-textured-turned": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 30079,
+      "drawn_b": 30079
+    },
     "teapot-smooth": {
       "coverage_iou": 1.0,
       "identical": 1.0,
@@ -42,6 +58,14 @@
       "drawn_b": 17943
     },
     "torus-smooth": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17943,
+      "drawn_b": 17943
+    },
+    "torus-textured": {
       "coverage_iou": 1.0,
       "identical": 1.0,
       "mad": 0.0,

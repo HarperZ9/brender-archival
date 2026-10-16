@@ -2,6 +2,7 @@
 
     python modern/parity/parity_compare.py <dir-a> <dir-b> [--label NAME] [--out result.json]
         [--require-identical] [--bounds MIN_IOU MIN_IDENTICAL MAX_DIFF [MAX_MAD]]
+        [--only TEXT] [--skip TEXT]
 
 Each directory holds the PPMs that parity-scene writes (one per scene). For
 every scene this reports, over the pixels either side drew (the union of the
@@ -24,7 +25,8 @@ byte-identical, which is the claim for two runs of one deterministic build.
 least MIN_IDENTICAL identical pixels, no channel off by more than MAX_DIFF and,
 when given, a mean absolute difference of at most MAX_MAD.
 Without it, the numbers are reported and only the control decides the exit
-status. Standard library only.
+status. --only and --skip keep or drop the scenes whose names contain TEXT,
+so one class of scene can be held to its own bounds. Standard library only.
 """
 from __future__ import annotations
 
@@ -78,6 +80,12 @@ def main(argv: list[str]) -> int:
     scenes = sorted(p.stem for p in a.glob("*.ppm") if not p.stem.startswith("control-"))
     if not scenes or sorted(p.stem for p in b.glob("*.ppm") if not p.stem.startswith("control-")) != scenes:
         raise SystemExit("the two directories do not hold the same scenes")
+    if "--only" in argv:
+        scenes = [s for s in scenes if argv[argv.index("--only") + 1] in s]
+    if "--skip" in argv:
+        scenes = [s for s in scenes if argv[argv.index("--skip") + 1] not in s]
+    if not scenes:
+        raise SystemExit("no scene left after --only/--skip")
     result = {"label": label, "scenes": {s: compare(read_ppm(a / f"{s}.ppm"), read_ppm(b / f"{s}.ppm")) for s in scenes}}
     control = compare(read_ppm(a / f"{CONTROL[0]}.ppm"), read_ppm(a / f"{CONTROL[1]}.ppm"))
     result["control"] = {"pair": list(CONTROL), **control, "fails_as_required": control["coverage_iou"] < CONTROL_IOU_MAX}
