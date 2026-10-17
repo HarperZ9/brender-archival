@@ -120,17 +120,18 @@ def test_ci_gates_the_modern_side_on_both_systems():
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert ci.count("--require-identical") >= 2
     parity = ci[ci.index("\n  parity:"):]
-    assert "needs: [brview, linux, brender-native]" in parity and "--bounds 1.0 0.999 1" in parity
-    assert "--skip textured,index8,rgb555,rgb565 --bounds 0.999 0.90 255 0.25" in parity
-    assert "--only textured --skip lit,index8,rgb555,rgb565 --bounds 0.999 0.95 255 1.2" in parity
-    assert "PARITY_SHADE4" in ci and "--only textured-lit --skip index8,rgb555,rgb565 --bounds 0.999 0.97 255 0.3" in parity
-    assert "--only index8 --skip textured --bounds 0.998 0.98 255 0.3" in parity
-    assert "--only textured-index8,textured-lit-index8 --bounds 0.998 0.96 255 0.5" in parity
+    assert "needs: [brview, linux, brender-native]" in parity and "--skip rgb555,rgb565 --bounds 1.0 0.999 1\n" in parity
+    assert "--only rgb555,rgb565 --bounds 1.0 0.999 9" in parity
+    assert "--skip textured,index8,rgb555,rgb565 --bounds 1.0 0.999 1 0.01" in parity
+    assert "--only textured --skip lit,index8,rgb555,rgb565 --require-identical" in parity
+    assert "PARITY_SHADE4" in ci and "--only textured-lit --skip index8,rgb555,rgb565 --bounds 1.0 0.999 13 0.01" in parity
+    assert "--only index8 --skip textured --require-identical" in parity
+    assert "--only textured-index8,textured-lit-index8 --require-identical" in parity
     native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
     assert "parity-period-a parity-period-b" in native and "--require-identical" in native
     # perspective-correct 8-bit scenes: twice on the period side, then gated
     assert '--label "period perspective scenes, two runs" --only persp,steep --require-identical' in native
-    assert "--only persp,steep --bounds 0.998 0.92 255 1.8" in parity
+    assert "--only persp,steep --require-identical" in parity
     # 15/16-bit scenes: twice on the period side, untextured gated, textured reported
     assert '--label "period 15/16-bit scenes, two runs" --only rgb555,rgb565 --require-identical' in native
     assert "--only rgb555,rgb565 --skip textured,dither --bounds 0.986 0.63 255 2.1" in parity
@@ -328,10 +329,10 @@ def test_ci_runs_the_period_build_through_the_mmx_table():
     assert "parity-period-a parity-period-mmx-a" in native and "--skip rgb555,rgb565 --require-identical" in native
     assert "name: parity-period-mmx" in native
     parity = ci[ci.index("\n  parity:"):]
-    assert "--only rgb555,rgb565 --skip textured,dither --bounds 0.998 0.97 255 0.25" in parity
-    assert "--only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5 --bounds 0.998 0.97 255 0.25" in parity
-    assert "--only textured-pal --skip dither --bounds 0.997 0.96 255 0.45" in parity
-    assert "--only dither --bounds 0.999 0.97 255 0.5" in parity
+    assert "--only rgb555,rgb565 --skip textured,dither --bounds 1.0 0.999 9 0.01" in parity
+    assert "--only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5 --bounds 1.0 0.999 9 0.01" in parity
+    assert "--only textured-pal --skip dither --require-identical" in parity
+    assert "--only dither --require-identical" in parity
     period = (PARITY / "period" / "CMakeLists.txt").read_text(encoding="utf-8")
     assert "BRENDER_PENTPRIM_MMX" in period
 
@@ -362,3 +363,34 @@ def test_the_mmx_evidence_matches_the_readme():
     assert all(m["identical"] == 1.0 for k, m in cross["scenes"].items() if "-pal" in k or "dither" in k)
     readme = (PARITY / "README.md").read_text(encoding="utf-8")
     assert "## 15 and 16-bit through the MMX table" in readme and "MmxPackDirectDither" in readme
+
+
+def test_the_shared_angle_evidence_matches_the_readme():
+    """With the same angle on both sides the rasterisers draw the same frames:
+    what is left is BRender 1.4's own Windows-against-Linux variance and the
+    1998 stride defect."""
+    def load(name):
+        return json.loads((EVIDENCE / f"{name}-angle-2026-10-17.json").read_text(encoding="utf-8"))
+    rgb8, mmx, shade4, cross = (load("modern-vs-period"), load("modern-vs-period-mmx"),
+                                load("modern-vs-period-shade4"), load("modern-windows-vs-linux"))
+    for record in (rgb8, mmx, shade4, cross):
+        assert record["ok"] and record["control"]["fails_as_required"]
+    assert len(rgb8["scenes"]) == 27 and len(mmx["scenes"]) == 34 and len(cross["scenes"]) == 61
+    left = {k for k, m in rgb8["scenes"].items() if m["identical"] != 1.0}
+    assert left == {"sphere-smooth", "teapot-smooth", "torus-smooth", "sphere-textured-lit", "torus-textured-lit"}
+    for name in ("sphere-smooth", "teapot-smooth", "torus-smooth"):
+        assert rgb8["scenes"][name]["max"] == 1 and rgb8["scenes"][name]["identical"] >= 0.9995, name
+    # the stride defect is still the stride defect
+    assert all(rgb8["scenes"][n]["identical"] < 0.01 for n in ("sphere-textured-lit", "torus-textured-lit"))
+    assert sum(m["identical"] == 1.0 for m in mmx["scenes"].values()) == 30
+    assert all(m["coverage_iou"] == 1.0 and m["max"] <= 9 for m in mmx["scenes"].values())
+    # every MMX scene that is not identical differs between 1.4's own Windows and Linux builds too
+    for name, m in mmx["scenes"].items():
+        if m["identical"] != 1.0:
+            assert cross["scenes"][name]["identical"] != 1.0, name
+    assert min(m["identical"] for m in shade4["scenes"].values()) == 0.9999
+    source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
+    assert "BR_ANGLE_DEG(" not in source.split("*/", 3)[-1], "every angle goes through PARITY_ANGLE"
+    assert source.count("PARITY_ANGLE(") >= 6
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## The same angle on both sides" in readme and "56 of the 61 scenes are byte-identical" in readme
