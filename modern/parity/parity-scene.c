@@ -57,6 +57,8 @@ typedef struct scene {
     int         tilt;    /* model turn about X, degrees; 0 means the usual 25 */
     int         hicolor; /* 555 or 565: draw into an RGB_555 or RGB_565 buffer, with
                             maps and shade tables packed into that format */
+    int         pal;     /* keep the 8-bit map and attach std.pal to it */
+    int         white;   /* a white material: no colour to modulate the map by */
 } scene;
 
 /* Untextured scenes, then unlit textured ones (RGB_888 maps, the period
@@ -129,6 +131,27 @@ static const scene scenes[] = {
     {"sphere-textured-gold-rgb565", "sph32.dat", 35, 0, 0, "gold8.pix", 0, NULL, 0, 0, 0, 565},
     {"sphere-textured-lit-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 565},
     {"torus-textured-lit-rgb565", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 0, "shade.tab", 0, 0, 0, 565},
+    /* 15 and 16-bit with an 8-bit map that carries the std.pal palette, the
+     * only maps the 1998 MMX table textures (pentprim match.c:593 swaps it in
+     * for the whole 15/16-bit table on a processor with MMX; BRender 1.4 does
+     * the same). A white unlit material reaches RasteriseMMX5x5_Z_UV
+     * (xzuv1.inc), a coloured one Z_UV_C (xzuvc.inc, the colour modulates the
+     * map), a lit smooth one Z_UV_RGB (xzuvrgb.inc). BR_MATF_DITHER reaches
+     * the _D kernels: Z_UV_D and, untextured, Z_RGB_D (xzrgb.inc). */
+    {"sphere-textured-pal-rgb555", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 555, 1, 1},
+    {"torus-textured-pal-rgb555", "torus.dat", 60, 0, 0, "rosewood.pix", 0, NULL, 0, 0, 0, 555, 1, 1},
+    {"sphere-textured-pal-tint-rgb555", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 555, 1, 0},
+    {"sphere-textured-pal-lit-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, NULL, 0, 0, 0, 555, 1, 0},
+    {"torus-textured-pal-lit-rgb555", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 0, NULL, 0, 0, 0, 555, 1, 0},
+    {"sphere-textured-pal-dither-rgb555", "sph32.dat", 35, BR_MATF_DITHER, 0, "earth.pix", 0, NULL, 0, 0, 0, 555, 1, 1},
+    {"sphere-smooth-dither-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_DITHER, 1, NULL, 0, NULL, 0, 0, 0, 555},
+    {"sphere-textured-pal-rgb565", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 565, 1, 1},
+    {"torus-textured-pal-rgb565", "torus.dat", 60, 0, 0, "rosewood.pix", 0, NULL, 0, 0, 0, 565, 1, 1},
+    {"sphere-textured-pal-tint-rgb565", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 565, 1, 0},
+    {"sphere-textured-pal-lit-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, NULL, 0, 0, 0, 565, 1, 0},
+    {"torus-textured-pal-lit-rgb565", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 0, NULL, 0, 0, 0, 565, 1, 0},
+    {"sphere-textured-pal-dither-rgb565", "sph32.dat", 35, BR_MATF_DITHER, 0, "earth.pix", 0, NULL, 0, 0, 0, 565, 1, 1},
+    {"sphere-smooth-dither-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_DITHER, 1, NULL, 0, NULL, 0, 0, 0, 565},
     {"control-torus-turned", "torus.dat", 85, 0, 0, NULL},
 };
 
@@ -215,6 +238,22 @@ static br_pixelmap *load_texture8(const char *dat, const char *name)
     br_pixelmap *tex;
     snprintf(path, sizeof(path), "%s/%s", dat, name);
     if ((tex = BrPixelmapLoad(path)) == NULL || tex->type != BR_PMT_INDEX_8) return NULL;
+    tex->identifier = (char *)name;
+    BrMapAdd(tex);
+    BrMapUpdate(tex, BR_MAPU_ALL);
+    return tex;
+}
+
+/* The 8-bit map as stored, with std.pal attached as its palette (the
+ * renderer takes a map's palette when it is RGBX_888, one pixel wide), then
+ * registered. */
+static br_pixelmap *load_texture8_pal(const char *dat, const char *name, br_pixelmap *pal)
+{
+    char path[1024];
+    br_pixelmap *tex;
+    snprintf(path, sizeof(path), "%s/%s", dat, name);
+    if ((tex = BrPixelmapLoad(path)) == NULL || tex->type != BR_PMT_INDEX_8 || pal == NULL) return NULL;
+    tex->map = pal;
     tex->identifier = (char *)name;
     BrMapAdd(tex);
     BrMapUpdate(tex, BR_MAPU_ALL);
@@ -483,9 +522,11 @@ int main(int argc, char **argv)
             failed++;
             continue;
         }
+        if (sc->white) material->colour = BR_COLOUR_RGB(255, 255, 255);
         if (sc->texture != NULL
-            && (material->colour_map = sc->index8 || sc->shade ? load_texture8(dat, sc->texture)
-                                                               : load_texture(dat, sc->texture, sc->hicolor)) == NULL) {
+            && (material->colour_map = sc->pal ? load_texture8_pal(dat, sc->texture, palette)
+                                       : sc->index8 || sc->shade ? load_texture8(dat, sc->texture)
+                                                                 : load_texture(dat, sc->texture, sc->hicolor)) == NULL) {
             printf("{\"scene\":\"%s\",\"error\":\"texture %s did not load\"}\n", sc->name, sc->texture);
             BrActorRemove(actor);
             failed++;

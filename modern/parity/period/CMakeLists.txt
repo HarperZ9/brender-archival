@@ -5,7 +5,10 @@
 #   cmake -S modern/parity/period -B <build> -A Win32 -DBRENDER_HARNESS_DIR=<harness> -DBRENDER_SOURCE_DIR=<BRender-v1.3.2>
 #   cmake --build <build> --config Debug --target parity_scene_period
 #
-# The flags are those of the harness's own renderer rung.
+# The flags are those of the harness's own renderer rung. Add
+# -DBRENDER_PENTPRIM_MMX=ON (engine-revival 0.9.0) to build pentprim as a
+# Pentium with MMX runs it: 15/16-bit triangles then go through its MMX table,
+# the 1998 path BRender 1.4 reproduces.
 cmake_minimum_required(VERSION 3.23)
 project(brender_parity_period C)
 

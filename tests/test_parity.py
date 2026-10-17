@@ -133,7 +133,7 @@ def test_ci_gates_the_modern_side_on_both_systems():
     assert "--only persp,steep --bounds 0.998 0.92 255 1.8" in parity
     # 15/16-bit scenes: twice on the period side, untextured gated, textured reported
     assert '--label "period 15/16-bit scenes, two runs" --only rgb555,rgb565 --require-identical' in native
-    assert "--only rgb555,rgb565 --skip textured --bounds 0.986 0.63 255 2.1" in parity
+    assert "--only rgb555,rgb565 --skip textured,dither --bounds 0.986 0.63 255 2.1" in parity
     assert "--only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5\n" in parity
 
 
@@ -166,10 +166,10 @@ def test_perspective_scenes_stay_out_of_the_older_class_gates():
     gates select, and the perspective gate must select exactly them."""
     names = _scene_names()
     persp = [n for n in names if "persp" in n or "steep" in n]
-    assert len(names) == 47 and len(persp) == 7
+    assert len(names) == 61 and len(persp) == 7
     assert all(n.endswith("-index8") and "textured" in n for n in persp)
     gates = _gates()
-    assert len(gates) == 9
+    assert len(gates) == 13
     for label, keep, drop in gates:
         chosen = _chosen(names, keep, drop)
         if keep == ["persp", "steep"]:
@@ -193,8 +193,8 @@ OLD_GATE_COUNTS = {
 
 def test_hicolor_scenes_leave_every_older_gate_as_it_was():
     names = _scene_names()
-    hicolor = [n for n in names if n.endswith(("-rgb555", "-rgb565"))]
-    older = [n for n in names if n not in hicolor]
+    hicolor = [n for n in names if n.endswith(("-rgb555", "-rgb565")) and "-pal" not in n and "dither" not in n]
+    older = [n for n in names if not n.endswith(("-rgb555", "-rgb565"))]
     assert len(older) == 27 and len(hicolor) == 20
     assert sorted(n[:-7] for n in hicolor if n.endswith("555")) == sorted(n[:-7] for n in hicolor if n.endswith("565"))
     gates = {label: (keep, drop) for label, keep, drop in _gates()}
@@ -286,3 +286,51 @@ def test_the_hicolor_evidence_matches_the_readme():
     assert all(m["identical"] == 1.0 for k, m in cross["scenes"].items() if k.endswith(("rgb555", "rgb565")))
     readme = (PARITY / "README.md").read_text(encoding="utf-8")
     assert "## 15 and 16-bit buffers (RGB_555, RGB_565)" in readme and "match.c:593" in readme
+
+
+# The four gates against the period build through the MMX table
+# (engine-revival 0.9.0) and what each must select.
+MMX_GATES = {
+    "modern against period (MMX), 15/16-bit untextured": 10,
+    "modern against period (MMX), 15/16-bit maps the MMX table does not texture": 10,
+    "modern against period (MMX), 15/16-bit textured": 10,
+    "modern against period (MMX), 15/16-bit dithered": 4,
+}
+
+
+def test_mmx_gates_split_the_hicolor_scenes_between_them():
+    """The 8-bit palette and dithered scenes (MMX textured rows) leave every
+    older gate as it was, and the four MMX gates share the 34 15/16-bit scenes
+    out between them, each scene to exactly one."""
+    names = _scene_names()
+    hicolor = [n for n in names if n.endswith(("-rgb555", "-rgb565"))]
+    new = [n for n in hicolor if "-pal" in n or "dither" in n]
+    assert len(hicolor) == 34 and len(new) == 14
+    assert sorted(n[:-7] for n in new if n.endswith("555")) == sorted(n[:-7] for n in new if n.endswith("565"))
+    gates = {label: (keep, drop) for label, keep, drop in _gates()}
+    for label, (keep, drop) in gates.items():
+        if label not in MMX_GATES:
+            assert not set(_chosen(names, keep, drop)) & set(new), label
+    chosen = []
+    for label, count in MMX_GATES.items():
+        picked = _chosen(names, *gates[label])
+        assert len(picked) == count, label
+        chosen += picked
+    assert sorted(chosen) == sorted(hicolor)
+
+
+def test_ci_runs_the_period_build_through_the_mmx_table():
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
+    assert "-DBRENDER_PENTPRIM_MMX=ON" in native
+    assert '--label "period through the MMX table, two runs" --require-identical' in native
+    assert "--only rgb555,rgb565 --require-identical" in native
+    assert "parity-period-a parity-period-mmx-a" in native and "--skip rgb555,rgb565 --require-identical" in native
+    assert "name: parity-period-mmx" in native
+    parity = ci[ci.index("\n  parity:"):]
+    assert "--only rgb555,rgb565 --skip textured,dither --bounds 0.998 0.97 255 0.25" in parity
+    assert "--only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5 --bounds 0.998 0.97 255 0.25" in parity
+    assert "--only textured-pal --skip dither --bounds 0.997 0.96 255 0.45" in parity
+    assert "--only dither --bounds 0.999 0.97 255 0.5" in parity
+    period = (PARITY / "period" / "CMakeLists.txt").read_text(encoding="utf-8")
+    assert "BRENDER_PENTPRIM_MMX" in period
