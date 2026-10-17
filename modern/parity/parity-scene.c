@@ -31,6 +31,18 @@
 #define W 320
 #define H 240
 
+/* BRender 1.3.2 and 1.4 turn degrees into angles differently. 1.3.2's
+ * BR_ANGLE_DEG multiplies by 182 into a 16-bit integer (65536 units a turn,
+ * so 182 is 0.024% short of 65536/360, and the product is truncated); 1.4's
+ * angle is a float fraction of a turn. Left as it is, the difference moves every
+ * period vertex by up to a few hundredths of a pixel. Both sides here use the
+ * same angle: the nearest 16-bit unit, given to each version in its own form. */
+#if PARITY_PERIOD
+#define PARITY_ANGLE(deg) ((br_angle)(long)floor((deg) * 65536.0 / 360.0 + 0.5))
+#else
+#define PARITY_ANGLE(deg) ((br_angle)(floor((deg) * 65536.0 / 360.0 + 0.5) / 65536.0))
+#endif
+
 #if PARITY_PERIOD
 void *BR_EXPORT BrDrv1SoftRendBegin(char *arguments);
 void *BR_EXPORT BrDrv1PentPrimBegin(char *arguments);
@@ -420,8 +432,8 @@ static void place_model(br_actor *actor, const br_model *model, int angle, int t
     BrMatrix34Translate(&actor->t.t.mat, BrFloatToScalar(-c[0]), BrFloatToScalar(-c[1]), BrFloatToScalar(-c[2]));
     BrMatrix34Scale(&scale, BrFloatToScalar(s), BrFloatToScalar(s), BrFloatToScalar(s));
     BrMatrix34Post(&actor->t.t.mat, &scale);
-    BrMatrix34PostRotateX(&actor->t.t.mat, BR_ANGLE_DEG(tilt ? tilt : 25));
-    BrMatrix34PostRotateY(&actor->t.t.mat, BR_ANGLE_DEG(angle));
+    BrMatrix34PostRotateX(&actor->t.t.mat, PARITY_ANGLE(tilt ? tilt : 25));
+    BrMatrix34PostRotateY(&actor->t.t.mat, PARITY_ANGLE(angle));
 }
 
 int main(int argc, char **argv)
@@ -481,7 +493,7 @@ int main(int argc, char **argv)
     camera_actor = BrActorAdd(world, BrActorAllocate(BR_ACTOR_CAMERA, NULL));
     camera = (br_camera *)camera_actor->type_data;
     camera->type = BR_CAMERA_PERSPECTIVE_FOV;
-    camera->field_of_view = BR_ANGLE_DEG(55);
+    camera->field_of_view = PARITY_ANGLE(55);
     camera->hither_z = BrFloatToScalar(1.0f);
     camera->yon_z = BrFloatToScalar(100.0f);
     camera->aspect = BrFloatToScalar((float)W / (float)H);
@@ -489,8 +501,8 @@ int main(int argc, char **argv)
     BrMatrix34Translate(&camera_actor->t.t.mat, 0, 0, BrFloatToScalar(2.5f));
     light_actor = BrActorAdd(world, BrActorAllocate(BR_ACTOR_LIGHT, NULL));
     light_actor->t.type = BR_TRANSFORM_MATRIX34;
-    BrMatrix34RotateY(&light_actor->t.t.mat, BR_ANGLE_DEG(-30));
-    BrMatrix34PostRotateX(&light_actor->t.t.mat, BR_ANGLE_DEG(-20));
+    BrMatrix34RotateY(&light_actor->t.t.mat, PARITY_ANGLE(-30));
+    BrMatrix34PostRotateX(&light_actor->t.t.mat, PARITY_ANGLE(-20));
 
     for (i = 0; i < (int)(sizeof(scenes) / sizeof(scenes[0])); i++) {
         const scene *sc = &scenes[i];
