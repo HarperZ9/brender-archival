@@ -25,6 +25,7 @@
 #include <brender.h>
 #include "brdemo.h"
 #include "brdisplay.h"
+#include "brview_run.h"
 #include "brview_scenes.h"
 
 typedef struct viewer {
@@ -53,49 +54,25 @@ static int smoke_mode, smoke_failures;
  * still after the renderer settles. */
 static const char *shot_path;
 static int shot_frames;
+static int shot_scene; /* BRVIEW_SCENE */
 
 /* BRVIEW_PERIOD=1: the period look for this run (stills and checks too). */
 static int period_forced;
 
-static const char *options_path(void)
-{
-    static char path[1024];
-    char *dir;
-    if (path[0] == '\0' && (dir = SDL_GetPrefPath("HarperZ9", "brview")) != NULL) {
-        SDL_snprintf(path, sizeof(path), "%soptions.cfg", dir);
-        SDL_free(dir);
-    }
-    return path[0] ? path : NULL;
-}
-
 /* Checks and stills use the defaults, never a player's saved options. */
 static void options_load(void)
 {
-    char word[32];
-    int v;
-    FILE *f;
-    V.pixel = 1;
-    V.fov = 50;
-    V.vsync = 1;
-    V.period = 0;
-    if (smoke_mode || shot_path || options_path() == NULL || (f = fopen(options_path(), "r")) == NULL)
-        return;
-    while (fscanf(f, "%31s %d", word, &v) == 2) {
-        if (strcmp(word, "pixel") == 0 && v >= BRD_PIXEL_MIN && v <= BRD_PIXEL_MAX) V.pixel = v;
-        else if (strcmp(word, "fov") == 0 && v >= BRD_FOV_MIN && v <= BRD_FOV_MAX) V.fov = v;
-        else if (strcmp(word, "vsync") == 0 && (v == 0 || v == 1)) V.vsync = v;
-        else if (strcmp(word, "period") == 0 && (v == 0 || v == 1)) V.period = v;
-    }
-    fclose(f);
+    brview_options o = {1, 50, 1, 0};
+    if (!smoke_mode && !shot_path)
+        brview_options_load(&o);
+    V.pixel = o.pixel; V.fov = o.fov; V.vsync = o.vsync; V.period = o.period;
 }
 
 static void options_save(void)
 {
-    FILE *f;
-    if (smoke_mode || shot_path || options_path() == NULL || (f = fopen(options_path(), "w")) == NULL)
-        return;
-    fprintf(f, "pixel %d\nfov %d\nvsync %d\nperiod %d\n", V.pixel, V.fov, V.vsync, V.period);
-    fclose(f);
+    brview_options o = {V.pixel, V.fov, V.vsync, V.period};
+    if (!smoke_mode && !shot_path)
+        brview_options_save(&o);
 }
 
 static void reset_view(void)
@@ -154,6 +131,12 @@ static br_error viewer_init(br_demo *demo)
     V.model_actor = BrActorAdd(demo->world, BrActorAllocate(BR_ACTOR_NONE, NULL));
     V.material = BrMaterialAllocate("brview");
     V.textured = BR_TRUE;
+    if (shot_path) { /* a still of one scene, as the environment sets it */
+        brview_still still = brview_still_from_env();
+        V.textured = still.textured ? BR_TRUE : BR_FALSE;
+        BrViewSceneSetUnlit(still.unlit);
+        shot_scene = still.scene;
+    }
     V.help = BR_TRUE;
     V.spin = shot_path == NULL;
     brd_display_init("BRVIEW");
@@ -162,7 +145,7 @@ static br_error viewer_init(br_demo *demo)
 
     if (demo->args->pos_argc > 0)
         BrViewSceneSetCustom(demo->args->pos_argv[0], demo->args->pos_argc > 1 ? demo->args->pos_argv[1] : NULL);
-    load_scene(demo, 0);
+    load_scene(demo, shot_scene);
     return BRE_OK;
 }
 
@@ -335,22 +318,10 @@ int main(int argc, char **argv)
         args.title = "brview: BRender on a modern PC";
         /* The software rasteriser draws in 24-bit colour unless --software-bpp
          * is given, as in the game: brdemo's 8-bit default has no palette for
-         * stills, and the scenes are true-colour. */
-        char *used[64];
-        int i, n = 0, given = 0, forced = 0;
-        for (i = 0; i < argc && i < 58; i++) {
-            given |= strcmp(argv[i], "--software-bpp") == 0;
-            forced |= strcmp(argv[i], "--force-software") == 0;
-        }
-        for (i = 0; i < argc && i < 58; i++) {
-            used[n++] = argv[i];
-            if (i == 0 && !given) { /* before any model path, so it parses as an option */
-                used[n++] = "--software-bpp";
-                used[n++] = "24";
-            }
-            if (i == 0 && !forced && (period_forced || V.period)) /* the period look draws on the software renderer */
-                used[n++] = "--force-software";
-        }
+         * stills, and the scenes are true-colour. The period look draws on the
+         * software renderer. */
+        int n;
+        char **used = brview_argv(argc, argv, period_forced || V.period, &n);
         if (BrDemoParseArgs(&args, n, used) != 0)
             return 1;
         args.no_stats = 1;

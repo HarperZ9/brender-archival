@@ -187,6 +187,10 @@ br_pixelmap *BrViewScenePalette(void)
     return palette;
 }
 
+static int unlit; /* BrViewSceneSetUnlit */
+
+void BrViewSceneSetUnlit(int on) { unlit = on; }
+
 static void set_material(br_material *material, const scene *s, br_boolean textured, br_boolean period)
 {
     br_pixelmap *tex = NULL;
@@ -202,7 +206,7 @@ static void set_material(br_material *material, const scene *s, br_boolean textu
     material->index_range = (br_uint_8)(tex ? 63 : ramps[ramp].range);
     material->index_shade = period && tex ? shade_table() : NULL;
     material->colour = BR_COLOUR_RGB(s->r, s->g, s->b);
-    material->flags = BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE;
+    material->flags = unlit ? BR_MATF_PERSPECTIVE : BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE;
     material->ka = BR_UFRACTION(0.25);
     material->kd = BR_UFRACTION(0.75);
     material->ks = BR_UFRACTION(0.35);

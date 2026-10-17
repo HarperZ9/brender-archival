@@ -224,9 +224,58 @@ Every change:
 All bounds were set from the measurements above, so they are calibrated, not
 predicted.
 
+## OpenGL against software (BRender 1.4)
+
+The downloads draw with BRender 1.4's OpenGL driver unless asked for the
+software rasteriser, so the two should draw the same picture.
+`gl_vs_software.py` draws every brview model both ways at 640 x 480, from
+brview's still mode (`BRVIEW_SHOT`, `BRVIEW_SCENE`, `BRVIEW_TEXTURE`,
+`BRVIEW_UNLIT`), in three classes:
+
+- **unlit:** one flat colour per model, which isolates coverage;
+- **textured:** unlit, with the texture (the earth and the torus);
+- **lit:** brview's normal look.
+
+Measured 16 October 2026 with Mesa llvmpipe (WSL, Ubuntu 24.04), recomputed
+in CI on every change:
+
+| Class | Stills | Coverage IoU | Identical (within 2 levels) | MAD |
+|---|---|---|---|---|
+| unlit | 8 | 0.9774 to 0.9957 | 0.9774 to 0.9957 | at most 4.21 |
+| textured | 2 | 0.9929 and 0.9957 | 0.7829 and 0.7925 | at most 4.32 |
+| lit | 8 | 0.9774 to 0.9957 | 0.0093 to 0.6763 | up to 35.2 |
+
+- **Coverage:** every pixel both renderers fill has the same colour (the
+  unlit "identical" share equals the IoU). The difference is at the edges:
+  93 to 293 pixels per model drawn only by OpenGL and 82 to 289 only by
+  software, about as many each way. The two follow different edge rules; no
+  shift or offset.
+- **Textures:** about 79% of textured pixels agree within 2 levels; texel
+  selection differs between the two samplers. Not traced further.
+- **Lighting:** OpenGL lights per pixel and the software rasteriser per
+  vertex, so the lit stills differ, as intended. One difference is larger: a
+  lit, textured 24-bit material is not lit at all by the software rasteriser
+  (its lit and unlit stills are the same bytes), while OpenGL lights it. This
+  follows 1998: the 24-bit textured kernels light only through a shade table
+  (`TrapezoidRenderPIZ2TIA_RGB_888`), and with none given BRender picks the
+  unlit kernel. So brview's earth and torus look flat on the software
+  renderer.
+- **Determinism:** two OpenGL runs give the same bytes (the readback waits
+  for OpenGL to finish, `brd_frame_write_ppm`).
+- **Control:** OpenGL's unlit earth against the software's unlit teapot must
+  fail (coverage IoU 0.31).
+
+CI gates unlit and textured at the measured values, rounded down: coverage
+IoU 0.975 and 0.99, identical 0.975 and 0.77, MAD 4.5. It keeps the stills
+and the JSON as the `gl-vs-software` artifact. Evidence:
+`evidence/gl-vs-software-2026-10-16.json` and
+`evidence/opengl-left-software-right-2026-10-16.png` (earth unlit, textured
+and lit, teapot lit, torus textured, logo unlit; OpenGL left).
+
+Windows CI has no OpenGL, so this runs on Linux only.
+
 ## Not measured yet
 
 - Perspective-correct texturing: the materials here do not set
   `BR_MATF_PERSPECTIVE`, so both sides run their linear texture kernels.
 - 15/16-bit targets: not ported.
-- OpenGL against software.

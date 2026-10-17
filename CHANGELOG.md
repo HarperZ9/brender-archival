@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased: OpenGL against software
+
+- `modern/parity/gl_vs_software.py` draws every brview model on BRender 1.4's OpenGL driver and on its software rasteriser and compares them, unlit, textured and lit, with a wrong-model control and a byte-for-byte repeat of the OpenGL stills. Measured 16 October 2026 (Mesa llvmpipe): coverage IoU 0.9774 or better and the same colour wherever both draw; textures agree on about 79% of pixels; lit stills differ by design. CI runs it on Linux within the measured bounds.
+- Found: the software rasteriser does not light a 24-bit textured material without a shade table (the lit and unlit stills are the same bytes), as in 1998; OpenGL lights it.
+- brview: `BRVIEW_SCENE`, `BRVIEW_TEXTURE` and `BRVIEW_UNLIT` set what a `BRVIEW_SHOT` still draws. The command line and the saved options move to `viewer/brview_run.c`.
+
 ## Unreleased: the period look
 
 - The Keeper's Hour: a Period look option (F2) draws the rooms in 256 colours through BRender's own 8-bit palette path, on the software renderer. The game builds its palette from its own materials: ramps for lit surfaces, the glows and skies as they are, and 128 colours cut from the pictures, which become 8-bit maps lit through a shade table. Saved with the other options; `KEEPERS_PERIOD=1` for one run.

@@ -1,0 +1,229 @@
+{
+  "scenes": {
+    "earth-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.9957,
+      "identical": 0.9957,
+      "mad": 2.011,
+      "max": 242,
+      "drawn": 103275,
+      "only_opengl": 222,
+      "only_software": 217
+    },
+    "earth-textured": {
+      "class": "textured",
+      "coverage_iou": 0.9957,
+      "identical": 0.7925,
+      "mad": 4.321,
+      "max": 237,
+      "drawn": 103275,
+      "only_opengl": 222,
+      "only_software": 217
+    },
+    "earth-lit": {
+      "class": "lit",
+      "coverage_iou": 0.9957,
+      "identical": 0.0093,
+      "mad": 35.186,
+      "max": 237,
+      "drawn": 103275,
+      "only_opengl": 222,
+      "only_software": 217
+    },
+    "teapot-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.983,
+      "identical": 0.983,
+      "mad": 2.951,
+      "max": 196,
+      "drawn": 32130,
+      "only_opengl": 293,
+      "only_software": 252
+    },
+    "teapot-lit": {
+      "class": "lit",
+      "coverage_iou": 0.983,
+      "identical": 0.146,
+      "mad": 10.036,
+      "max": 237,
+      "drawn": 32130,
+      "only_opengl": 293,
+      "only_software": 252
+    },
+    "skull-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.9861,
+      "identical": 0.9861,
+      "mad": 3.676,
+      "max": 208,
+      "drawn": 22909,
+      "only_opengl": 159,
+      "only_software": 160
+    },
+    "skull-lit": {
+      "class": "lit",
+      "coverage_iou": 0.9861,
+      "identical": 0.6669,
+      "mad": 3.376,
+      "max": 157,
+      "drawn": 22909,
+      "only_opengl": 159,
+      "only_software": 160
+    },
+    "argo-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.9774,
+      "identical": 0.9774,
+      "mad": 4.206,
+      "max": 217,
+      "drawn": 20668,
+      "only_opengl": 227,
+      "only_software": 240
+    },
+    "argo-lit": {
+      "class": "lit",
+      "coverage_iou": 0.9774,
+      "identical": 0.4001,
+      "mad": 6.632,
+      "max": 197,
+      "drawn": 20668,
+      "only_opengl": 227,
+      "only_software": 240
+    },
+    "ship-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.9914,
+      "identical": 0.9914,
+      "mad": 2.392,
+      "max": 177,
+      "drawn": 32386,
+      "only_opengl": 155,
+      "only_software": 124
+    },
+    "ship-lit": {
+      "class": "lit",
+      "coverage_iou": 0.9914,
+      "identical": 0.3371,
+      "mad": 5.866,
+      "max": 234,
+      "drawn": 32386,
+      "only_opengl": 155,
+      "only_software": 124
+    },
+    "duck-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.9944,
+      "identical": 0.9944,
+      "mad": 1.451,
+      "max": 218,
+      "drawn": 31402,
+      "only_opengl": 93,
+      "only_software": 82
+    },
+    "duck-lit": {
+      "class": "lit",
+      "coverage_iou": 0.9944,
+      "identical": 0.3356,
+      "mad": 7.583,
+      "max": 178,
+      "drawn": 31402,
+      "only_opengl": 93,
+      "only_software": 82
+    },
+    "torus-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.9929,
+      "identical": 0.9929,
+      "mad": 2.68,
+      "max": 242,
+      "drawn": 69764,
+      "only_opengl": 204,
+      "only_software": 289
+    },
+    "torus-textured": {
+      "class": "textured",
+      "coverage_iou": 0.9929,
+      "identical": 0.7829,
+      "mad": 2.682,
+      "max": 199,
+      "drawn": 69763,
+      "only_opengl": 204,
+      "only_software": 288
+    },
+    "torus-lit": {
+      "class": "lit",
+      "coverage_iou": 0.9929,
+      "identical": 0.0254,
+      "mad": 19.121,
+      "max": 190,
+      "drawn": 69763,
+      "only_opengl": 204,
+      "only_software": 288
+    },
+    "terrain-unlit": {
+      "class": "unlit",
+      "coverage_iou": 0.9854,
+      "identical": 0.9854,
+      "mad": 1.683,
+      "max": 134,
+      "drawn": 20503,
+      "only_opengl": 170,
+      "only_software": 129
+    },
+    "terrain-lit": {
+      "class": "lit",
+      "coverage_iou": 0.9854,
+      "identical": 0.6763,
+      "mad": 3.301,
+      "max": 167,
+      "drawn": 20503,
+      "only_opengl": 170,
+      "only_software": 129
+    }
+  },
+  "classes": {
+    "unlit": {
+      "lowest_coverage_iou": 0.9774,
+      "lowest_identical": 0.9774,
+      "highest_mad": 4.206,
+      "bounds": {
+        "min_coverage_iou": 0.975,
+        "min_identical": 0.975,
+        "max_mad": 4.5
+      },
+      "within_bounds": true
+    },
+    "textured": {
+      "lowest_coverage_iou": 0.9929,
+      "lowest_identical": 0.7829,
+      "highest_mad": 4.321,
+      "bounds": {
+        "min_coverage_iou": 0.99,
+        "min_identical": 0.77,
+        "max_mad": 4.5
+      },
+      "within_bounds": true
+    },
+    "lit": {
+      "lowest_coverage_iou": 0.9774,
+      "lowest_identical": 0.0093,
+      "highest_mad": 35.186
+    }
+  },
+  "control": {
+    "pair": [
+      "opengl earth-unlit",
+      "software teapot-unlit"
+    ],
+    "coverage_iou": 0.3089,
+    "identical": 0.0,
+    "mad": 197.629,
+    "max": 242,
+    "drawn": 103058,
+    "only_opengl": 71221,
+    "only_software": 0,
+    "fails_as_required": true
+  },
+  "opengl_runs_identical": true,
+  "ok": true
+}
