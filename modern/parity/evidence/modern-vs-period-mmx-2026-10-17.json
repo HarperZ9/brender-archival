@@ -1,0 +1,327 @@
+{
+  "label": "modern (Linux) against period through the MMX table, 15/16-bit (CI run 39010833674)",
+  "scenes": {
+    "sphere-flat-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9993,
+      "mad": 0.118,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-flat-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9993,
+      "mad": 0.118,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-lit-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9859,
+      "mad": 0.111,
+      "max": 181,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-lit-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9813,
+      "mad": 0.113,
+      "max": 181,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-smooth-dither-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9872,
+      "mad": 0.094,
+      "max": 173,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-smooth-dither-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9825,
+      "mad": 0.095,
+      "max": 173,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-smooth-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9871,
+      "mad": 0.093,
+      "max": 173,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-smooth-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9822,
+      "mad": 0.094,
+      "max": 173,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-gold-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9993,
+      "mad": 0.118,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-gold-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9993,
+      "mad": 0.118,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-lit-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9871,
+      "mad": 0.093,
+      "max": 173,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-lit-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9822,
+      "mad": 0.094,
+      "max": 173,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-pal-dither-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9799,
+      "mad": 0.433,
+      "max": 255,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-pal-dither-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9781,
+      "mad": 0.476,
+      "max": 255,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-pal-lit-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9734,
+      "mad": 0.191,
+      "max": 99,
+      "drawn_a": 29592,
+      "drawn_b": 29614,
+      "by_index": false
+    },
+    "sphere-textured-pal-lit-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9708,
+      "mad": 0.189,
+      "max": 97,
+      "drawn_a": 29592,
+      "drawn_b": 29614,
+      "by_index": false
+    },
+    "sphere-textured-pal-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9798,
+      "mad": 0.432,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-pal-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9798,
+      "mad": 0.432,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-pal-tint-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9809,
+      "mad": 0.277,
+      "max": 165,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-pal-tint-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9794,
+      "mad": 0.273,
+      "max": 165,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9993,
+      "mad": 0.118,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9993,
+      "mad": 0.118,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "torus-flat-rgb555": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9986,
+      "mad": 0.23,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    },
+    "torus-flat-rgb565": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9986,
+      "mad": 0.229,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    },
+    "torus-smooth-rgb555": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9773,
+      "mad": 0.181,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    },
+    "torus-smooth-rgb565": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9701,
+      "mad": 0.18,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    },
+    "torus-textured-lit-rgb555": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9773,
+      "mad": 0.181,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    },
+    "torus-textured-lit-rgb565": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9701,
+      "mad": 0.18,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    },
+    "torus-textured-pal-lit-rgb555": {
+      "coverage_iou": 0.997,
+      "identical": 0.9701,
+      "mad": 0.168,
+      "max": 82,
+      "drawn_a": 16973,
+      "drawn_b": 16978,
+      "by_index": false
+    },
+    "torus-textured-pal-lit-rgb565": {
+      "coverage_iou": 0.997,
+      "identical": 0.9676,
+      "mad": 0.17,
+      "max": 82,
+      "drawn_a": 16973,
+      "drawn_b": 16978,
+      "by_index": false
+    },
+    "torus-textured-pal-rgb555": {
+      "coverage_iou": 0.9977,
+      "identical": 0.9659,
+      "mad": 0.424,
+      "max": 156,
+      "drawn_a": 17737,
+      "drawn_b": 17753,
+      "by_index": false
+    },
+    "torus-textured-pal-rgb565": {
+      "coverage_iou": 0.9977,
+      "identical": 0.9659,
+      "mad": 0.415,
+      "max": 156,
+      "drawn_a": 17737,
+      "drawn_b": 17753,
+      "by_index": false
+    },
+    "torus-textured-rgb555": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9986,
+      "mad": 0.23,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    },
+    "torus-textured-rgb565": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9986,
+      "mad": 0.229,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": false
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6027,
+    "identical": 0.6027,
+    "mad": 63.301,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11946,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true
+}

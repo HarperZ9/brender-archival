@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased: 15/16-bit parity through the 1998 MMX table
+
+- Depends on engine-revival 0.9.0. It ports pentprim's MMX 15/16-bit family line by line (`gsetuptf.asm`, `rastbuff.asm` and the `xz*.inc` kernels), and its harness option `BRENDER_PENTPRIM_MMX` builds pentprim as a Pentium with MMX runs it. That is the 1998 path BRender 1.4 reproduces, so 15/16-bit output now compares like for like, textured included.
+- `modern/parity/`: fourteen new scenes, seven in each format. They use 8-bit maps with `std.pal` attached, the only maps the MMX table textures: plain, tinted (the colour modulates the map), lit, dithered, and an untextured dithered sphere. 61 scenes in all.
+- CI builds the period scene a second time with the option and runs it twice. It checks that the 27 scenes outside 15/16-bit equal the general build, then gates modern against it in four classes that share out the 34 15/16-bit scenes. Measured on CI: coverage IoU 0.9970 or better, 96.6% to 99.9% identical, MAD at most 0.48. Against the general tables the textured scenes had been 0% identical.
+- Found: fed BRender 1.4's own vertices, the port of the 1998 MMX kernels draws 1.4's frames byte for byte on all 34 scenes (a local replay through an instrumented copy of 1.4's softprim). The remaining difference is therefore in the vertices the two softrend versions produce, not in the rasterisers.
+- Kept as found: the 16-bit dithered textured kernel leaves green unmasked in spans of two or more words, so the dithered 565 earth's green land gains about 97 levels of blue. BlazingRenderer recorded this first, in 1.4's `drivers/softprim/raster.cpp`, and 1.4 reproduces it.
+- The general-table period run and its gates stay as recorded; its untextured gate now also skips the new dithered scene.
+
 ## Unreleased: Vulkan, stage B
 
 - `vkprim` (`modern/vulkan/`): a BRender primitive library under softrend whose triangles Vulkan rasterises. It wraps softprim, so softprim still chooses each block and sets the component ranges, and both libraries get the same screen-space vertices. vkprim collects untextured RGB triangles and draws them with depth into BRender's own colour and depth buffers when the renderer flushes. Anything else goes to softprim.

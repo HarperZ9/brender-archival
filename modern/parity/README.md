@@ -3,7 +3,7 @@
 The question is whether BRender 1.4, the modern 64-bit engine the downloads
 use, draws the same pixels as Argonaut's BRender 1.3.2 from 1998.
 
-**Answer on 16 and 17 October 2026, for the twenty-seven scenes measured
+**Answer on 16 and 17 October 2026, for the sixty-one scenes measured
 here: almost, with one 1998 defect.**
 - **24-bit untextured:** silhouettes match to a coverage IoU of 0.9993 or
   better, 90.7% to 100% of pixels are identical, and the mean difference is
@@ -24,12 +24,18 @@ here: almost, with one 1998 defect.**
   [A 1998 defect](#a-1998-defect-the-24-bit-lit-textured-kernel)). With the
   table laid at the stride it reads, it matches: coverage IoU 0.9998 or
   better, 97.9% and 99.5% identical.
+- **15 and 16-bit, through the 1998 MMX table:** coverage IoU 0.9970 or
+  better, 96.6% to 99.9% of pixels identical, and the mean difference at
+  most 0.48 levels, textured included. Fed BRender 1.4's own vertices, the
+  1998 MMX kernels draw 1.4's frames byte for byte, so the rest is in the
+  vertices (see
+  [15 and 16-bit through the MMX table](#15-and-16-bit-through-the-mmx-table)).
 
 The 1998 build gives the same bytes on every run.
 
 ## The instrument
 
-`parity-scene.c` draws twenty-seven scenes and a control at 320 x 240, from
+`parity-scene.c` draws sixty-one scenes and a control at 320 x 240, from
 the 1998 sample models and one plane it builds itself. Eleven draw into an RGB_888 buffer:
 
 - six untextured: a sphere, a torus and the teapot, unlit, lit flat and lit
@@ -45,7 +51,9 @@ path: five untextured (each on its own palette ramp), two textured unlit and
 two textured lit through `shade.tab`. Seven more are 8-bit and textured
 with `BR_MATF_PERSPECTIVE`: the sphere and the torus, unlit and lit, and a
 plane of eight large triangles turned 60 degrees so it recedes, unlit and lit,
-beside the same plane without perspective. Each 8-bit scene writes the indices
+beside the same plane without perspective. Thirty-four more draw into
+RGB_555 and RGB_565 buffers (the two 15/16-bit sections below). Each 8-bit
+scene writes the indices
 (`.pgm`) and the colours they map to (`.ppm`); the comparison counts a pixel
 identical when the index is the same.
 
@@ -55,7 +63,7 @@ Each side copies the renderer setup of its own ladder rung.
 
 | Side | Engine | Built by |
 |---|---|---|
-| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the harness from engine-revival 0.7.0 |
+| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the harness from engine-revival 0.9.0, built twice: with pentprim's general tables, and with `-DBRENDER_PENTPRIM_MMX=ON` as a Pentium with MMX runs it |
 | modern | BRender 1.4 (BlazingRenderer): softrend + softprim, 64-bit | `modern/CMakeLists.txt` (target `parity-scene`) |
 
 BRender's 1998 rasterisers are x86 assembly. The period build replaces the
@@ -270,7 +278,8 @@ The period harness builds without `USE_MMX`, so it uses pentprim's general
 tables. For z-buffered 15/16-bit triangles the two sides share no kernel.
 This is a difference in which 1998 path each side reproduces, not a defect
 on either side. It is recorded here and not filed upstream (BlazingRenderer
-`ed5e7a9`).
+`ed5e7a9`). engine-revival 0.9.0 ports the MMX path as well; the next
+section compares like with like.
 
 | Scene, modern against period | Coverage IoU | Identical | MAD | Max |
 |---|---|---|---|---|
@@ -296,6 +305,90 @@ scenes), `evidence/modern-windows-vs-linux-hicolor-2026-10-17.json` (all 47
 scenes; the twenty new ones identical) and
 `evidence/period-left-modern-right-hicolor-2026-10-17.png` (flat, Gouraud,
 earth, gold and the lit torus; period on the left).
+
+## 15 and 16-bit through the MMX table
+
+Measured 17 October 2026, engine-revival 0.9.0 against BRender 1.4. The
+frames come from CI run 39010833674 (commit `cbb58ce`). The CI period frames
+are the same bytes as a local Win32 run, and the CI Windows modern frames are
+the same as a local Windows run. The control fails as required.
+
+engine-revival 0.9.0 ports pentprim's MMX family line by line:
+`gsetuptf.asm`'s setup, `rastbuff.asm`'s rasterise buffer (parameter blocks
+drawn newest first when the buffer fills or the renderer flushes) and the
+kernels `xzrgb.inc`, `xzuv1.inc`, `xzuvc.inc` and `xzuvrgb.inc`. Its harness
+option `BRENDER_PENTPRIM_MMX` builds pentprim with `USE_MMX=1` and a host that
+reports MMX, so the 1998 matcher uses its MMX table for 15/16-bit triangles,
+as on a Pentium with MMX. CI builds the period scene a second time with that
+option. The 27 scenes that are not 15/16-bit come out byte for byte as the
+general build draws them.
+
+The MMX table textures only an 8-bit map with a palette, a power of two on
+each side. The textured scenes of the previous section use 16-bit maps, or an
+8-bit map with no palette, so on both sides they take the table's untextured
+rows. Fourteen new scenes, seven in each format, use `earth.pix` and
+`rosewood.pix` with `std.pal` attached:
+
+| Scene | MMX kernel (1998 source) |
+|---|---|
+| `*-textured-pal-*`, white unlit material | `RasteriseMMX5x5_Z_UV` (`xzuv1.inc`) |
+| `sphere-textured-pal-tint-*`, the usual material colour | `Z_UV_C` (`xzuvc.inc`): softrend modulates by any colour that is not white |
+| `*-textured-pal-lit-*`, lit smooth | `Z_UV_RGB` (`xzuvrgb.inc`) |
+| `sphere-textured-pal-dither-*`, `BR_MATF_DITHER` | `Z_UV_D` |
+| `sphere-smooth-dither-*`, `BR_MATF_DITHER` | `Z_RGB_D` (`xzrgb.inc`) |
+
+The untextured scenes take `Z_RGB`.
+
+**Checked against the 1998 assembly.** `gsetuptf.asm`, `rastbuff.asm`,
+`rastrise.asm`, `setupdat.asm` and the eight `xz*.asm` files were assembled
+with MASM and linked into the period build in place of the port. MASM used a
+`drv.inc` generated from the harness's structure offsets, plus 26 operand-size
+annotations that MASM 14 asks for and that leave every encoding unchanged.
+All 61 scenes came out byte for byte as the port draws them. A differential
+test drew 240,866 random triangles both ways, in batches of 1 to 24 so that
+the buffer's order and its flush are exercised, over all 32 kernels in both
+formats: no difference. One-instruction changes to the assembly (one per
+kernel file, one in the setup) made it fail in exactly the kernels they
+touch. This was a local run; the reference build is not part of CI.
+
+| Class, modern against period (MMX) | Scenes | Coverage IoU | Identical | MAD, at most |
+|---|---|---|---|---|
+| untextured | 10 | 0.9986 to 0.9993 | 0.9701 to 0.9993 | 0.230 |
+| 16-bit maps (untextured on both sides) | 10 | 0.9986 to 0.9993 | 0.9701 to 0.9993 | 0.230 |
+| 8-bit palette maps, textured | 10 | 0.9970 to 0.9993 | 0.9659 to 0.9809 | 0.432 |
+| dithered | 4 | 0.9993 | 0.9781 to 0.9872 | 0.476 |
+
+Against the general tables (previous section) the untextured scenes were 63%
+to 99% identical. Through the MMX table they are 97% to 99.9%, and the
+textured scenes, 0% before, are 96.6% to 98.1%.
+
+**Where the rest comes from.** A local, instrumented copy of BRender 1.4's
+softprim wrote out the vertices each of its MMX triangles receives
+(`MmxTriangle`, `drivers/softprim/raster.cpp:5265`). Replayed in the same
+order through engine-revival's port of the 1998 setup and kernels, they give
+BRender 1.4's own frames byte for byte, on all 34 scenes. The port draws as
+the 1998 assembly does, so the 1998 MMX kernels and BRender 1.4's draw the
+same pixels from the same input. The period frames differ because the two
+softrend versions hand the rasteriser different vertices: the 0.03-pixel
+geometry difference found with the perspective scenes. It is also why the
+period sphere covers 22 more pixels than 1.4's in every 15/16-bit scene. The
+replay was local; it is not part of CI.
+
+**A 1998 defect, kept as found.** In a span of two or more words, the 16-bit
+dithered textured kernel does not mask green: `xzuv1.inc` tests
+`COLOUR_TYPE_15` twice where the second test should be `COLOUR_TYPE_16`, so
+green's low bits land in the blue field. The one-word span masks it. On the
+sheet, the dithered 565 earth shows it as cyan in the green land, on both
+sides. BlazingRenderer recorded this first, in BRender 1.4's
+`drivers/softprim/raster.cpp:4823` (`MmxPackDirectDither`), and 1.4
+reproduces it.
+
+Evidence: `evidence/modern-vs-period-mmx-2026-10-17.json` (34 scenes),
+`evidence/modern-windows-vs-linux-mmx-2026-10-17.json` (all 61 scenes; the
+fourteen new ones identical) and
+`evidence/period-mmx-left-modern-right-hicolor-2026-10-17.png` (the four
+textured kernels, the dithered earth and the Gouraud torus; period on the
+left).
 
 ## A 1998 defect: the 24-bit lit textured kernel
 
@@ -366,14 +459,15 @@ Every change:
 
 - runs the period scenes twice (Win32), checks the perspective and the
   15/16-bit scenes on their own as well, and runs them twice more with the shade table at stride
-  4, and the modern scenes twice on Windows and on Linux, and
+  4, then twice through the MMX table (checking that only the 15/16-bit
+  scenes change), and the modern scenes twice on Windows and on Linux, and
   requires identical bytes each time;
 - compares modern Windows against modern Linux within coverage IoU 1.0, at
   least 99.9% identical pixels and at most 1 level;
 - compares modern against period, each class within its own bounds (table
   below);
 - reports the 24-bit lit textured scenes as shipped, and the textured
-  15/16-bit scenes, without bounds.
+  15/16-bit scenes against the general tables, without bounds.
 
 | Class | Coverage IoU | Identical | MAD |
 |---|---|---|---|
@@ -383,7 +477,11 @@ Every change:
 | 8-bit textured, unlit and lit | 0.998 | 96% | 0.5 |
 | 24-bit lit textured, table at stride 4 | 0.999 | 97% | 0.3 |
 | 8-bit perspective-correct, with the linear plane | 0.998 | 92% | 1.8 |
-| 15/16-bit untextured (against 1.4's MMX path) | 0.986 | 63% | 2.1 |
+| 15/16-bit untextured, general tables (against 1.4's MMX path) | 0.986 | 63% | 2.1 |
+| 15/16-bit untextured, through the MMX table | 0.998 | 97% | 0.25 |
+| 15/16-bit, 16-bit maps, through the MMX table | 0.998 | 97% | 0.25 |
+| 15/16-bit, 8-bit palette maps, through the MMX table | 0.997 | 96% | 0.45 |
+| 15/16-bit dithered, through the MMX table | 0.999 | 97% | 0.5 |
 
 All bounds were set from the measurements above, so they are calibrated, not
 predicted.
@@ -444,7 +542,6 @@ Windows CI has no OpenGL, so this runs on Linux only.
 
 ## Not measured yet
 
-- 15/16-bit textured parity against BRender 1.4: 1.4 reproduces the MMX path,
-  which draws these maps untextured, so there is no like-for-like kernel to
-  compare with. The z-sorted 15/16-bit kernels, the `TIP256` perspective
-  mappers and the MMX family itself are not ported.
+- The z-sorted 15/16-bit kernels and the `TIP256` perspective mappers are
+  not ported. The MMX table's subdivided-perspective rows reuse the ported
+  kernels, but no scene asks for subdivision.

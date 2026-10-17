@@ -334,3 +334,31 @@ def test_ci_runs_the_period_build_through_the_mmx_table():
     assert "--only dither --bounds 0.999 0.97 255 0.5" in parity
     period = (PARITY / "period" / "CMakeLists.txt").read_text(encoding="utf-8")
     assert "BRENDER_PENTPRIM_MMX" in period
+
+
+def test_the_mmx_evidence_matches_the_readme():
+    """15/16-bit through the 1998 MMX table: every scene draws on both sides,
+    textured included, and the numbers are the README's."""
+    record = json.loads((EVIDENCE / "modern-vs-period-mmx-2026-10-17.json").read_text(encoding="utf-8"))
+    scenes = record["scenes"]
+    assert len(scenes) == 34 and record["ok"] and record["control"]["fails_as_required"]
+    assert all(m["drawn_a"] > 0 and m["drawn_b"] > 0 for m in scenes.values())
+    pal = {k: m for k, m in scenes.items() if "-pal" in k and "dither" not in k}
+    assert len(pal) == 10
+    assert min(m["coverage_iou"] for m in scenes.values()) == 0.997
+    assert min(m["identical"] for m in scenes.values()) == 0.9659
+    assert max(m["mad"] for m in scenes.values()) == 0.476
+    assert min(m["identical"] for m in pal.values()) == 0.9659 and max(m["identical"] for m in pal.values()) == 0.9809
+    # flat scenes: every pixel both sides draw has the same colour
+    for name in ("sphere-flat-rgb555", "sphere-flat-rgb565", "torus-flat-rgb555", "torus-flat-rgb565"):
+        assert scenes[name]["identical"] == scenes[name]["coverage_iou"], name
+    # against the general tables the textured scenes had no pixel in common
+    general = json.loads((EVIDENCE / "modern-vs-period-hicolor-2026-10-17.json").read_text(encoding="utf-8"))
+    for name, m in general["scenes"].items():
+        if "textured" in name:
+            assert m["identical"] == 0.0 and scenes[name]["identical"] > 0.97, name
+    cross = json.loads((EVIDENCE / "modern-windows-vs-linux-mmx-2026-10-17.json").read_text(encoding="utf-8"))
+    assert len(cross["scenes"]) == 61 and cross["within_bounds"]
+    assert all(m["identical"] == 1.0 for k, m in cross["scenes"].items() if "-pal" in k or "dither" in k)
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## 15 and 16-bit through the MMX table" in readme and "MmxPackDirectDither" in readme
