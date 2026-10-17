@@ -116,7 +116,7 @@ Not done:
 Done when: each channel installs the current release on a clean machine in CI
 (or on a recorded manual run where CI cannot reach). AppImage: met in CI.
 
-### 5. Renderer parity, measured (24-bit and 8-bit, untextured, textured and perspective-correct: met)
+### 5. Renderer parity, measured (24-bit, 8-bit and 15/16-bit, untextured, textured and perspective-correct: met)
 
 `modern/parity/` (see its README) draws one set of scenes on the 1998
 rasteriser and on BRender 1.4's, and compares them pixel by pixel with a
@@ -146,6 +146,15 @@ line by line (`tt24_piz.asm` in 0.4.0, `t_piza.asm` under Argonaut's
   table at a 4-byte stride and draws garbage. Laid at that stride (period
   side only, as a measurement), the scenes match: coverage IoU 0.9998 or
   better, 97.9% and 99.5% identical.
+- **15/16-bit** (17 October 2026, engine-revival 0.8.0 ports `tt15_piz.asm`,
+  `tt16_piz.asm`, `zb16p2ul.asm` and `t_piza.asm`'s 16-bit instances, checked
+  byte for byte against the assembled 1998 code): the period build draws all
+  twenty RGB_555 and RGB_565 scenes, textured ones included. BRender 1.4
+  reproduces pentprim's MMX path for these formats, which the 1998 matcher
+  uses instead of the general tables on an MMX processor. That path draws
+  these maps untextured, so only the untextured scenes compare: coverage IoU
+  0.9869 or better, MAD at most 2.08, with the colour identical wherever both
+  draw a flat scene.
 - CI checks every change: determinism on all three builds, and both scene
   classes within their measured bounds. The 1998 renderer rung now gates on
   a textured frame.
@@ -161,11 +170,12 @@ about evenly. Lit stills differ by design (per-pixel against per-vertex
 lighting), and the software rasteriser does not light 24-bit textures without
 a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
 
-Still open: 15/16-bit targets.
+Still open: a like-for-like 15/16-bit textured comparison (BRender 1.4 has only the MMX path, the period harness only the general one).
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the
-last through the stride measurement) and for INDEX_8.
+last through the stride measurement), for INDEX_8, and for RGB_555 and
+RGB_565 untextured.
 
 ### 6. Modern GPU backends (Vulkan stage A: built)
 

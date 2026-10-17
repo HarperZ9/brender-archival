@@ -1,0 +1,201 @@
+{
+  "label": "modern (Linux) against period, 15/16-bit",
+  "scenes": {
+    "sphere-flat-rgb555": {
+      "coverage_iou": 0.9935,
+      "identical": 0.9935,
+      "mad": 1.03,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-flat-rgb565": {
+      "coverage_iou": 0.9935,
+      "identical": 0.9935,
+      "mad": 1.023,
+      "max": 198,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-lit-rgb555": {
+      "coverage_iou": 0.9935,
+      "identical": 0.9309,
+      "mad": 1.008,
+      "max": 181,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-lit-rgb565": {
+      "coverage_iou": 0.9935,
+      "identical": 0.9226,
+      "mad": 1.008,
+      "max": 181,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-smooth-rgb555": {
+      "coverage_iou": 0.9935,
+      "identical": 0.8574,
+      "mad": 0.888,
+      "max": 181,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-smooth-rgb565": {
+      "coverage_iou": 0.9935,
+      "identical": 0.8156,
+      "mad": 0.887,
+      "max": 181,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-textured-gold-rgb555": {
+      "coverage_iou": 0.9935,
+      "identical": 0.0,
+      "mad": 65.884,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-textured-gold-rgb565": {
+      "coverage_iou": 0.9935,
+      "identical": 0.0,
+      "mad": 64.964,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-textured-lit-rgb555": {
+      "coverage_iou": 0.9935,
+      "identical": 0.0,
+      "mad": 63.886,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-textured-lit-rgb565": {
+      "coverage_iou": 0.9935,
+      "identical": 0.0,
+      "mad": 63.814,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29642,
+      "by_index": false
+    },
+    "sphere-textured-rgb555": {
+      "coverage_iou": 0.9993,
+      "identical": 0.0,
+      "mad": 92.012,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "sphere-textured-rgb565": {
+      "coverage_iou": 0.9993,
+      "identical": 0.0,
+      "mad": 90.914,
+      "max": 247,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": false
+    },
+    "torus-flat-rgb555": {
+      "coverage_iou": 0.9869,
+      "identical": 0.9869,
+      "mad": 2.081,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17943,
+      "by_index": false
+    },
+    "torus-flat-rgb565": {
+      "coverage_iou": 0.9869,
+      "identical": 0.9869,
+      "mad": 2.068,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17943,
+      "by_index": false
+    },
+    "torus-smooth-rgb555": {
+      "coverage_iou": 0.9869,
+      "identical": 0.7166,
+      "mad": 1.875,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17943,
+      "by_index": false
+    },
+    "torus-smooth-rgb565": {
+      "coverage_iou": 0.9869,
+      "identical": 0.632,
+      "mad": 1.879,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17943,
+      "by_index": false
+    },
+    "torus-textured-lit-rgb555": {
+      "coverage_iou": 0.9642,
+      "identical": 0.0,
+      "mad": 43.933,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17512,
+      "by_index": false
+    },
+    "torus-textured-lit-rgb565": {
+      "coverage_iou": 0.9642,
+      "identical": 0.0,
+      "mad": 43.453,
+      "max": 165,
+      "drawn_a": 17959,
+      "drawn_b": 17512,
+      "by_index": false
+    },
+    "torus-textured-rgb555": {
+      "coverage_iou": 0.9865,
+      "identical": 0.0,
+      "mad": 115.239,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17757,
+      "by_index": false
+    },
+    "torus-textured-rgb565": {
+      "coverage_iou": 0.9865,
+      "identical": 0.0,
+      "mad": 113.808,
+      "max": 198,
+      "drawn_a": 17959,
+      "drawn_b": 17757,
+      "by_index": false
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6027,
+    "identical": 0.6027,
+    "mad": 63.301,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11946,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true
+}

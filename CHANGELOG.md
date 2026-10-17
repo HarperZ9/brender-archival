@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased: 15 and 16-bit parity
+
+- Depends on engine-revival 0.8.0. Its line-by-line ports of `tt15_piz.asm`, `tt16_piz.asm`, `zb16p2ul.asm` and `t_piza.asm`'s 16-bit instances make the period build draw into RGB_555 and RGB_565 buffers. Before it, those kernels were stubs that drew nothing.
+- `modern/parity/`: twenty scenes, ten in each format: untextured flat, flat lit and Gouraud; `earth.pix` and `rosewood.pix` (256 x 256) and `gold8.pix` (320 x 200) packed into the buffer's format; and the 8-bit maps lit through `shade.tab` packed the same way. The PPMs expand each field by repeating its top bits, the same on both sides.
+- Checked against the 1998 assembly: assembled with MASM and linked in place of the ports, it draws all 47 scenes byte for byte as the ports do, and 72,000 random triangles agree.
+- Found: BRender 1.4 reproduces pentprim's MMX path for 15/16-bit output, which the 1998 matcher uses instead of the general tables on an MMX processor, and that path draws these maps untextured. The period harness has no MMX and uses the general tables. The untextured scenes compare at coverage IoU 0.9869 or better and MAD at most 2.08, and CI holds them to those bounds. The textured ones are reported.
+- The 16-bit lit kernel reads its 2-byte shade table at the right stride; the 24-bit stride defect has no 16-bit counterpart.
+- CI checks the period 15/16-bit scenes twice on their own. The older gates skip the new scenes, so each still selects exactly what it did, and a test holds them to that.
+
 ## Unreleased: Vulkan, stage A
 
 - ADR 0002 sets out the Vulkan backend in three stages, each measured against the software rasteriser: A, a headless Vulkan rasteriser; B, a Vulkan primitive library under softrend; C, a renderer facility like glrend.
