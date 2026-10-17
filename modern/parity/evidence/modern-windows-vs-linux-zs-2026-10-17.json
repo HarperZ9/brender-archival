@@ -1,0 +1,322 @@
+{
+  "label": "modern Windows against modern Linux, z-sorted, TIP256 and perspective-row scenes (CI run 39076269252)",
+  "scenes": {
+    "plane-mmxp-steep-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-mmxp-steep-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-tip-steep-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-tip-steep-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-tip-steep-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0,
+      "by_index": false
+    },
+    "plane-tip-steep-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0,
+      "by_index": false
+    },
+    "sphere-flat-zs": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-flat-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-flat-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-mmxp-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-mmxp-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-smooth-zs": {
+      "coverage_iou": 1.0,
+      "identical": 0.9999,
+      "differ": 2,
+      "mad": 0.0,
+      "max": 1,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-smooth-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-smooth-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-gold-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-gold-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-lit-zs": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-lit-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-lit-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-zs": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-tip-blend-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 14803,
+      "drawn_b": 14803,
+      "by_index": false
+    },
+    "sphere-tip-blend-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 14803,
+      "drawn_b": 14803,
+      "by_index": false
+    },
+    "sphere-tip-blend-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0,
+      "by_index": false
+    },
+    "sphere-tip-blend-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0,
+      "by_index": false
+    },
+    "sphere-tip-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-tip-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-tip-zs-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0,
+      "by_index": false
+    },
+    "sphere-tip-zs-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 0,
+      "drawn_b": 0,
+      "by_index": false
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6023,
+    "identical": 0.6023,
+    "differ": 7422,
+    "mad": 63.368,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11959,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true
+}

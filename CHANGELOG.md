@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased: z-sorted, TIP256 and the MMX perspective rows
+
+- Depends on engine-revival 0.10.0. It ports the z-sorted 15/16/24-bit kernels (`tt15_pi.asm`, `tt16_pi.asm`, `tt24_pi.asm`, `t_pia.asm`), the TIP256 perspective-correct lit texture scanlines (`t15_pizp.asm`, `t15_pip.asm`) and softrend's `subdiv.asm`, each checked byte for byte against the assembled 1998 code on all 91 scenes and 96,000 random triangles.
+- `modern/parity/`: thirty new scenes, 91 in all. `parity-scene.c` can now render through `BrZsSceneRender` and set a material's opacity. Per format: five z-sorted scenes, the TIP sphere and steep plane z-buffered and z-sorted, the blended TIP sphere both ways, and two scenes on the MMX table's perspective rows; plus four 24-bit z-sorted scenes.
+- Measured on CI run 39076269252 against BRender 1.4: the z-sorted 15/16-bit scenes are byte-identical but for one pixel on the Gouraud sphere in each format; the MMX perspective plane is byte-identical, and the sphere differs in one pixel. 1.4 has no TIP kernel: it draws the z-buffered TIP shapes untextured through the MMX table, as the 1998 MMX build does, and refuses the z-sorted ones.
+- Found, on the harness side and fixed in engine-revival 0.10.0: the FLOAT softrend's subdivision routines had been stubbed to never subdivide, so the MMX table's perspective rows drew affine (7,450 of the steep plane's 9,107 pixels differed from 1.4).
+- Recorded first by BlazingRenderer (commit `96f9537d`, fixed in 1.4): the 1998 MMX table has no `z_buffered` property, so it takes z-sorted triangles and reads stale depth. The MMX build's z-sorted scenes are reported, not gated.
+- Eight new CI gates, each checked against a control that fails. The older gates skip the new names and select exactly the scenes they did.
+- Corrected: `parity_compare.py` treated a rounded 100.00% as identical, so one differing pixel in 20,000 passed `--require-identical`. It now counts differing pixels exactly (`differ`) and has `--max-differ N`. Recounted, the shared-angle result is 50 of 61 scenes byte-identical to 1.4 on Windows, not 56, and 26 of the 34 MMX scenes on Linux, not 30; each hidden difference is one pixel by one level. The 8-bit textured and perspective gates now allow one differing pixel. Evidence in `modern/parity/evidence/*-exact-2026-10-17.json`.
+- Evidence in `modern/parity/evidence/*-zs-2026-10-17.json` and `period-left-modern-right-zs-2026-10-17.png`.
+
 ## Unreleased: the same angle on both sides
 
 - `parity-scene.c` gives BRender 1.3.2 and 1.4 the same angles (`PARITY_ANGLE`, the nearest 16-bit unit in each version's form). BRender 1.3.2's `BR_ANGLE_DEG` multiplies by 182, which is 0.024% short of a degree's 182.04 units, and truncates; 1.4's angle is an exact float. That alone moved every period vertex by up to a few hundredths of a pixel. The lead traced it to the model-to-clip matrices.

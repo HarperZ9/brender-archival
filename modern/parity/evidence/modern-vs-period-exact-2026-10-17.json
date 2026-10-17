@@ -1,0 +1,292 @@
+{
+  "label": "modern (Linux) against period, the 27 24-bit and 8-bit scenes, differing pixels counted exactly (CI run 39076269252)",
+  "scenes": {
+    "plane-textured-lit-steep-persp-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-steep-linear-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-steep-persp-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "sphere-flat": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-flat-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-lit": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-lit-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-smooth": {
+      "coverage_iou": 1.0,
+      "identical": 0.9998,
+      "differ": 5,
+      "mad": 0.0,
+      "max": 1,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-smooth-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    },
+    "sphere-textured-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit": {
+      "coverage_iou": 0.4771,
+      "identical": 0.0005,
+      "differ": 29621,
+      "mad": 132.64,
+      "max": 252,
+      "drawn_a": 29636,
+      "drawn_b": 14140,
+      "by_index": false
+    },
+    "sphere-textured-lit-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 9,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-persp-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 9,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-persp-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-turned": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 30079,
+      "drawn_b": 30079,
+      "by_index": false
+    },
+    "teapot-smooth": {
+      "coverage_iou": 1.0,
+      "identical": 0.9995,
+      "differ": 4,
+      "mad": 0.0,
+      "max": 1,
+      "drawn_a": 8786,
+      "drawn_b": 8786,
+      "by_index": false
+    },
+    "teapot-smooth-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 8791,
+      "drawn_b": 8791,
+      "by_index": true
+    },
+    "torus-flat": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17943,
+      "drawn_b": 17943,
+      "by_index": false
+    },
+    "torus-smooth": {
+      "coverage_iou": 1.0,
+      "identical": 0.9999,
+      "differ": 2,
+      "mad": 0.0,
+      "max": 1,
+      "drawn_a": 17943,
+      "drawn_b": 17943,
+      "by_index": false
+    },
+    "torus-smooth-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17961,
+      "drawn_b": 17961,
+      "by_index": true
+    },
+    "torus-textured": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17943,
+      "drawn_b": 17943,
+      "by_index": false
+    },
+    "torus-textured-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17961,
+      "drawn_b": 17961,
+      "by_index": true
+    },
+    "torus-textured-lit": {
+      "coverage_iou": 0.6562,
+      "identical": 0.0,
+      "differ": 17923,
+      "mad": 89.035,
+      "max": 248,
+      "drawn_a": 17702,
+      "drawn_b": 11982,
+      "by_index": false
+    },
+    "torus-textured-lit-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17716,
+      "drawn_b": 17716,
+      "by_index": true
+    },
+    "torus-textured-lit-persp-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17723,
+      "drawn_b": 17723,
+      "by_index": true
+    },
+    "torus-textured-persp-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17961,
+      "drawn_b": 17961,
+      "by_index": true
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6023,
+    "identical": 0.6023,
+    "differ": 7422,
+    "mad": 63.368,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11959,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true
+}
