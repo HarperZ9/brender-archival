@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased: Vulkan, stage A
+
+- ADR 0002 sets out the Vulkan backend in three stages, each measured against the software rasteriser: A, a headless Vulkan rasteriser; B, a Vulkan primitive library under softrend; C, a renderer facility like glrend.
+- Stage A is in `modern/vulkan/`, built with `-DBRENDER_VULKAN=ON`. It needs the Vulkan headers and loader and `glslangValidator`. `vk-triangle` draws flat-coloured screen-space triangles with Vulkan and with BRender 1.4's software rasteriser, and `vk_compare.py` compares them.
+- Measured 17 October 2026 on Mesa lavapipe: coverage IoU 0.9913 for a triangle, 1.0 for a quad split along a diagonal, and 0.9137 for thin slivers. The colour is within one level wherever both draw, and two runs give the same bytes.
+- Found on the software side: some flat colours come out one level low (232, 180, 92 is written as 231, 179, 92), and a shared diagonal gives 80 more pixels to the first triangle. Vulkan writes exact colours and splits the diagonal evenly.
+- CI runs stage A on Linux with lavapipe forced and holds it to the measured bounds. It keeps the frames as the `vulkan-triangle` artifact.
+
 ## Unreleased: The Keeper's Hour 0.6.0, toward 1.0
 
 - A title screen: the lamp room turns slowly behind the name, with Begin the night, Carry on (when a night is saved), Options and Quit, by keyboard, gamepad or mouse. It replaces the old "resume" conversation.
