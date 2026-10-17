@@ -401,7 +401,7 @@ in CI on every change:
 |---|---|---|---|---|
 | unlit | 8 | 0.9774 to 0.9957 | 0.9774 to 0.9957 | at most 4.21 |
 | textured | 2 | 0.9929 and 0.9957 | 0.7829 and 0.7925 | at most 4.32 |
-| lit | 8 | 0.9774 to 0.9957 | 0.0093 to 0.6763 | up to 35.2 |
+| lit | 8 | 0.9774 to 0.9957 | 0.1139 to 0.6763 | up to 13.8 |
 
 - **Coverage:** every pixel both renderers fill has the same colour (the
   unlit "identical" share equals the IoU). The difference is at the edges:
@@ -416,8 +416,12 @@ in CI on every change:
   (its lit and unlit stills are the same bytes), while OpenGL lights it. This
   follows 1998: the 24-bit textured kernels light only through a shade table
   (`TrapezoidRenderPIZ2TIA_RGB_888`), and with none given BRender picks the
-  unlit kernel. So brview's earth and torus look flat on the software
-  renderer.
+  unlit kernel. Since 17 October 2026 brview gives its lit textured models
+  on the software renderer their 8-bit map and a 24-bit shade table built
+  from `std.pal` (`viewer/brview_shade.c`). Before that change the earth and
+  torus drew flat: identical pixels 0.9% and 2.5%, MAD 35.2 and 19.1 against
+  OpenGL. After it: 11.4% and 35.6%, MAD 13.8 and 10.4. The rest is
+  per-pixel against per-vertex lighting and OpenGL's specular highlight.
 - **Determinism:** two OpenGL runs give the same bytes (the readback waits
   for OpenGL to finish, `brd_frame_write_ppm`).
 - **Control:** OpenGL's unlit earth against the software's unlit teapot must

@@ -23,9 +23,9 @@
     "earth-lit": {
       "class": "lit",
       "coverage_iou": 0.9957,
-      "identical": 0.0093,
-      "mad": 35.186,
-      "max": 237,
+      "identical": 0.1139,
+      "mad": 13.834,
+      "max": 227,
       "drawn": 103275,
       "only_opengl": 222,
       "only_software": 217
@@ -153,9 +153,9 @@
     "torus-lit": {
       "class": "lit",
       "coverage_iou": 0.9929,
-      "identical": 0.0254,
-      "mad": 19.121,
-      "max": 190,
+      "identical": 0.3563,
+      "mad": 10.374,
+      "max": 136,
       "drawn": 69763,
       "only_opengl": 204,
       "only_software": 288
@@ -206,8 +206,8 @@
     },
     "lit": {
       "lowest_coverage_iou": 0.9774,
-      "lowest_identical": 0.0093,
-      "highest_mad": 35.186
+      "lowest_identical": 0.1139,
+      "highest_mad": 13.834
     }
   },
   "control": {

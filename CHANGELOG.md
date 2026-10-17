@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased: brview lights textures in software
+
+- brview: on the software renderer, lit textured models (the earth, the torus) now shade with the light. BRender's software rasteriser lights a texture only through a shade table, as in 1998, and brview gave it none, so they drew flat. brview now gives them their 8-bit map and a 24-bit table built from `std.pal` (`viewer/brview_shade.c`). Against OpenGL, MAD falls from 35.2 to 13.8 on the earth and from 19.1 to 10.4 on the torus.
+- `display_check.py`: brview's true-colour earth now has 987 colours, so the period look's colour-count control applies to brview as well as the game.
+
 ## Unreleased: 15 and 16-bit parity
 
 - Depends on engine-revival 0.8.0. Its line-by-line ports of `tt15_piz.asm`, `tt16_piz.asm`, `zb16p2ul.asm` and `t_piza.asm`'s 16-bit instances make the period build draw into RGB_555 and RGB_565 buffers. Before it, those kernels were stubs that drew nothing.

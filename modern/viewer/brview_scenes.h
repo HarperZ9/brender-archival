@@ -21,6 +21,13 @@ br_error BrViewSceneLoad(int index, br_actor *parent, br_material *material, br_
 /* Draw the scenes loaded from now on without lighting (1) or lit (0). */
 void BrViewSceneSetUnlit(int on);
 
+/* On the software rasteriser (1), lit textured scenes use their 8-bit map
+ * and a 24-bit shade table, so the texture is lit as on OpenGL. */
+void BrViewSceneSetSoftware(int on);
+
+/* The 24-bit shade table built from std.pal (brview_shade.c). */
+br_pixelmap *BrViewSceneRGBShade(void);
+
 /* std.pal, the palette the period look is shown through. */
 br_pixelmap *BrViewScenePalette(void);
 

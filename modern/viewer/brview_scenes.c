@@ -187,16 +187,24 @@ br_pixelmap *BrViewScenePalette(void)
     return palette;
 }
 
-static int unlit; /* BrViewSceneSetUnlit */
+static int unlit;    /* BrViewSceneSetUnlit */
+static int software; /* BrViewSceneSetSoftware */
 
 void BrViewSceneSetUnlit(int on) { unlit = on; }
+void BrViewSceneSetSoftware(int on) { software = on; }
 
 static void set_material(br_material *material, const scene *s, br_boolean textured, br_boolean period)
 {
     br_pixelmap *tex = NULL;
     int ramp = ramp_for(s->r, s->g, s->b);
-    if (textured && s->texture)
-        tex = period ? load_texture8(s->texture) : load_texture(s->texture);
+    int rgb_lit = !period && software && !unlit; /* a lit map on the software rasteriser: 8-bit map, RGB shade table */
+    if (textured && s->texture) {
+        tex = period || rgb_lit ? load_texture8(s->texture) : NULL;
+        if (tex == NULL) {
+            rgb_lit = 0;
+            if (!period) tex = load_texture(s->texture);
+        }
+    }
     if (tex != NULL)
         BrMapAdd(tex);
     material->colour_map = tex;
@@ -204,7 +212,7 @@ static void set_material(br_material *material, const scene *s, br_boolean textu
      * textured one is lit through shade.tab, row by row */
     material->index_base = (br_uint_8)(tex ? 0 : ramps[ramp].base);
     material->index_range = (br_uint_8)(tex ? 63 : ramps[ramp].range);
-    material->index_shade = period && tex ? shade_table() : NULL;
+    material->index_shade = period && tex ? shade_table() : rgb_lit && tex ? BrViewSceneRGBShade() : NULL;
     material->colour = BR_COLOUR_RGB(s->r, s->g, s->b);
     material->flags = unlit ? BR_MATF_PERSPECTIVE : BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE;
     material->ka = BR_UFRACTION(0.25);

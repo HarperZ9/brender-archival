@@ -23,10 +23,10 @@ passes everything is caught.
 4. Field of view changes the picture: 40 and 90 degrees differ.
 5. The period look (software only) draws in 256 colours or fewer, through
    BRender's 8-bit path, and shows the same scene. Controls: the period frame
-   is not the true-colour frame (the 8-bit path ran), and in the game the
-   true-colour frame of the same room uses more than 256 colours. brview's
-   first model, the earth map, measured 100 colours in true colour on
-   16 October 2026, so the count cannot be its control.
+   is not the true-colour frame (the 8-bit path ran), and the true-colour
+   frame of the same scene uses more than 256 colours. (brview's earth drew
+   unlit in software with 100 colours until 17 October 2026, when brview
+   gained a shade table; it now measures 987.)
 
 --stills DIR keeps the period and true-colour stills (as PPM) for a look.
 
@@ -63,7 +63,8 @@ PREFIX = "KEEPERS"
 
 PERIOD_COLOURS_MAX = 256     # an 8-bit frame
 PERIOD_SCENE_MAD_MAX = 30.0  # period against true colour, mean level difference. Measured 16 October
-# 2026: 10.5 (the game, lamp room) and 24.0 (brview, earth; its background
+# 2026: 10.5 (the game, lamp room) and 24.0 (brview, earth; 19.5 once lit
+# through a shade table on 17 October; its background
 # differs too). Calibrated, not predicted.
 
 
@@ -180,8 +181,7 @@ def main(argv: list[str]) -> int:
     if period is not None:
         checks["period_is_256_colours"] = m["period_colours"] <= PERIOD_COLOURS_MAX
         checks["period_path_used"] = period[2] != sharp[2]
-        if PREFIX == "KEEPERS":
-            checks["period_control_fails"] = m["true_colour_colours_control"] > PERIOD_COLOURS_MAX
+        checks["period_control_fails"] = m["true_colour_colours_control"] > PERIOD_COLOURS_MAX
         checks["period_same_scene"] = 0 < m["period_vs_true_colour_mad"] <= PERIOD_SCENE_MAD_MAX
     result = {"measured": m, "checks": checks, "ok": all(checks.values())}
     text = json.dumps(result, indent=2)
