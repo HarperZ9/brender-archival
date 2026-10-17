@@ -155,6 +155,13 @@ line by line (`tt24_piz.asm` in 0.4.0, `t_piza.asm` under Argonaut's
   these maps untextured, so only the untextured scenes compare: coverage IoU
   0.9869 or better, MAD at most 2.08, with the colour identical wherever both
   draw a flat scene.
+- **15/16-bit through the MMX table** (17 October 2026, engine-revival 0.9.0
+  ports pentprim's MMX family, checked byte for byte against the assembled
+  1998 code; the period build runs it with `BRENDER_PENTPRIM_MMX`): the 1998
+  path BRender 1.4 reproduces, so textured scenes compare too. 34 scenes, 8-bit
+  palette maps and dithering included: coverage IoU 0.9970 or better, 96.6% to
+  99.9% identical, MAD at most 0.48. Fed 1.4's own vertices, the 1998 kernels
+  draw 1.4's frames byte for byte, so the rest comes from the vertices.
 - CI checks every change: determinism on all three builds, and both scene
   classes within their measured bounds. The 1998 renderer rung now gates on
   a textured frame.
@@ -170,7 +177,7 @@ about evenly. Lit stills differ by design (per-pixel against per-vertex
 lighting), and the software rasteriser does not light 24-bit textures without
 a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
 
-Still open: a like-for-like 15/16-bit textured comparison (BRender 1.4 has only the MMX path, the period harness only the general one).
+Still open: the period geometry (softrend hands the rasteriser vertices up to 0.03 pixels from 1.4's; every remaining parity difference traced so far starts there).
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the

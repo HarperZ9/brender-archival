@@ -133,6 +133,29 @@ jobs:
             & "$build/Debug/parity_scene_period.exe" "$src/dat" "parity-period-shade4-$run" 2>$null | Out-Null
           }
           python modern/parity/parity_compare.py parity-period-shade4-a parity-period-shade4-b --label "period, shade table at stride 4, two runs" --require-identical
+      # The same scenes on the period build as a Pentium with MMX runs it
+      # (engine-revival 0.9.0, harness option BRENDER_PENTPRIM_MMX): pentprim
+      # swaps its whole 15/16-bit triangle table for the MMX table, which is
+      # the 1998 path BRender 1.4 reproduces. Twice, and the 15/16-bit
+      # scenes on their own.
+      - name: the period parity scenes through the MMX table are deterministic
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $src = Join-Path $env:RUNNER_TEMP 'brender-src'
+          $harness = Join-Path $env:RUNNER_TEMP 'brender-harness'
+          $build = Join-Path $env:RUNNER_TEMP 'parity-period-mmx'
+          cmake -S modern/parity/period -B $build -A Win32 "-DBRENDER_HARNESS_DIR=$harness" "-DBRENDER_SOURCE_DIR=$src" -DBRENDER_PENTPRIM_MMX=ON
+          cmake --build $build --config Debug --parallel --target parity_scene_period
+          foreach ($run in 'a', 'b') {
+            New-Item -ItemType Directory -Force "parity-period-mmx-$run" | Out-Null
+            & "$build/Debug/parity_scene_period.exe" "$src/dat" "parity-period-mmx-$run" 2>$null | Out-Null
+          }
+          python modern/parity/parity_compare.py parity-period-mmx-a parity-period-mmx-b --label "period through the MMX table, two runs" --require-identical
+          python modern/parity/parity_compare.py parity-period-mmx-a parity-period-mmx-b --label "period 15/16-bit scenes through the MMX table, two runs" --only rgb555,rgb565 --require-identical
+          # Only the 15/16-bit table changes: every other scene is the general build's.
+          python modern/parity/parity_compare.py parity-period-a parity-period-mmx-a --label "the MMX build leaves the other scenes alone" --skip rgb555,rgb565 --require-identical
       - uses: actions/upload-artifact@v4
         with:
           name: parity-period
@@ -141,6 +164,10 @@ jobs:
         with:
           name: parity-period-shade4
           path: parity-period-shade4-a
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-period-mmx
+          path: parity-period-mmx-a
 
   # The same 21 programs against BRender 1.4 from BlazingRenderer/BRender
   # (MIT), built 64-bit. modern/ladder64/make_ladder64.py documents the two
@@ -548,7 +575,7 @@ jobs:
       # textured scenes are reported, not bounded: 1.4's MMX path draws them
       # untextured.
       - name: the 1998 and modern rasterisers draw the same untextured 15/16-bit scenes within the recorded bounds
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 15/16-bit untextured" --only rgb555,rgb565 --skip textured --bounds 0.986 0.63 255 2.1
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 15/16-bit untextured" --only rgb555,rgb565 --skip textured,dither --bounds 0.986 0.63 255 2.1
       - name: the textured 15/16-bit scenes, reported
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 15/16-bit textured (1.4 draws the MMX path)" --only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5
       - uses: actions/download-artifact@v4
@@ -560,3 +587,22 @@ jobs:
       # >= 97.9% identical, MAD <= 0.272.
       - name: the 24-bit lit textured scenes match once the shade table sits at the 1998 kernel's stride
         run: python3 modern/parity/parity_compare.py parity-linux parity-period-shade4 --label "modern against period, 24-bit lit textured, shade table at stride 4" --only textured-lit --skip index8,rgb555,rgb565 --bounds 0.999 0.97 255 0.3
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-period-mmx
+          path: parity-period-mmx
+      # 15/16-bit against the period build through the MMX table
+      # (engine-revival 0.9.0), the 1998 path BRender 1.4 reproduces, so the
+      # two sides run the same kernel family. Measured 17 October 2026: CI
+      # frames, Linux modern against the Win32 period. Every class within its
+      # measured bounds, calibrated, not predicted; fed 1.4's own vertices,
+      # the MMX port reproduces 1.4's frames byte for byte (README), so the
+      # residual is in the vertices.
+      - name: the 1998 MMX path and modern draw the same untextured 15/16-bit scenes within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period-mmx --label "modern against period (MMX), 15/16-bit untextured" --only rgb555,rgb565 --skip textured,dither --bounds 0.998 0.97 255 0.25
+      - name: the 1998 MMX path and modern draw the 16-bit-map scenes the same, untextured on both sides
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period-mmx --label "modern against period (MMX), 15/16-bit maps the MMX table does not texture" --only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5 --bounds 0.998 0.97 255 0.25
+      - name: the 1998 MMX path and modern texture the 8-bit palette maps the same within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period-mmx --label "modern against period (MMX), 15/16-bit textured" --only textured-pal --skip dither --bounds 0.997 0.96 255 0.45
+      - name: the 1998 MMX path and modern dither the same within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period-mmx --label "modern against period (MMX), 15/16-bit dithered" --only dither --bounds 0.999 0.97 255 0.5

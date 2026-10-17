@@ -13,7 +13,7 @@ license-files = ["LICENSE", "LICENSES/MIT-BRender.txt"]
 authors = [{ name = "Zain Dana Harper" }]
 keywords = ["brender", "game-engines", "rendering", "preservation", "archives", "provenance"]
 dependencies = [
-    "engine-revival @ git+https://github.com/HarperZ9/engine-revival@v0.8.0",
+    "engine-revival @ git+https://github.com/HarperZ9/engine-revival@v0.9.0",
 ]
 
 [project.optional-dependencies]
