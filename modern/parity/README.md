@@ -3,8 +3,31 @@
 The question is whether BRender 1.4, the modern 64-bit engine the downloads
 use, draws the same pixels as Argonaut's BRender 1.3.2 from 1998.
 
-**Answer on 16 and 17 October 2026, for the sixty-one scenes measured
-here: almost, with one 1998 defect.**
+**Answer on 17 October 2026, for the sixty-one scenes measured here: yes,
+with one 1998 defect.** Given the same angles, the 1998 rasteriser and
+BRender 1.4 draw the same pixels.
+
+- **56 of the 61 scenes are byte-identical** to BRender 1.4 on Windows:
+  every 8-bit scene (unlit, flat, Gouraud, textured, lit textured,
+  perspective-correct), every 24-bit flat and textured scene, and all 34
+  15/16-bit scenes through the 1998 MMX table, textured and dithered
+  included.
+- **Three 24-bit Gouraud scenes** differ in 2 to 6 pixels, by one level. BRender 1.4's own
+  Windows and Linux builds differ from each other on the same scenes by a
+  similar amount.
+- **24-bit lit textured:** the 1998 kernel reads its shade table at the wrong
+  stride, so as shipped it draws garbage (see
+  [A 1998 defect](#a-1998-defect-the-24-bit-lit-textured-kernel)). With the
+  table laid at the stride it reads, one scene is identical and the other
+  differs in 2 pixels.
+- What made the difference: BRender 1.3.2's `BR_ANGLE_DEG` is 182 units a
+  degree, truncated, where BRender 1.4's angle is exact (see
+  [The same angle on both sides](#the-same-angle-on-both-sides)). Every
+  section below that one was measured before the fix, with each version's own
+  macro; it stays as the record of what each kernel port achieved then.
+
+The earlier answer (16 and 17 October, each version's own angle macro): almost,
+with the same defect.
 - **24-bit untextured:** silhouettes match to a coverage IoU of 0.9993 or
   better, 90.7% to 100% of pixels are identical, and the mean difference is
   under 0.2 levels.
@@ -32,6 +55,60 @@ here: almost, with one 1998 defect.**
   [15 and 16-bit through the MMX table](#15-and-16-bit-through-the-mmx-table)).
 
 The 1998 build gives the same bytes on every run.
+
+## The same angle on both sides
+
+Measured 17 October 2026, CI run 39067573521. The CI period frames (general
+tables, MMX table and shade table at stride 4) are the same bytes as local
+Win32 runs, and CI Windows modern the same as a local Windows run.
+
+`parity-scene.c` turns its model, camera and light through degrees. The two
+versions turn degrees into angles differently:
+
+- BRender 1.3.2, `inc/angles.h:16`:
+  `BR_ANGLE_DEG(deg) ((br_angle)(long)((deg)*182))`. A turn is 65536 units,
+  so a degree is 182.04 units; 182 is 0.024% short, and the product is
+  truncated. The 55-degree field of view becomes 54.987 degrees.
+- BRender 1.4, `core/inc/angles.h:16`:
+  `BR_ANGLE_DEG(deg) ((br_angle)((deg) / 360.0f))`, a float fraction of a turn.
+
+So every period vertex sat up to a few hundredths of a pixel from 1.4's: the
+geometry difference the perspective and 15/16-bit sections traced to the
+vertices. The lead found the cause by dumping each version's model, clip and
+screen coordinates (the model-to-clip matrices differed by 3.5e-4 relative).
+`parity-scene.c` now gives both sides the same angle, `PARITY_ANGLE`: the
+nearest 16-bit unit, in each version's own form. With it the clip
+coordinates agree, and:
+
+| Against BRender 1.4 (Linux, CI) | Scenes | Identical scenes | Rest |
+|---|---|---|---|
+| 24-bit and 8-bit, general tables | 27 | 22 | three Gouraud scenes, 2 to 6 pixels each, max 1 level; the two lit textured scenes (1998 stride defect) |
+| 24-bit lit textured, table at stride 4 | 2 | 1 | 2 pixels |
+| 15/16-bit, MMX table | 34 | 30 | four scenes, 2 pixels each, one level of the format |
+| 15/16-bit, general tables | 34 | 0 | a different kernel family from 1.4's (above): IoU 0.9868, 63.7% identical |
+
+Against BRender 1.4 on Windows the MMX row is 34 of 34. Apart from the torus with its table at stride 4 (2 pixels, not
+traced), every scene left over
+is one on which BRender 1.4's own Windows and Linux builds also disagree, by
+a similar amount (7 scenes, 1 to 3 pixels each,
+`evidence/modern-windows-vs-linux-angle-2026-10-17.json`). That looks like
+the last-bit floating point variance between builds that BlazingRenderer's
+softprim README describes; it was not traced further.
+
+The gates are now tight: byte-identical where the measurement is, and one
+level (one level of the format at 15/16 bits) on at most 0.1% of pixels
+elsewhere. Run against the frames from before the fix, the tightened gates
+fail, so they can tell the difference.
+
+Evidence: `evidence/modern-vs-period-angle-2026-10-17.json` (24 and 8-bit),
+`evidence/modern-vs-period-mmx-angle-2026-10-17.json` (15/16-bit, MMX),
+`evidence/modern-vs-period-shade4-angle-2026-10-17.json`,
+`evidence/modern-vs-period-hicolor-angle-2026-10-17.json` (15/16-bit,
+general tables), `evidence/modern-windows-vs-linux-angle-2026-10-17.json` and
+`evidence/shared-angle-differences-2026-10-17.png`. The sheet shows, for five
+scenes, where period and 1.4 differ before the fix and after it. I looked at
+it: hundreds of scattered pixels before, two after on the Gouraud sphere,
+none on the others.
 
 ## The instrument
 

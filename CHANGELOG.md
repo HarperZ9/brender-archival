@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: the same angle on both sides
+
+- `parity-scene.c` gives BRender 1.3.2 and 1.4 the same angles (`PARITY_ANGLE`, the nearest 16-bit unit in each version's form). BRender 1.3.2's `BR_ANGLE_DEG` multiplies by 182, which is 0.024% short of a degree's 182.04 units, and truncates; 1.4's angle is an exact float. That alone moved every period vertex by up to a few hundredths of a pixel. The lead traced it to the model-to-clip matrices.
+- With it, 56 of the 61 scenes are byte-identical to BRender 1.4 on Windows: all 8-bit, all 24-bit flat and textured, and all 34 15/16-bit scenes through the 1998 MMX table. Three 24-bit Gouraud scenes differ in 2 to 6 pixels by one level, about as much as 1.4's own Windows and Linux builds differ from each other. The 24-bit lit textured pair still shows the 1998 stride defect; with the table at stride 4, one is identical and the other differs in 2 pixels.
+- CI gates tightened to the new measurement (CI run 39067573521): byte-identical where it is, one level on at most 0.1% of pixels elsewhere. Windows against Linux is now two gates, one level at 24 and 8 bits and one level of the format at 15/16 bits. The tightened gates fail on the frames from before the fix.
+- Evidence in `modern/parity/evidence/*-angle-2026-10-17.json` and `shared-angle-differences-2026-10-17.png`. The older evidence stays as the record of each kernel port before the fix.
+
 ## Unreleased: 15/16-bit parity through the 1998 MMX table
 
 - Depends on engine-revival 0.9.0. It ports pentprim's MMX 15/16-bit family line by line (`gsetuptf.asm`, `rastbuff.asm` and the `xz*.inc` kernels), and its harness option `BRENDER_PENTPRIM_MMX` builds pentprim as a Pentium with MMX runs it. That is the 1998 path BRender 1.4 reproduces, so 15/16-bit output now compares like for like, textured included.

@@ -177,7 +177,15 @@ about evenly. Lit stills differ by design (per-pixel against per-vertex
 lighting), and the software rasteriser does not light 24-bit textures without
 a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
 
-Still open: the period geometry (softrend hands the rasteriser vertices up to 0.03 pixels from 1.4's; every remaining parity difference traced so far starts there).
+- **The same angle on both sides** (17 October 2026): the period geometry
+  difference was the angle macro. BRender 1.3.2's `BR_ANGLE_DEG` is 182 units
+  a degree, truncated; 1.4's is exact. With the same angle on both sides, 56
+  of 61 scenes are byte-identical to 1.4 on Windows (all 8-bit, all 24-bit
+  flat and textured, all 15/16-bit through the MMX table); three Gouraud
+  scenes differ in a few pixels by one level, as 1.4's Windows and Linux
+  builds do from each other.
+
+Still open: the z-sorted 15/16-bit kernels and the `TIP256` perspective mappers are not ported.
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the
