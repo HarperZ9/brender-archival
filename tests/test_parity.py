@@ -261,3 +261,28 @@ def test_opengl_against_software_evidence_and_gate():
     assert record["classes"]["textured"]["lowest_identical"] == 0.7829
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert "gl_vs_software.py build/brview --bounds-unlit 0.975 0.975 4.5 --bounds-textured 0.99 0.77 4.5 --require-identical-runs" in ci
+
+
+def test_the_hicolor_evidence_matches_the_readme():
+    """15/16-bit: the period kernels draw every scene; BRender 1.4 draws the MMX
+    path, so the untextured scenes compare and the textured ones do not."""
+    record = json.loads((EVIDENCE / "modern-vs-period-hicolor-2026-10-17.json").read_text(encoding="utf-8"))
+    scenes = record["scenes"]
+    assert len(scenes) == 20 and record["control"]["fails_as_required"]
+    assert all(m["drawn_b"] > 0 for m in scenes.values()), "every period scene draws"
+    plain = {k: m for k, m in scenes.items() if "textured" not in k}
+    textured = {k: m for k, m in scenes.items() if "textured" in k}
+    assert len(plain) == 10 and len(textured) == 10
+    assert min(m["coverage_iou"] for m in plain.values()) == 0.9869
+    assert min(m["identical"] for m in plain.values()) == 0.632
+    assert max(m["mad"] for m in plain.values()) == 2.081
+    # flat scenes: every pixel both sides draw is the same colour
+    for name in ("sphere-flat-rgb555", "sphere-flat-rgb565", "torus-flat-rgb555", "torus-flat-rgb565"):
+        assert scenes[name]["identical"] == scenes[name]["coverage_iou"], name
+    # BRender 1.4 does not texture these maps: no textured pixel agrees
+    assert all(m["identical"] == 0.0 for m in textured.values())
+    cross = json.loads((EVIDENCE / "modern-windows-vs-linux-hicolor-2026-10-17.json").read_text(encoding="utf-8"))
+    assert len(cross["scenes"]) == 47 and cross["within_bounds"]
+    assert all(m["identical"] == 1.0 for k, m in cross["scenes"].items() if k.endswith(("rgb555", "rgb565")))
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## 15 and 16-bit buffers (RGB_555, RGB_565)" in readme and "match.c:593" in readme
