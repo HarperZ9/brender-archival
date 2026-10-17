@@ -18,6 +18,9 @@ void BrViewSceneSetCustom(const char *model_path, const char *texture_path);
 br_error BrViewSceneLoad(int index, br_actor *parent, br_material *material, br_boolean textured, br_boolean period,
                          char *err, size_t err_len);
 
+/* Draw the scenes loaded from now on without lighting (1) or lit (0). */
+void BrViewSceneSetUnlit(int on);
+
 /* std.pal, the palette the period look is shown through. */
 br_pixelmap *BrViewScenePalette(void);
 

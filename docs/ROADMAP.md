@@ -148,8 +148,14 @@ The first measurement that day found the 1998 build unusable. The C port
 shadowed BRender's component slots, its Gouraud and depth logic were wrong,
 and its texture setup was missing. The parity README keeps that record.
 
-Still open: perspective-correct texturing, 15/16-bit targets, and OpenGL
-against software.
+OpenGL against software (BRender 1.4, Mesa llvmpipe, 16 October 2026): every
+brview model fills the same pixels to a coverage IoU of 0.9774 or better, with
+the same colour wherever both draw; the remaining pixels sit on edges, split
+about evenly. Lit stills differ by design (per-pixel against per-vertex
+lighting), and the software rasteriser does not light 24-bit textures without
+a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
+
+Still open: perspective-correct texturing and 15/16-bit targets.
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the

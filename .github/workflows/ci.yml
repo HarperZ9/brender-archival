@@ -329,6 +329,20 @@ jobs:
         with:
           name: display-stills-linux
           path: stills-linux
+      # BRender 1.4's OpenGL driver (Mesa llvmpipe here) against its software
+      # rasteriser, on every brview model (modern/parity/gl_vs_software.py).
+      # Bounds from the first measurement (16 October 2026, WSL Ubuntu 24.04
+      # llvmpipe), so calibrated, not predicted: unlit IoU >= 0.9774, identical
+      # >= 0.9774, MAD <= 4.21; textured unlit IoU >= 0.9929, identical
+      # >= 0.7829, MAD <= 4.32. Lit stills are reported: the two light
+      # differently. The OpenGL stills must repeat byte for byte.
+      - name: OpenGL and the software rasteriser draw the same models within the recorded bounds
+        run: python3 modern/parity/gl_vs_software.py build/brview --bounds-unlit 0.975 0.975 4.5 --bounds-textured 0.99 0.77 4.5 --require-identical-runs --out gl-vs-software/result.json --stills gl-vs-software
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gl-vs-software
+          path: gl-vs-software
       # Both renderers. A stale OpenGL readback shows up as a frame that
       # repeats the one before it, so no two neighbouring frames may match.
       - name: the frame recorder is deterministic and the lamp moves, on both renderers

@@ -150,3 +150,16 @@ def test_eight_bit_scenes_compare_by_palette_index(tmp_path):
     scene = result["scenes"]["sphere-flat"]
     assert scene["by_index"] and scene["drawn_a"] == 1000 and scene["identical"] == 0.9
     assert scene["mad"] == 0.0  # the PPMs (colours) are the same
+
+
+def test_opengl_against_software_evidence_and_gate():
+    record = json.loads((EVIDENCE / "gl-vs-software-2026-10-16.json").read_text(encoding="utf-8"))
+    assert record["ok"] and record["opengl_runs_identical"] and record["control"]["fails_as_required"]
+    assert len(record["scenes"]) == 18
+    unlit = {k: m for k, m in record["scenes"].items() if m["class"] == "unlit"}
+    assert len(unlit) == 8 and all(m["identical"] == m["coverage_iou"] for m in unlit.values()), \
+        "wherever both renderers draw an unlit model, the colour is the same"
+    assert record["classes"]["unlit"]["lowest_coverage_iou"] == 0.9774
+    assert record["classes"]["textured"]["lowest_identical"] == 0.7829
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert "gl_vs_software.py build/brview --bounds-unlit 0.975 0.975 4.5 --bounds-textured 0.99 0.77 4.5 --require-identical-runs" in ci
