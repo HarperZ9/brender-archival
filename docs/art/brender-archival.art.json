@@ -78,9 +78,9 @@
         {"key": "schemas", "value": "twelve files", "note": "One JSON schema per record kind, shipped in the engine-revival package, each naming the fields a record must carry. validate reports any record that omits one."},
         {"key": "generated pages", "value": "214 written", "note": "The report command writes two hundred and thirteen markdown pages plus a database file, and the tree stays byte-identical afterwards."},
         {"key": "ladder targets", "value": "21 under CTest", "note": "Twenty in the generated CMake project plus the period-pipeline rung. The transcript in builds/ reports twenty-one passed and none failed."},
-        {"key": "harness files", "value": "31 generated", "note": "Written by materialize-brender-harness: the CMake project, the compatibility C ports, and the smoke programs. No upstream file is copied."},
+        {"key": "harness files", "value": "37 generated", "note": "Written by materialize-brender-harness: the CMake project, the compatibility C ports, and the smoke programs. No upstream file is copied."},
         {"key": "build settings", "value": "eight dirs", "note": "The FLOAT core is built from fw, host, std, pixelmap, dosio, v1db, math and fmt, under nine compile definitions led by BASED_FLOAT."},
-        {"key": "python tests", "value": "63 passing", "note": "pytest over tests/, covering the release media, the release packager, the project metadata, and every number on these three drawings. The package has its own tests in engine-revival."}
+        {"key": "python tests", "value": "64 passing", "note": "pytest over tests/, covering the release media, the release packager, the project metadata, and every number on these three drawings. The package has its own tests in engine-revival."}
       ]
     }
   ]
