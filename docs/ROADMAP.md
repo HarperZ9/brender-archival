@@ -167,12 +167,24 @@ Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the
 last through the stride measurement) and for INDEX_8.
 
-### 6. Modern GPU backends
+### 6. Modern GPU backends (Vulkan stage A: built)
 
 BRender 1.4 has OpenGL 3.3. Add Vulkan first (it runs on Windows and Linux),
 then Direct3D 11 or 12 if Windows needs it. Each backend is a BRender driver
 written here under MIT, offered upstream to BlazingRenderer, and held to the
 item 5 parity bounds against the software rasteriser.
+
+The plan is ADR 0002 (`docs/adr/0002-vulkan-backend.md`), in three stages:
+
+- **A, a headless Vulkan rasteriser, is built** (`modern/vulkan/`,
+  `-DBRENDER_VULKAN=ON`). On Mesa lavapipe it draws the same triangles as
+  the software rasteriser to a coverage IoU of 0.9897 or better, or 0.9137
+  for thin slivers. The colour is within one level wherever both draw. The
+  two differ only at edges, where they follow different edge rules. Two runs
+  give the same bytes. CI checks it on Linux.
+- **B, a Vulkan primitive library under softrend, is next.** Both sides
+  then rasterise the same vertices.
+- **C, a full renderer facility like glrend, comes after B.**
 
 Done when: the game runs on the new backend with `--driver vulkan`, and its
 parity record passes.

@@ -1,0 +1,66 @@
+{
+  "scenes": {
+    "offset": {
+      "coverage_iou": 0.9897,
+      "identical": 0.0,
+      "mad": 2.396,
+      "max": 232,
+      "drawn": 22712,
+      "within_one_where_both": 1.0,
+      "only_vulkan": 157,
+      "only_software": 78
+    },
+    "quad": {
+      "coverage_iou": 1.0,
+      "identical": 0.0,
+      "mad": 0.714,
+      "max": 119,
+      "drawn": 32000,
+      "within_one_where_both": 0.9975,
+      "only_vulkan": 0,
+      "only_software": 0
+    },
+    "slivers": {
+      "coverage_iou": 0.9137,
+      "identical": 0.0,
+      "mad": 13.952,
+      "max": 230,
+      "drawn": 4880,
+      "within_one_where_both": 1.0,
+      "only_vulkan": 188,
+      "only_software": 233
+    },
+    "triangle": {
+      "coverage_iou": 0.9913,
+      "identical": 0.0,
+      "mad": 2.116,
+      "max": 232,
+      "drawn": 22793,
+      "within_one_where_both": 1.0,
+      "only_vulkan": 38,
+      "only_software": 160
+    }
+  },
+  "control": {
+    "pair": [
+      "vulkan triangle",
+      "software quad"
+    ],
+    "coverage_iou": 0.6321,
+    "identical": 0.0,
+    "mad": 92.276,
+    "max": 232,
+    "drawn": 33474,
+    "within_one_where_both": 0.0,
+    "only_vulkan": 1474,
+    "only_software": 10841,
+    "fails_as_required": true
+  },
+  "bounds": {
+    "min_coverage_iou": 0.91,
+    "min_within_one_where_both": 0.997,
+    "max_mad": 14.5
+  },
+  "within_bounds": true,
+  "ok": true
+}

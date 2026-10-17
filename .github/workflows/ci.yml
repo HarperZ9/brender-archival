@@ -346,6 +346,34 @@ jobs:
         with:
           name: gl-vs-software
           path: gl-vs-software
+      # The Vulkan backend, stage A (docs/adr/0002-vulkan-backend.md): one
+      # headless rasteriser on Mesa's lavapipe (a CPU Vulkan device, forced so
+      # no GPU is used) against BRender 1.4's software rasteriser, on the same
+      # screen-space triangles. Bounds from the first measurement (17 October
+      # 2026, WSL Ubuntu 24.04 lavapipe), so calibrated, not predicted:
+      # coverage IoU >= 0.9137 (slivers; 0.9897 and up otherwise), colour
+      # within one level on >= 99.75% of the pixels both draw, MAD <= 13.95.
+      - name: Vulkan (lavapipe) and the software rasteriser draw the same triangles within the recorded bounds
+        shell: bash
+        env:
+          VK_DRIVER_FILES: /usr/share/vulkan/icd.d/lvp_icd.json
+          VKO_DEVICE_TYPE: cpu
+        run: |
+          set -euo pipefail
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q --no-install-recommends libvulkan-dev mesa-vulkan-drivers
+          cmake -S modern -B build -DBRENDER_VULKAN=ON
+          cmake --build build --target vk-triangle
+          for run in a b; do
+            mkdir -p vk-$run/software vk-$run/vulkan
+            ./build/vk-triangle vk-$run
+          done
+          diff -r vk-a vk-b
+          python3 modern/vulkan/vk_compare.py vk-a --bounds 0.91 0.997 14.5 --out vk-a/result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vulkan-triangle
+          path: vk-a
       # Both renderers. A stale OpenGL readback shows up as a frame that
       # repeats the one before it, so no two neighbouring frames may match.
       - name: the frame recorder is deterministic and the lamp moves, on both renderers

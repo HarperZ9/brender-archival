@@ -115,5 +115,12 @@ else()
   set_target_properties(parity-scene PROPERTIES BUILD_WITH_INSTALL_RPATH ON INSTALL_RPATH "$ORIGIN")
 endif()
 
+# The Vulkan backend, stage A (docs/adr/0002-vulkan-backend.md). Off unless
+# asked for: it needs the Vulkan SDK headers and glslangValidator.
+option(BRENDER_VULKAN "Build the Vulkan rasteriser proof (vk-triangle)" OFF)
+if(BRENDER_VULKAN)
+  add_subdirectory(vulkan)
+endif()
+
 # The showcase game's first playable slice.
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../games/keepers-hour" keepers-hour)
