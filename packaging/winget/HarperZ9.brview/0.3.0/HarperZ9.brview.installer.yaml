@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
 
 PackageIdentifier: HarperZ9.brview
-PackageVersion: 0.2.0
+PackageVersion: 0.3.0
 InstallerType: zip
 NestedInstallerType: portable
 NestedInstallerFiles:
@@ -9,7 +9,7 @@ NestedInstallerFiles:
   PortableCommandAlias: brview
 Installers:
 - Architecture: x64
-  InstallerUrl: https://github.com/HarperZ9/brender-archival/releases/download/brview-v0.2.0/brview-0.2.0-windows-x64.zip
-  InstallerSha256: 1BA9220676B2383BFF1941A92DF3401817365EFEF7FC22AFB9FF499C3C73A607
+  InstallerUrl: https://github.com/HarperZ9/brender-archival/releases/download/brview-v0.3.0/brview-0.3.0-windows-x64.zip
+  InstallerSha256: CFD12C336C1E8C5EE3623A2A41577F8459C362DD778D403B83C44E6795306DC8
 ManifestType: installer
 ManifestVersion: 1.6.0
