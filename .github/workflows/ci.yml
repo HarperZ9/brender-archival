@@ -377,6 +377,35 @@ jobs:
         with:
           name: vulkan-triangle
           path: vk-a
+      # Stage B: vkprim, a primitive library under softrend whose triangles
+      # Vulkan rasterises from softprim's own screen-space vertices, against
+      # softprim on the same untextured scenes. Bounds from the first
+      # measurement (17 October 2026, WSL lavapipe), so calibrated, not
+      # predicted: coverage IoU >= 0.9764 (teapot), >= 27.5% identical (the
+      # Gouraud scenes; flat scenes are identical wherever both draw),
+      # MAD <= 2.81.
+      - name: vkprim (Vulkan under softrend) and softprim draw the same scenes within the recorded bounds
+        shell: bash
+        env:
+          VK_DRIVER_FILES: /usr/share/vulkan/icd.d/lvp_icd.json
+          VKO_DEVICE_TYPE: cpu
+        run: |
+          set -euo pipefail
+          cmake --build build --target vk-scenes
+          for run in a b; do
+            mkdir -p vkp-$run vkp-soft
+            ./build/vk-scenes build/_deps/brender132-src/dat vkp-$run vulkan
+          done
+          ./build/vk-scenes build/_deps/brender132-src/dat vkp-soft software
+          diff -r vkp-a vkp-b
+          python3 modern/parity/parity_compare.py vkp-soft vkp-a --label "softprim against vkprim (lavapipe)" --bounds 0.975 0.25 255 3.0 --out vkp-a/result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vulkan-vkprim
+          path: |
+            vkp-a
+            vkp-soft
       # Both renderers. A stale OpenGL readback shows up as a frame that
       # repeats the one before it, so no two neighbouring frames may match.
       - name: the frame recorder is deterministic and the lamp moves, on both renderers
