@@ -4,6 +4,19 @@ A short, strange, talkative game about the last night of a lighthouse on a
 coast the sea left years ago. Built on BRender, the 1990s Argonaut engine,
 running 64-bit on a modern PC. The design is in [DESIGN.md](DESIGN.md).
 
+**0.6.0: toward 1.0.** A title screen with the lamp room turning behind it;
+a Text size option, so the words stay readable at 1080p and 4K; the sky
+greying toward dawn once you decide, and dawn itself at the ending; and the
+one item the letter lets you keep, which the dawn card remembers.
+
+| Title | At 1920 x 1080, text size Auto (2) |
+|---|---|
+| ![the title screen](media/title.png) | ![a conversation at 1080p](media/talk-1080p.png) |
+
+| Dawn coming: the decision | Dawn: the card |
+|---|---|
+| ![the lamp room as the sky greys](media/dawn-decide.png) | ![the dawn card](media/dawn-card.png) |
+
 **Milestone M4: released.** Credits on the dawn card and in CREDITS.txt; the
 release workflow publishes a build only after the packaged copy passes the
 full smoke run. All four milestones in DESIGN.md are done.
@@ -83,6 +96,10 @@ than cutting off the top and bottom. F2 sets:
   scaled up with whole, square pixels, for a period look. Text stays sharp.
 - **Field of view**, 40 to 90 degrees (default 55).
 - **Vsync**, on or off (OpenGL).
+- **Text size**, Auto or 1 to 3: every word on screen drawn at a whole-number
+  scale of BRender's 7 x 9 font, so it stays crisp. Auto takes the largest
+  size the window holds (one step per 640 x 400: 1 at 720p, 2 at 1080p, 3 at
+  1440p and up).
 - **Period look**, off or 256 colours: the rooms are drawn by BRender's own
   8-bit palette path, as a mid-1990s PC game was. Lit surfaces step down
   palette ramps and the pictures are 8-bit maps lit through a shade table.

@@ -176,14 +176,27 @@ int kh_world_talker_near(const kh_world *w, float x, float z, float dx, float dz
 
 const kh_talker *kh_world_talker(const kh_world *w, int i) { return &w->rooms[w->current].talkers[i]; }
 
+/* The room's night sky, moved toward the dawn sky by w->dawn. */
+static void sky_rgb(const kh_world *w, int rgb[3])
+{
+    static const int dawn[3] = {KH_DAWN_R, KH_DAWN_G, KH_DAWN_B};
+    const kh_room *room = &kh_rooms[w->current];
+    float t = w->dawn < 0 ? 0 : (w->dawn > 1 ? 1 : w->dawn);
+    int c;
+    for (c = 0; c < 3; c++)
+        rgb[c] = (int)(room->sky[c] + (dawn[c] - room->sky[c]) * t + 0.5f);
+}
+
 br_uint_8 kh_world_sky_index(const kh_world *w)
 {
-    const kh_room *room = &kh_rooms[w->current];
-    return kh_period_index(room->sky[0], room->sky[1], room->sky[2]);
+    int rgb[3];
+    sky_rgb(w, rgb);
+    return kh_period_index(rgb[0], rgb[1], rgb[2]);
 }
 
 br_colour kh_world_sky(const kh_world *w, const br_pixelmap *target)
 {
-    const kh_room *room = &kh_rooms[w->current];
-    return kh_px(target, room->sky[0], room->sky[1], room->sky[2]);
+    int rgb[3];
+    sky_rgb(w, rgb);
+    return kh_px(target, rgb[0], rgb[1], rgb[2]);
 }

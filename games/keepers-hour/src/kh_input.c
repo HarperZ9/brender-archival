@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "kh_game.h"
+#include "kh_title.h"
 
 static void interact(void)
 {
@@ -49,7 +50,7 @@ static void key_down(const SDL_KeyboardEvent *k)
 
 void kh_input_event(const SDL_Event *e)
 {
-    if (kh_options_event(&G.opt, e))
+    if (kh_options_event(&G.opt, e) || kh_title_event(e))
         return;
     switch (e->type) {
     case SDL_EVENT_KEY_DOWN: key_down(&e->key); break;
@@ -84,7 +85,7 @@ void kh_input_walk(float dt)
                  + axis(SDL_GAMEPAD_AXIS_LEFTX);
     float yaw = G.cam_yaw * 3.14159265f / 180.0f, dx, dz;
     G.cam_yaw -= axis(SDL_GAMEPAD_AXIS_RIGHTX) * 24.0f * G.opt.look * dt;
-    if (G.ended || G.opt.open || kh_talk_open_p(&G.talk) || (fwd == 0 && side == 0))
+    if (G.ended || G.opt.open || kh_title_active() || kh_talk_open_p(&G.talk) || (fwd == 0 && side == 0))
         return;
     dx = (side * cosf(yaw) - fwd * sinf(yaw)) * 2.6f * dt;
     dz = (-side * sinf(yaw) - fwd * cosf(yaw)) * 2.6f * dt;

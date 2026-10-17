@@ -81,7 +81,8 @@ TIDE: It was not unaffected.
 LOGBOOK: The pen is ready. What happened tonight, keeper?
 * "Nothing." -> logbook_nothing
 * "A letter came." -> logbook_letter
-* "Marigold called." -> logbook_marigold
+* (?lamp_voice) "Marigold called." -> logbook_marigold
+* (?radio_tune) "A ship called on the radio." -> logbook_marigold
 
 == logbook_nothing
 LOGBOOK: Four thousand and eight. Consistent. I admire consistency. Goodnight.
@@ -412,19 +413,46 @@ LENS: You make a noise you believe a gull would respect. The sheep below look up
 
 # --------------------------------------------------------- dawn, and the endings
 
-== resume
-LEDGER: There is a night already under way. The kettle is where you left it. The voices remember what they said.
-* Carry on from where you were. -> @@continue
-* Begin the night again. -> @@new
-
 == decide
 LENS: 05:58. The sky over the fields is going grey at the edges. The lamp turns. The beam is thinner now against the light.
 LEDGER: Dawn at 06:12. Fourteen minutes. The switch is on the wall, where it has always been, under a little brass cover.
 TIDE: Whatever you do, do it on purpose.
+* (?letter_two) First, the one item the letter allows you. -> memento
 * Keep it burning. Let them come and turn it off themselves. -> ending_keep
 * (?painting_two_ledger) Do what Agnes did: keep it one night past, then let it go properly. -> ending_ceremony
 * (?town_window) Turn the lens by hand until the beam rests on the town. -> ending_town
 * Not yet. -> END
+
+== memento
+LEDGER: One item of station equipment, at the keeper's discretion. Not the lens. The schedule is very clear about the lens.
+TIDE: Choose it the way you would choose what to carry out of a fire.
+* The logbook, with its eleven pages left. -> memento_logbook
+* (?kettle_light) The kettle. It is still warm. -> memento_kettle
+* (?photo_face) The photograph from your first day. -> memento_photo
+* (?radio_tune) The radio, still tuned to a frequency that is not in the register. -> memento_radio
+* Nothing. The night was the item. -> memento_nothing
+* Not yet. -> decide
+
+== memento_logbook
+LOGBOOK: Me? I am station equipment. I am, technically, the most important station equipment. Thank you for noticing.
+LEDGER: Eleven pages. We will need a procedure for what goes on them.
+* Back to the switch. -> decide
+
+== memento_kettle
+KETTLE: Somewhere with water, then. Proper water, from a tap. I have heard about taps.
+* Back to the switch. -> decide
+
+== memento_photo
+TIDE: The thin bright line behind you. You are taking the sea with you, the only way it can still be taken.
+* Back to the switch. -> decide
+
+== memento_radio
+STATIC: ...kssh... we will keep listening... kssh... wherever you put us down...
+* Back to the switch. -> decide
+
+== memento_nothing
+LENS: You take your hands out of your pockets. They are empty, and that is the right weight.
+* Back to the switch. -> decide
 
 == ending_keep
 LEDGER: You leave the brass cover closed. 06:12 comes and goes. The lamp turns. Nobody comes.

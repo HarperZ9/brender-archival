@@ -30,7 +30,14 @@ typedef struct kh_world {
     br_actor      *lens;                /* the turning lamp (lamp room) */
     kh_room_stage  rooms[KH_MAX_ROOMS];
     int            current;
+    float          dawn;                /* 0 night to 1 dawn: the sky behind every room */
 } kh_world;
+
+/* The sky at dawn, which the night's sky turns toward once the keeper
+ * decides (kh_world.dawn). */
+#define KH_DAWN_R 104
+#define KH_DAWN_G 112
+#define KH_DAWN_B 136
 
 br_error kh_world_build(kh_world *w, br_actor *stage);
 

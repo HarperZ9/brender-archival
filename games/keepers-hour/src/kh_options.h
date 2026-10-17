@@ -17,6 +17,7 @@ typedef struct kh_options {
     int          fov;                  /* 40 to 90 degrees, vertical, in steps of 5 */
     int          vsync;                /* 0 or 1: wait for the display (OpenGL only) */
     int          period;               /* 0 or 1: 256 colours through BRender's 8-bit path */
+    int          text;                 /* KH_TEXT_AUTO (0) or 1 to 3: text size (kh_text.h) */
     SDL_Scancode keys[KH_ACT_COUNT];
     int          open;                 /* the options screen is showing */
     int          row;                  /* highlighted row */

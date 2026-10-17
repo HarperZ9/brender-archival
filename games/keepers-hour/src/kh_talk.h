@@ -20,6 +20,7 @@ typedef struct kh_talk {
     int              asked[KH_VOICE_COUNT];  /* checks each voice was asked to make */
     char             go[KH_ID_LEN];          /* "@room" or "@@..." chosen: where to go */
     char             last[KH_ID_LEN];        /* the last node opened (the ending, at the end) */
+    char             kept[KH_ID_LEN];        /* the last memento_ node opened: the item the keeper takes */
 } kh_talk;
 
 void kh_talk_init(kh_talk *t, const kh_script *s, unsigned int seed);

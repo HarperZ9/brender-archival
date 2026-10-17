@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased: The Keeper's Hour 0.6.0, toward 1.0
+
+- A title screen: the lamp room turns slowly behind the name, with Begin the night, Carry on (when a night is saved), Options and Quit, by keyboard, gamepad or mouse. It replaces the old "resume" conversation.
+- Text size (F2): Auto or 1 to 3. Every word is BRender's 7 x 9 font drawn at a whole-number scale, so it stays crisp; Auto takes one step per 640 x 400 of window (2 at 1080p). Panels, the dawn card and the options grow with it. On OpenGL the scaled glyphs go straight onto the frame; on the software renderer through a memory strip, as 1x text already did.
+- Dawn: once the keeper opens the decision the sky greys at the edges, and at an ending it turns to dawn. The period look's palette carries three steps of it.
+- One item to keep: the letter's second page now pays off. The decision offers the item; the logbook is always there, and the kettle, the photograph and the radio join it if you found them in the night. The dawn card names what you kept, and says "not asked tonight" for a voice you never rolled instead of "heard 0 of 0".
+- The logbook's "Marigold called." waits until you have heard the Marigold (on the lamp, or on the radio as "A ship called on the radio.").
+- For stills: `KEEPERS_OPEN` takes several nodes ("a,b,c"), `KEEPERS_END=1` shows the dawn card and `KEEPERS_TITLE=1` the title. Script: 85 nodes.
+
 ## Unreleased: OpenGL against software
 
 - `modern/parity/gl_vs_software.py` draws every brview model on BRender 1.4's OpenGL driver and on its software rasteriser and compares them, unlit, textured and lit, with a wrong-model control and a byte-for-byte repeat of the OpenGL stills. Measured 16 October 2026 (Mesa llvmpipe): coverage IoU 0.9774 or better and the same colour wherever both draw; textures agree on about 79% of pixels; lit stills differ by design. CI runs it on Linux within the measured bounds.

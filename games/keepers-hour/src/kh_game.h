@@ -26,6 +26,10 @@ void kh_game_go(const char *room_id);  /* walk to a room: door sound, ambience, 
 void kh_game_new_night(void);
 void kh_game_follow(const char *go);    /* "@room", "@end", "@continue", "@new" */
 
+void kh_game_open_list(const char *list); /* KEEPERS_OPEN: "a,b,c" opens each node in turn */
+void kh_game_dawn_step(float dt);          /* the sky toward dawn once the keeper decides */
+void kh_game_smoke_step(void);             /* KEEPERS_SMOKE: one step of the scripted route */
+
 void kh_input_event(const SDL_Event *e);
 void kh_input_walk(float dt);
 
