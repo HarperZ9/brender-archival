@@ -305,8 +305,8 @@ found it first: their `drivers/softprim/README.md` (at the pinned commit
 `ed5e7a9`) records that pentprim read the 256 x 256 RGB_888 table at a
 four-byte stride while its matcher required three-byte entries, and that
 softprim implements the family with the read corrected. We found it again on
-16 October 2026 from the period side, by measurement, before reading their
-note; what this repository adds is the measurement below.
+16 October 2026 from the period side, by measurement, and missed their note
+at the time; what this repository adds is the measurement below.
 
 - `prim_t24.c` declares the primitive "RGB 888, Z Buffered, Constant
   Intensity, Textured, Perspective Correct"
