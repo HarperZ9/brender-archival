@@ -81,7 +81,7 @@ if(MSVC)
 endif()
 
 # WIN32: a window-only program, so no console window opens beside it.
-add_executable(brview WIN32 viewer/brview.c viewer/brview_scenes.c viewer/brview_scenes.h viewer/brview_run.c viewer/brview_run.h)
+add_executable(brview WIN32 viewer/brview.c viewer/brview_scenes.c viewer/brview_scenes.h viewer/brview_run.c viewer/brview_run.h viewer/brview_shade.c)
 target_link_libraries(brview PRIVATE brdemo brdisplay)
 if(MSVC)
   target_compile_definitions(brview PRIVATE _CRT_SECURE_NO_WARNINGS)

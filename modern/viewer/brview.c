@@ -97,6 +97,7 @@ static void load_scene(br_demo *demo, int index)
     char err[160];
     V.scene = (index + BrViewSceneCount()) % BrViewSceneCount();
     V.period_shown = (V.period || period_forced) && brd_display_period_available(demo);
+    BrViewSceneSetSoftware(!demo->hw_accel);
     if (BrViewSceneLoad(V.scene, V.model_actor, V.material, V.textured, V.period_shown, err, sizeof(err)) != BRE_OK) {
         BrLogError("BRVIEW", "%s", err);
         smoke_failures++;

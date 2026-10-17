@@ -51,7 +51,11 @@ colours instead of washing them out to white. It needs the software
 renderer; brview starts on it when the look was left on, and
 `BRVIEW_PERIOD=1` turns it on for one run. For stills, `BRVIEW_SHOT=<file.ppm>`
 draws one frame and quits; `BRVIEW_SCENE=n` picks the model (from 0),
-`BRVIEW_TEXTURE=0` drops the texture and `BRVIEW_UNLIT=1` the lighting. BRender 1.4's 8-bit kernels match
+`BRVIEW_TEXTURE=0` drops the texture and `BRVIEW_UNLIT=1` the lighting.
+
+On the software renderer, the earth and the torus are lit through a 24-bit
+shade table built from `std.pal`, the way BRender has lit textures in
+software since 1998, so they shade with the light as they do on OpenGL. BRender 1.4's 8-bit kernels match
 the 1998 ones to 96.4% to 99.9% of pixels on the same palette index
 (`parity/README.md`).
 
