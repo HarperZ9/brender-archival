@@ -96,6 +96,26 @@ def test_the_evidence_matches_the_readme():
     assert min(m["identical"] for m in shade4["scenes"].values()) == 0.9789
 
 
+def test_the_perspective_evidence_matches_the_readme():
+    persp = json.loads((EVIDENCE / "modern-vs-period-persp-2026-10-17.json").read_text(encoding="utf-8"))
+    scenes = persp["scenes"]
+    assert len(scenes) == 7 and persp["ok"] and persp["within_bounds"] and persp["control"]["fails_as_required"]
+    assert persp["bounds"] == {"min_coverage_iou": 0.998, "min_identical": 0.92, "max_diff": 255, "max_mad": 1.8}
+    assert min(m["coverage_iou"] for m in scenes.values()) == 0.9983
+    assert min(m["identical"] for m in scenes.values()) == 0.9259
+    assert max(m["mad"] for m in scenes.values()) == 1.713
+    assert all(m["by_index"] and m["drawn_b"] > 0 for m in scenes.values()), "every period scene draws, by index"
+    # The steep plane scores the same with and without perspective.
+    linear, curved = scenes["plane-textured-steep-linear-index8"], scenes["plane-textured-steep-persp-index8"]
+    assert linear["coverage_iou"] == curved["coverage_iou"] and abs(linear["identical"] - curved["identical"]) < 0.01
+    full = json.loads((EVIDENCE / "modern-vs-period-2026-10-17.json").read_text(encoding="utf-8"))
+    assert len(full["scenes"]) == 27 and full["control"]["fails_as_required"]
+    for name, m in scenes.items():
+        assert full["scenes"][name] == m, name
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "92.6% to\n  97.9%" in readme.replace("\r\n", "\n") and "## Perspective-correct texturing" in readme
+
+
 def test_ci_gates_the_modern_side_on_both_systems():
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert ci.count("--require-identical") >= 2
@@ -108,6 +128,33 @@ def test_ci_gates_the_modern_side_on_both_systems():
     assert "--only textured-index8,textured-lit-index8 --bounds 0.998 0.96 255 0.5" in parity
     native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
     assert "parity-period-a parity-period-b" in native and "--require-identical" in native
+    # perspective-correct 8-bit scenes: twice on the period side, then gated
+    assert '--label "period perspective scenes, two runs" --only persp,steep --require-identical' in native
+    assert "--only persp,steep --bounds 0.998 0.92 255 1.8" in parity
+
+
+def test_perspective_scenes_stay_out_of_the_older_class_gates():
+    """The new scene names must not change what the existing --only/--skip
+    gates select, and the perspective gate must select exactly them."""
+    import re
+    source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
+    names = [n for n in re.findall(r'^\s*\{"([a-z0-9-]+)"', source, re.M) if not n.startswith("control-")]
+    persp = [n for n in names if "persp" in n or "steep" in n]
+    assert len(names) == 27 and len(persp) == 7
+    assert all(n.endswith("-index8") and "textured" in n for n in persp)
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    parity = ci[ci.index("\n  parity:"):]
+    gates = re.findall(r'parity-linux parity-period[a-z0-9-]* --label "[^"]+"([^\n]*)', parity)
+    assert len(gates) == 7
+    for args in gates:
+        words = args.split()
+        keep = words[words.index("--only") + 1].split(",") if "--only" in words else None
+        drop = words[words.index("--skip") + 1].split(",") if "--skip" in words else []
+        chosen = [n for n in names if (keep is None or any(k in n for k in keep)) and not any(d in n for d in drop)]
+        if keep == ["persp", "steep"]:
+            assert sorted(chosen) == sorted(persp)
+        else:
+            assert chosen and not set(chosen) & set(persp), args
 
 
 def test_a_mean_difference_bound_can_fail_a_run(tmp_path):

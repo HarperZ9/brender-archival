@@ -116,7 +116,7 @@ Not done:
 Done when: each channel installs the current release on a clean machine in CI
 (or on a recorded manual run where CI cannot reach). AppImage: met in CI.
 
-### 5. Renderer parity, measured (24-bit and 8-bit, untextured and textured: met)
+### 5. Renderer parity, measured (24-bit and 8-bit, untextured, textured and perspective-correct: met)
 
 `modern/parity/` (see its README) draws one set of scenes on the 1998
 rasteriser and on BRender 1.4's, and compares them pixel by pixel with a
@@ -136,6 +136,12 @@ line by line (`tt24_piz.asm` in 0.4.0, `t_piza.asm` under Argonaut's
 - **8-bit through the palette** (untextured, textured and lit textured):
   coverage IoU 0.9983 or better, 96.4% to 99.9% of pixels on the same
   palette index, mean difference at most 0.43 levels.
+- **8-bit perspective-correct** (17 October 2026, engine-revival 0.7.0
+  ports `fti8pizp.asm` and `pfpsetup.asm`, checked byte for byte against the
+  assembled 1998 code): coverage IoU 0.9983 or better, 92.6% to 97.9% on the
+  same index, MAD at most 1.71. The lowest, a steep plane, scores the same
+  without perspective; its difference comes from the vertex data, not the
+  kernels.
 - **24-bit lit textured**: a 1998 defect. The kernel reads its 3-byte shade
   table at a 4-byte stride and draws garbage. Laid at that stride (period
   side only, as a measurement), the scenes match: coverage IoU 0.9998 or
@@ -155,7 +161,7 @@ about evenly. Lit stills differ by design (per-pixel against per-vertex
 lighting), and the software rasteriser does not light 24-bit textures without
 a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
 
-Still open: perspective-correct texturing and 15/16-bit targets.
+Still open: 15/16-bit targets.
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the

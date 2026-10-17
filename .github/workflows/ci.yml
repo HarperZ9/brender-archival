@@ -110,6 +110,9 @@ jobs:
             & "$build/Debug/parity_scene_period.exe" "$src/dat" "parity-period-$run" 2>$null | Out-Null
           }
           python modern/parity/parity_compare.py parity-period-a parity-period-b --label "period, two runs" --require-identical
+          # The perspective-correct 8-bit scenes (fti8pizp.asm through the
+          # engine-revival 0.7.0 port), on their own, so a regression names them.
+          python modern/parity/parity_compare.py parity-period-a parity-period-b --label "period perspective scenes, two runs" --only persp,steep --require-identical
       # The 1998 kernel for 24-bit lit textured triangles (t_piza.asm,
       # TrapezoidRenderPIZ2TIA_RGB_888) reads its RGB_888 shade table at a
       # 4-byte stride. PARITY_SHADE4=1 lays the table out at that stride, on
@@ -465,6 +468,15 @@ jobs:
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit untextured" --only index8 --skip textured --bounds 0.998 0.98 255 0.3
       - name: the 1998 and modern rasterisers draw the same 8-bit textured scenes within the recorded bounds
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit textured" --only textured-index8,textured-lit-index8 --bounds 0.998 0.96 255 0.5
+      # Perspective-correct 8-bit texturing (BR_MATF_PERSPECTIVE; fti8pizp.asm
+      # and pfpsetup.asm through engine-revival 0.7.0), with the steep plane
+      # drawn without perspective beside it. Measured 17 October 2026 (WSL
+      # Linux and Windows modern give the same frames): IoU >= 0.9983,
+      # >= 92.59% of indices identical, MAD <= 1.713. The plane scores the
+      # same with and without perspective (README), so calibrated, not
+      # predicted.
+      - name: the 1998 and modern rasterisers draw the same perspective-correct 8-bit scenes within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit perspective" --only persp,steep --bounds 0.998 0.92 255 1.8
       - name: the 24-bit lit textured scenes, reported
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 24-bit lit textured (1998 stride defect)" --only textured-lit --skip index8
       - uses: actions/download-artifact@v4

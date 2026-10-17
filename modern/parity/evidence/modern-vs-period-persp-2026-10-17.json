@@ -1,0 +1,91 @@
+{
+  "label": "modern Linux against period, 8-bit perspective-correct (CI run 38988569106)",
+  "scenes": {
+    "plane-textured-lit-steep-persp-index8": {
+      "coverage_iou": 0.9988,
+      "identical": 0.9305,
+      "mad": 1.492,
+      "max": 208,
+      "drawn_a": 9106,
+      "drawn_b": 9117,
+      "by_index": true
+    },
+    "plane-textured-steep-linear-index8": {
+      "coverage_iou": 0.9988,
+      "identical": 0.9267,
+      "mad": 1.713,
+      "max": 252,
+      "drawn_a": 9106,
+      "drawn_b": 9117,
+      "by_index": true
+    },
+    "plane-textured-steep-persp-index8": {
+      "coverage_iou": 0.9988,
+      "identical": 0.9259,
+      "mad": 1.616,
+      "max": 252,
+      "drawn_a": 9106,
+      "drawn_b": 9117,
+      "by_index": true
+    },
+    "sphere-textured-lit-persp-index8": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9781,
+      "mad": 0.304,
+      "max": 246,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": true
+    },
+    "sphere-textured-persp-index8": {
+      "coverage_iou": 0.9993,
+      "identical": 0.9793,
+      "mad": 0.427,
+      "max": 246,
+      "drawn_a": 29594,
+      "drawn_b": 29616,
+      "by_index": true
+    },
+    "torus-textured-lit-persp-index8": {
+      "coverage_iou": 0.9983,
+      "identical": 0.9634,
+      "mad": 0.386,
+      "max": 158,
+      "drawn_a": 17721,
+      "drawn_b": 17732,
+      "by_index": true
+    },
+    "torus-textured-persp-index8": {
+      "coverage_iou": 0.9986,
+      "identical": 0.9665,
+      "mad": 0.393,
+      "max": 158,
+      "drawn_a": 17959,
+      "drawn_b": 17973,
+      "by_index": true
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6027,
+    "identical": 0.6027,
+    "mad": 63.301,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11946,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true,
+  "bounds": {
+    "min_coverage_iou": 0.998,
+    "min_identical": 0.92,
+    "max_diff": 255,
+    "max_mad": 1.8
+  },
+  "within_bounds": true
+}
