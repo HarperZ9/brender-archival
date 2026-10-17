@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased: credit
+
+- `modern/parity/README.md`: the 24-bit shade table stride defect in BRender 1.3.2 was recorded first by BlazingRenderer (`drivers/softprim/README.md`, commit `ed5e7a9`), who also note a second pentprim defect in the z-sorted 32 x 32 perspective block. The parity README now says so; our contribution is the measurement against the 1998 build.
+
 ## Unreleased: brview lights textures in software
 
 - brview: on the software renderer, lit textured models (the earth, the torus) now shade with the light. BRender's software rasteriser lights a texture only through a shade table, as in 1998, and brview gave it none, so they drew flat. brview now gives them their 8-bit map and a 24-bit table built from `std.pal` (`viewer/brview_shade.c`). Against OpenGL, MAD falls from 35.2 to 13.8 on the earth and from 19.1 to 10.4 on the torus.
