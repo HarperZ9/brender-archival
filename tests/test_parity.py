@@ -126,12 +126,12 @@ def test_ci_gates_the_modern_side_on_both_systems():
     assert "--only textured --skip lit,index8,rgb555,rgb565,zs --require-identical" in parity
     assert "PARITY_SHADE4" in ci and "--only textured-lit --skip index8,rgb555,rgb565,zs --bounds 1.0 0.999 13 0.01" in parity
     assert "--only index8 --skip textured --require-identical" in parity
-    assert "--only textured-index8,textured-lit-index8 --require-identical" in parity
+    assert "--only textured-index8,textured-lit-index8 --max-differ 1" in parity
     native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
     assert "parity-period-a parity-period-b" in native and "--require-identical" in native
     # perspective-correct 8-bit scenes: twice on the period side, then gated
     assert '--label "period perspective scenes, two runs" --only persp,steep --require-identical' in native
-    assert "--only persp,steep --skip rgb5 --require-identical" in parity
+    assert "--only persp,steep --skip rgb5 --max-differ 1" in parity
     # 15/16-bit scenes: twice on the period side, untextured gated, textured reported
     assert '--label "period 15/16-bit scenes, two runs" --only rgb555,rgb565 --require-identical' in native
     assert "--only rgb555,rgb565 --skip textured,dither,zs,tip,mmxp --bounds 0.986 0.63 255 2.1" in parity
@@ -397,7 +397,7 @@ def test_the_shared_angle_evidence_matches_the_readme():
     assert "BR_ANGLE_DEG(" not in source.split("*/", 3)[-1], "every angle goes through PARITY_ANGLE"
     assert source.count("PARITY_ANGLE(") >= 6
     readme = (PARITY / "README.md").read_text(encoding="utf-8")
-    assert "## The same angle on both sides" in readme and "56 of the 61 scenes are byte-identical" in readme
+    assert "## The same angle on both sides" in readme and "50 of the 61 older scenes are byte-identical" in readme
 
 
 # The gates for the z-sorted and TIP256 scenes (engine-revival 0.10.0) against
@@ -441,13 +441,83 @@ def test_ci_gates_the_zsorted_tip_and_mmx_perspective_scenes():
     native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
     assert '--label "period z-sorted and TIP256 scenes, two runs" --only zs,tip --require-identical' in native
     parity = ci[ci.index("\n  parity:"):]
-    assert "--only zs-rgb5 --skip tip --require-identical" in parity
+    assert "--only zs-rgb5 --skip tip --max-differ 1" in parity
     assert "--only flat-zs,smooth-zs,textured-zs --skip rgb5,lit --bounds 1.0 0.999 1 0.01" in parity
     assert "parity-period-shade4 --label \"modern against period, 24-bit z-sorted lit textured, shade table at stride 4\" --only textured-lit-zs --skip rgb5 --require-identical" in parity
     assert "parity-period-mmx --label \"modern against period (MMX), TIP shapes the MMX table does not texture\" --only tip --skip zs --bounds 1.0 0.999 9 0.01" in parity
     assert "--only mmxp --bounds 1.0 0.999 80 0.01" in parity
     # the older gates keep exactly what they had
     assert "--skip textured,dither,zs,tip,mmxp --bounds 0.986 0.63 255 2.1" in parity
-    assert "--only persp,steep --skip rgb5 --require-identical" in parity
+    assert "--only persp,steep --skip rgb5 --max-differ 1" in parity
     source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
     assert "BrZsSceneRender(" in source and "material->opacity" in source
+
+
+def test_one_differing_pixel_fails_require_identical_and_max_differ_counts_exactly(tmp_path):
+    """The share of identical pixels is rounded to four places; identity is
+    decided on the exact count, so one pixel in a disc of 31,000 still fails."""
+    a, b = _dir(tmp_path, "a"), _dir(tmp_path, "b")
+    for side in (a, b):
+        _ppm(side / "sphere-flat.ppm", (200, 170, 110), r=100)
+    target = b / "sphere-flat.ppm"
+    data = bytearray(target.read_bytes())
+    data[len(b"P6\n320 240\n255\n") + 3 * (120 * 320 + 160)] ^= 1
+    target.write_bytes(bytes(data))
+    code, result = _run(str(a), str(b), "--require-identical")
+    assert code == 1 and result["scenes"]["sphere-flat"]["differ"] == 1
+    assert result["scenes"]["sphere-flat"]["identical"] == 1.0, "the rounded share alone would have passed it"
+    assert _run(str(a), str(b), "--max-differ", "1")[0] == 0
+    assert _run(str(a), str(b), "--max-differ", "0")[0] == 1
+
+
+def test_the_zsorted_evidence_matches_the_readme():
+    def load(name):
+        return json.loads((EVIDENCE / f"{name}-zs-2026-10-17.json").read_text(encoding="utf-8"))
+    gen, mmx, shade4, cross = (load("modern-vs-period"), load("modern-vs-period-mmx"),
+                               load("modern-vs-period-shade4"), load("modern-windows-vs-linux"))
+    for record in (gen, mmx, shade4, cross):
+        assert record["ok"] and record["control"]["fails_as_required"]
+    assert len(gen["scenes"]) == 26 and len(mmx["scenes"]) == 26 and len(cross["scenes"]) == 30
+    g = gen["scenes"]
+    zs16 = {k: m["differ"] for k, m in g.items() if k.endswith(("rgb555", "rgb565")) and "-zs" in k and "tip" not in k}
+    assert len(zs16) == 10 and sum(d == 0 for d in zs16.values()) == 8
+    assert {k for k, d in zs16.items() if d} == {"sphere-smooth-zs-rgb555", "sphere-smooth-zs-rgb565"}
+    assert max(zs16.values()) == 1
+    assert g["sphere-flat-zs"]["differ"] == 0 and g["sphere-textured-zs"]["differ"] == 0
+    assert g["sphere-smooth-zs"]["differ"] == 5 and g["sphere-smooth-zs"]["max"] == 1
+    assert g["sphere-textured-lit-zs"]["identical"] < 0.01 and shade4["scenes"]["sphere-textured-lit-zs"]["differ"] == 0
+    # 1.4 refuses z-sorted TIP and does not texture TIP shapes at all
+    assert all(m["drawn_a"] == 0 and m["drawn_b"] > 0 for k, m in g.items() if "tip" in k and "-zs" in k)
+    assert all(m["identical"] == 0.0 for k, m in g.items() if "tip" in k)
+    m = mmx["scenes"]
+    tip = {k: v["differ"] for k, v in m.items() if "tip" in k and "-zs" not in k}
+    assert len(tip) == 6 and sorted(tip.values()) == [0, 0, 1, 1, 1, 1]
+    mmxp = {k: v["differ"] for k, v in m.items() if "mmxp" in k}
+    assert mmxp == {"plane-mmxp-steep-rgb555": 0, "plane-mmxp-steep-rgb565": 0,
+                    "sphere-mmxp-rgb555": 1, "sphere-mmxp-rgb565": 1}
+    assert m["sphere-flat-zs-rgb555"]["differ"] == 195
+    assert [k for k, v in cross["scenes"].items() if v["differ"]] == ["sphere-smooth-zs"]
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## Z-sorted, TIP256 and the MMX perspective rows" in readme and "96f9537d" in readme
+    assert "7,450 of the steep plane's 9,107 pixels" in readme
+
+
+def test_the_exact_recount_matches_the_correction():
+    """Counted exactly, the shared-angle result is 50 of 61 on Windows, and
+    every scene the rounding hid differs in one pixel."""
+    def load(name):
+        return json.loads((EVIDENCE / f"{name}-exact-2026-10-17.json").read_text(encoding="utf-8"))
+    def same(record):
+        return sum(m["differ"] == 0 for m in record["scenes"].values())
+    lin, lin_mmx, win, win_mmx = (load("modern-vs-period"), load("modern-vs-period-mmx"),
+                                  load("modern-windows-vs-period"), load("modern-windows-vs-period-mmx"))
+    assert (same(lin), same(lin_mmx), same(win), same(win_mmx)) == (20, 26, 20, 30)
+    assert same(win) + same(win_mmx) == 50 and len(win["scenes"]) + len(win_mmx["scenes"]) == 61
+    for record in (lin, lin_mmx, win, win_mmx):
+        for name, m in record["scenes"].items():
+            if m["identical"] == 1.0:
+                assert m["differ"] <= 1, name
+    assert load("modern-vs-period-shade4")["scenes"]["torus-textured-lit"]["differ"] == 1
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "**Correction, 17 October 2026, later the same day.**" in readme
+    assert "**50 of the 61 older scenes are byte-identical**" in readme

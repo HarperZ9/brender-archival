@@ -1,0 +1,32 @@
+{
+  "label": "modern (Linux) against period, 24-bit z-sorted lit textured, shade table at stride 4 (CI run 39076269252)",
+  "scenes": {
+    "sphere-textured-lit-zs": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29636,
+      "drawn_b": 29636,
+      "by_index": false
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6023,
+    "identical": 0.6023,
+    "differ": 7422,
+    "mad": 63.368,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11959,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": true,
+  "ok": true
+}

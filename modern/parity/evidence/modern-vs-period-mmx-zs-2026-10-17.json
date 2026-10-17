@@ -1,0 +1,282 @@
+{
+  "label": "modern (Linux) against period through the MMX table, z-sorted, TIP256 and perspective-row scenes (CI run 39076269252)",
+  "scenes": {
+    "plane-mmxp-steep-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-mmxp-steep-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-tip-steep-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-tip-steep-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-tip-steep-zs-rgb555": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "differ": 9107,
+      "mad": 98.667,
+      "max": 123,
+      "drawn_a": 0,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "plane-tip-steep-zs-rgb565": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "differ": 9107,
+      "mad": 98.0,
+      "max": 123,
+      "drawn_a": 0,
+      "drawn_b": 9107,
+      "by_index": false
+    },
+    "sphere-flat-zs-rgb555": {
+      "coverage_iou": 0.9934,
+      "identical": 0.9934,
+      "differ": 195,
+      "mad": 1.046,
+      "max": 198,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-flat-zs-rgb565": {
+      "coverage_iou": 0.9934,
+      "identical": 0.9934,
+      "differ": 195,
+      "mad": 1.039,
+      "max": 198,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-mmxp-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.001,
+      "max": 75,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-mmxp-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.001,
+      "max": 74,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-smooth-zs-rgb555": {
+      "coverage_iou": 0.9934,
+      "identical": 0.8593,
+      "differ": 4180,
+      "mad": 0.9,
+      "max": 181,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-smooth-zs-rgb565": {
+      "coverage_iou": 0.9934,
+      "identical": 0.8178,
+      "differ": 5415,
+      "mad": 0.899,
+      "max": 181,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-textured-gold-zs-rgb555": {
+      "coverage_iou": 0.9934,
+      "identical": 0.0,
+      "differ": 29715,
+      "mad": 65.928,
+      "max": 247,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-textured-gold-zs-rgb565": {
+      "coverage_iou": 0.9934,
+      "identical": 0.0,
+      "differ": 29715,
+      "mad": 65.007,
+      "max": 247,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-textured-lit-zs-rgb555": {
+      "coverage_iou": 0.9934,
+      "identical": 0.0,
+      "differ": 29715,
+      "mad": 63.892,
+      "max": 247,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-textured-lit-zs-rgb565": {
+      "coverage_iou": 0.9934,
+      "identical": 0.0,
+      "differ": 29715,
+      "mad": 63.82,
+      "max": 247,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-textured-zs-rgb555": {
+      "coverage_iou": 0.9934,
+      "identical": 0.0,
+      "differ": 29715,
+      "mad": 92.505,
+      "max": 255,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-textured-zs-rgb565": {
+      "coverage_iou": 0.9934,
+      "identical": 0.0,
+      "differ": 29715,
+      "mad": 91.406,
+      "max": 255,
+      "drawn_a": 29636,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-tip-blend-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 0.9999,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 8,
+      "drawn_a": 14803,
+      "drawn_b": 14803,
+      "by_index": false
+    },
+    "sphere-tip-blend-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 0.9999,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 4,
+      "drawn_a": 14803,
+      "drawn_b": 14803,
+      "by_index": false
+    },
+    "sphere-tip-blend-zs-rgb555": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "differ": 14803,
+      "mad": 114.213,
+      "max": 198,
+      "drawn_a": 0,
+      "drawn_b": 14803,
+      "by_index": false
+    },
+    "sphere-tip-blend-zs-rgb565": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "differ": 14803,
+      "mad": 114.268,
+      "max": 198,
+      "drawn_a": 0,
+      "drawn_b": 14803,
+      "by_index": false
+    },
+    "sphere-tip-rgb555": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 8,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-tip-rgb565": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 4,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-tip-zs-rgb555": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "differ": 29599,
+      "mad": 114.228,
+      "max": 198,
+      "drawn_a": 0,
+      "drawn_b": 29599,
+      "by_index": false
+    },
+    "sphere-tip-zs-rgb565": {
+      "coverage_iou": 0.0,
+      "identical": 0.0,
+      "differ": 29599,
+      "mad": 114.281,
+      "max": 198,
+      "drawn_a": 0,
+      "drawn_b": 29599,
+      "by_index": false
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6023,
+    "identical": 0.6023,
+    "differ": 7422,
+    "mad": 63.368,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11959,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true
+}

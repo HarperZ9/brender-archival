@@ -179,13 +179,19 @@ a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
 
 - **The same angle on both sides** (17 October 2026): the period geometry
   difference was the angle macro. BRender 1.3.2's `BR_ANGLE_DEG` is 182 units
-  a degree, truncated; 1.4's is exact. With the same angle on both sides, 56
-  of 61 scenes are byte-identical to 1.4 on Windows (all 8-bit, all 24-bit
-  flat and textured, all 15/16-bit through the MMX table); three Gouraud
-  scenes differ in a few pixels by one level, as 1.4's Windows and Linux
-  builds do from each other.
+  a degree, truncated; 1.4's is exact. With the same angle on both sides, 50
+  of 61 scenes are byte-identical to 1.4 on Windows (first reported as 56,
+  before the comparison counted pixels exactly); the rest differ in 1 to 5
+  pixels by one level.
+- **Z-sorted, TIP256 and the MMX perspective rows** (17 October 2026):
+  engine-revival 0.10.0 ports the last kernels these scenes reach and
+  softrend's subdivision. The z-sorted 15/16-bit scenes and the MMX
+  perspective rows match 1.4 to one pixel. 1.4 has no TIP kernel and refuses
+  z-sorted TIP; the 1998 MMX table takes z-sorted triangles (BlazingRenderer's
+  fix in 1.4). Both are reported.
 
-Still open: the z-sorted 15/16-bit kernels and the `TIP256` perspective mappers are not ported.
+Still open: the one-pixel residues are not traced, and the 8-bit
+perspective kernels for maps that are not 256 wide have no scene.
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the

@@ -3,27 +3,35 @@
 The question is whether BRender 1.4, the modern 64-bit engine the downloads
 use, draws the same pixels as Argonaut's BRender 1.3.2 from 1998.
 
-**Answer on 17 October 2026, for the sixty-one scenes measured here: yes,
-with one 1998 defect.** Given the same angles, the 1998 rasteriser and
-BRender 1.4 draw the same pixels.
+**Answer on 17 October 2026, for the ninety-one scenes measured here: yes,
+to a few pixels, with one 1998 defect.** Given the same angles, the 1998
+rasteriser and BRender 1.4 draw the same pixels.
 
-- **56 of the 61 scenes are byte-identical** to BRender 1.4 on Windows:
-  every 8-bit scene (unlit, flat, Gouraud, textured, lit textured,
-  perspective-correct), every 24-bit flat and textured scene, and all 34
-  15/16-bit scenes through the 1998 MMX table, textured and dithered
-  included.
-- **Three 24-bit Gouraud scenes** differ in 2 to 6 pixels, by one level. BRender 1.4's own
+- **50 of the 61 older scenes are byte-identical** to BRender 1.4 on Windows
+  (first reported as 56; see the correction under
+  [The same angle on both sides](#the-same-angle-on-both-sides)): every
+  8-bit scene but the lit sphere (with and without perspective), every 24-bit flat and textured scene, and 30 of
+  the 34 15/16-bit scenes through the 1998 MMX table, textured and dithered
+  included. The rest differ in 1 to 5 pixels, by one level.
+- **Three 24-bit Gouraud scenes** differ in 1 to 5 pixels, by one level. BRender 1.4's own
   Windows and Linux builds differ from each other on the same scenes by a
   similar amount.
+- **The 30 z-sorted, TIP256 and MMX perspective scenes** (engine-revival
+  0.10.0): 15 of the 24 that 1.4 draws the same way are byte-identical
+  (the lit textured one with its shade table at stride 4), and the rest
+  differ in 1 to 5 pixels. 1.4
+  has no TIP kernel, and the 1998 MMX table takes z-sorted triangles that 1.4
+  sends elsewhere; both are reported (see
+  [Z-sorted, TIP256 and the MMX perspective rows](#z-sorted-tip256-and-the-mmx-perspective-rows)).
 - **24-bit lit textured:** the 1998 kernel reads its shade table at the wrong
   stride, so as shipped it draws garbage (see
   [A 1998 defect](#a-1998-defect-the-24-bit-lit-textured-kernel)). With the
   table laid at the stride it reads, one scene is identical and the other
-  differs in 2 pixels.
+  differs in 1 pixel.
 - What made the difference: BRender 1.3.2's `BR_ANGLE_DEG` is 182 units a
   degree, truncated, where BRender 1.4's angle is exact (see
   [The same angle on both sides](#the-same-angle-on-both-sides)). Every
-  section below that one was measured before the fix, with each version's own
+  section below that one, apart from the z-sorted section, was measured before the fix, with each version's own
   macro; it stays as the record of what each kernel port achieved then.
 
 The earlier answer (16 and 17 October, each version's own angle macro): almost,
@@ -110,9 +118,125 @@ scenes, where period and 1.4 differ before the fix and after it. I looked at
 it: hundreds of scattered pixels before, two after on the Gouraud sphere,
 none on the others.
 
+**Correction, 17 October 2026, later the same day.** The counts above were
+too high. `parity_compare.py` decided "identical" by comparing the share of
+identical pixels, rounded to four places, with 1.0, so one differing pixel in
+a sphere's 29,600 passed as identical. It now counts differing pixels
+exactly (`differ` in the evidence). Recounted on the same frames (CI run
+39076269252 draws the 61 older scenes byte for byte as run 39067573521):
+
+| Against BRender 1.4 | Scenes | Identical, as first reported | Identical, counted exactly |
+|---|---|---|---|
+| 24-bit and 8-bit, general tables, Linux | 27 | 22 | 20 |
+| 24-bit lit textured at stride 4, Linux | 2 | 1 | 1 (the torus differs in 1 pixel, not 2) |
+| 15/16-bit, MMX table, Linux | 34 | 30 | 26 |
+| 15/16-bit, MMX table, Windows | 34 | 34 | 30 |
+| all 61, Windows | 61 | 56 | 50 |
+
+The scenes the rounding hid each differ in one pixel by one level of the
+format or one palette index: the 8-bit lit sphere, with and without
+perspective, at (113, 206); and through the MMX table the Gouraud and lit
+textured spheres at (108, 40) in both formats. 1.4's own Windows and Linux
+builds agree on those pixels, so the sentence above about every leftover
+scene does not hold for them. They were not traced. Two gates that required
+byte identity (8-bit textured and 8-bit perspective) now allow one differing
+pixel (`--max-differ 1`); every other `--require-identical` gate passes the
+exact count. Evidence: `evidence/*-exact-2026-10-17.json`.
+
+## Z-sorted, TIP256 and the MMX perspective rows
+
+Measured 17 October 2026, engine-revival 0.10.0 against BRender 1.4, with the
+shared angle. The frames come from CI run 39076269252 (commit `9b784f2`). The
+CI period frames (general, MMX and stride 4) are the same bytes as local
+Win32 runs, and the CI Windows modern frames the same as a local Windows run.
+
+engine-revival 0.10.0 ports the last 15/16-bit kernels these scenes reach:
+the z-sorted twins of the true colour kernels (`tt15_pi.asm`, `tt16_pi.asm`,
+`tt24_pi.asm`, and `t_pia.asm`'s true colour instances under `awtm.c`), the
+TIP256 perspective-correct lit texture scanlines (`t15_pizp.asm` z-buffered,
+`t15_pip.asm` z-sorted, plain and blended), and softrend's `subdiv.asm`.
+Thirty new scenes, 91 in all:
+
+| Scenes | What they reach in 1998 |
+|---|---|
+| `*-zs-rgb555`, `*-zs-rgb565`: flat, smooth, textured, gold, lit (10) | `BrZsSceneRender`: `TriangleRenderPI*`, `TrapezoidRenderPITA15`, `PITIA_RGB_555` |
+| `sphere-flat-zs`, `sphere-smooth-zs`, `sphere-textured-zs`, `sphere-textured-lit-zs` (4, 24-bit) | `TriangleRenderPI*_RGB_888`, `TrapezoidRenderPITA24`, `PITIA_RGB_888` |
+| `sphere-tip-*`, `plane-tip-steep-*`, their `-zs` twins (8) | 8-bit map with `shade.tab`, lit, `BR_MATF_PERSPECTIVE`: `ScanLinePIZ2TIP256` / `ScanLinePITIP256` |
+| `sphere-tip-blend-*` and `-zs` (4), opacity 128 | the blended `TIPB256` forms |
+| `sphere-mmxp-*`, `plane-mmxp-steep-*` (4) | 8-bit map with `std.pal`, `BR_MATF_PERSPECTIVE`: the MMX table's perspective rows, which ask softrend to subdivide |
+
+**Checked against the 1998 assembly.** The seven files, assembled with MASM
+against the harness's own structure offsets and linked in place of the
+ports, draw all 91 scenes byte for byte as the ports do (whole files
+compared), on the general and the MMX builds. A differential test drew 96,000
+random triangles through the sixteen new kernels both ways: no difference.
+One-instruction changes to the assembly change exactly the scenes that reach
+the changed kernel (1, 8, 4 and 4 scenes) and fail the random test only in
+that kernel. Local runs; the reference build is not part of CI.
+
+**A harness defect, fixed.** The FLOAT softrend takes `subdivideCheck`,
+`averageVerticesOnScreen` and `averageVertices` from `subdiv.asm` and has no
+C for them. Until 0.10.0 the harness linked stubs that never subdivide, on
+the claim that no primitive block asks for it. The MMX table's perspective
+rows do (`RF_NEED_SUBDIVIDE`), so the MMX build drew them affine, a triangle
+at a time: 7,450 of the steep plane's 9,107 pixels differed from 1.4. With
+the port the plane is byte-identical. Subdivision changes nothing else: the
+61 older scenes draw the same bytes as with 0.9.0, on both builds.
+
+| Against BRender 1.4 (Linux, CI) | Scenes | Byte-identical | Rest |
+|---|---|---|---|
+| 15/16-bit z-sorted, general tables | 10 | 8 | the Gouraud sphere, 1 pixel by one level, in each format |
+| 24-bit z-sorted flat, smooth, textured | 3 | 2 | the Gouraud sphere, 5 pixels by 1 level |
+| 24-bit z-sorted lit textured | 1 | 0 | the 1998 stride defect; at stride 4, byte-identical |
+| TIP shapes, MMX build | 6 | 2 | the z-buffered TIP and TIPB spheres, 1 pixel by one level each; both planes identical |
+| MMX perspective rows, subdivided | 4 | 2 | the sphere, 1 pixel, in each format |
+| TIP256, general tables | 12 | 0 | reported: 1.4 has no TIP kernel (below) |
+| z-sorted 15/16-bit, MMX build | 16 | 0 | reported: the 1998 MMX table takes z-sorted triangles (below) |
+
+Modern Windows and Linux draw all 30 new scenes the same but one (the 24-bit
+z-sorted Gouraud sphere, 2 pixels). None of the one-pixel residues above is
+one where 1.4's Windows and Linux builds differ from each other; they were
+not traced.
+
+**BRender 1.4 has no TIP kernel.** Its softprim tables have no row for a lit
+perspective-correct 8-bit map in a 15/16-bit buffer. A z-buffered TIP
+triangle falls through to the MMX table's untextured row, which is what the
+1998 MMX build draws too (6 scenes, gated above). A z-sorted one finds no row
+at all and is refused, so 1.4 draws nothing: the four `tip-*-zs` scenes are
+empty on the modern side. The 1998 general tables texture both, so the TIP
+gate against the general build is reported, not bounded.
+
+**The 1998 MMX table takes z-sorted triangles.** Its rows carry no
+`z_buffered` property, so on a Pentium with MMX the matcher picks them for
+z-sorted triangles too, and they test and write whatever `work.depth` holds.
+On these scenes that leaves the rim of the sphere wrong (195 pixels on the
+flat sphere) and the textured scenes untextured. BlazingRenderer found
+this first and fixed it in BRender 1.4 (commit `96f9537d`, 4 October 2026:
+`tables/mmx_t16.ifg` gains `z_buffered` on its rows), so 1.4 draws z-sorted
+15/16-bit through its general tables. That is why the general period build is
+the counterpart for the z-sorted gate, and the MMX build's z-sorted scenes
+are reported.
+
+**The one pixel on the MMX perspective sphere** is at (98, 189). Both sides
+subdivide the same triangles (5,648 on the sphere); the last bits of the
+subdivided screen coordinates differ. The likely cause, inferred and not
+checked further, is that 1.4's C port of `subdiv.asm` projects midpoints
+with `PROJECT_VERTEX_WRITE_Q` (`drivers/softrend/subdiv.c:33-35`), a
+different float sequence from the 1998 assembly's.
+
+Evidence: `evidence/modern-vs-period-zs-2026-10-17.json` (general tables,
+26 scenes), `evidence/modern-vs-period-mmx-zs-2026-10-17.json` (MMX build, 26
+scenes), `evidence/modern-vs-period-shade4-zs-2026-10-17.json`,
+`evidence/modern-windows-vs-linux-zs-2026-10-17.json` and
+`evidence/period-left-modern-right-zs-2026-10-17.png`. The sheet shows eleven
+rows, the plane before and after subdivision among them, with a ring around
+each differing pixel where there are few. I looked at it: the frames are what
+the numbers say, including the textured period TIP sphere beside 1.4's
+untextured one and the empty z-sorted TIP frame on the 1.4 side.
+
 ## The instrument
 
-`parity-scene.c` draws sixty-one scenes and a control at 320 x 240, from
+`parity-scene.c` draws ninety-one scenes and a control at 320 x 240, from
 the 1998 sample models and one plane it builds itself. Eleven draw into an RGB_888 buffer:
 
 - six untextured: a sphere, a torus and the teapot, unlit, lit flat and lit
@@ -129,7 +253,9 @@ two textured lit through `shade.tab`. Seven more are 8-bit and textured
 with `BR_MATF_PERSPECTIVE`: the sphere and the torus, unlit and lit, and a
 plane of eight large triangles turned 60 degrees so it recedes, unlit and lit,
 beside the same plane without perspective. Thirty-four more draw into
-RGB_555 and RGB_565 buffers (the two 15/16-bit sections below). Each 8-bit
+RGB_555 and RGB_565 buffers (the two 15/16-bit sections below), and thirty
+more are z-sorted, TIP256 or MMX perspective scenes (the z-sorted section
+above). Each 8-bit
 scene writes the indices
 (`.pgm`) and the colours they map to (`.ppm`); the comparison counts a pixel
 identical when the index is the same.
@@ -140,7 +266,7 @@ Each side copies the renderer setup of its own ladder rung.
 
 | Side | Engine | Built by |
 |---|---|---|
-| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the harness from engine-revival 0.9.0, built twice: with pentprim's general tables, and with `-DBRENDER_PENTPRIM_MMX=ON` as a Pentium with MMX runs it |
+| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the harness from engine-revival 0.10.0, built twice: with pentprim's general tables, and with `-DBRENDER_PENTPRIM_MMX=ON` as a Pentium with MMX runs it |
 | modern | BRender 1.4 (BlazingRenderer): softrend + softprim, 64-bit | `modern/CMakeLists.txt` (target `parity-scene`) |
 
 BRender's 1998 rasterisers are x86 assembly. The period build replaces the
@@ -166,7 +292,10 @@ perspective kernels the port was also checked against the 1998 code itself
 side drew:
 
 - **coverage IoU**: pixels drawn in both, over pixels drawn in either;
-- **identical**: the share of those pixels with the same three bytes;
+- **identical**: the share of those pixels with the same three bytes,
+  rounded to four places;
+- **differ**: how many of those pixels are not the same, counted exactly
+  (`--require-identical` and `--max-differ` use this);
 - **MAD**: the mean absolute channel difference;
 - **max**: the largest single channel difference.
 
@@ -559,6 +688,20 @@ Every change:
 | 15/16-bit, 16-bit maps, through the MMX table | 0.998 | 97% | 0.25 |
 | 15/16-bit, 8-bit palette maps, through the MMX table | 0.997 | 96% | 0.45 |
 | 15/16-bit dithered, through the MMX table | 0.999 | 97% | 0.5 |
+| 15/16-bit z-sorted, general tables | 1.0 | at most 1 pixel differs | |
+| 24-bit z-sorted flat, smooth, textured | 1.0 | 99.9%, max 1 level | 0.01 |
+| 24-bit z-sorted lit textured, table at stride 4 | 1.0 | byte-identical | |
+| TIP shapes, through the MMX table | 1.0 | 99.9%, max 9 | 0.01 |
+| MMX perspective rows, subdivided | 1.0 | 99.9%, max 80 | 0.01 |
+
+The z-sorted and TIP rows were set on 17 October 2026, after the shared
+angle; the older rows above them are as first set, and the angle section
+gives the tighter values CI now runs. Reported without bounds: the TIP256
+scenes against the general tables, the z-sorted 24-bit lit scene as shipped,
+and the z-sorted 15/16-bit scenes through the MMX table. Each new gate fails
+on a control: frames from before the port, the MMX build without
+subdivision, or the general build where the MMX build is expected; each
+`--max-differ 1` gate fails when one more pixel is changed.
 
 All bounds were set from the measurements above, so they are calibrated, not
 predicted.
@@ -619,6 +762,8 @@ Windows CI has no OpenGL, so this runs on Linux only.
 
 ## Not measured yet
 
-- The z-sorted 15/16-bit kernels and the `TIP256` perspective mappers are
-  not ported. The MMX table's subdivided-perspective rows reuse the ported
-  kernels, but no scene asks for subdivision.
+- The one-pixel residues (the 8-bit lit sphere, the 15/16-bit Gouraud and
+  lit spheres through the MMX table, the z-sorted Gouraud sphere, the TIP and
+  MMX perspective spheres) are not traced.
+- The 8-bit perspective kernels at other texture sizes (the `ZPT` rows for
+  maps that are not 256 wide) have no scene.
