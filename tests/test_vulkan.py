@@ -26,3 +26,14 @@ def test_ci_runs_stage_a_on_lavapipe_twice_within_the_bounds():
     assert "vk_compare.py vk-a --bounds 0.91 0.997 14.5" in ci
     cmake = (ROOT / "modern" / "CMakeLists.txt").read_text(encoding="utf-8")
     assert 'option(BRENDER_VULKAN "Build the Vulkan rasteriser proof (vk-triangle)" OFF)' in cmake
+
+
+def test_stage_b_evidence_and_gate():
+    record = json.loads((VULKAN / "vkprim-scenes-2026-10-17.json").read_text(encoding="utf-8"))
+    scenes = record["scenes"]
+    assert len(scenes) == 6 and record["ok"] and record["within_bounds"] and record["control"]["fails_as_required"]
+    assert min(m["coverage_iou"] for m in scenes.values()) == 0.9764
+    flat = [m for k, m in scenes.items() if k.endswith("-flat")]
+    assert flat and all(m["identical"] == m["coverage_iou"] for m in flat), "flat colours match wherever both draw"
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert "diff -r vkp-a vkp-b" in ci and "--bounds 0.975 0.25 255 3.0" in ci

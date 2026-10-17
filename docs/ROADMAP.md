@@ -192,8 +192,12 @@ The plan is ADR 0002 (`docs/adr/0002-vulkan-backend.md`), in three stages:
   for thin slivers. The colour is within one level wherever both draw. The
   two differ only at edges, where they follow different edge rules. Two runs
   give the same bytes. CI checks it on Linux.
-- **B, a Vulkan primitive library under softrend, is next.** Both sides
-  then rasterise the same vertices.
+- **B, a Vulkan primitive library under softrend, is built** (`vkprim`,
+  `vk-scenes`). It rasterises softprim's own screen-space vertices with
+  Vulkan, with depth, into BRender's buffers. On six untextured scenes it
+  reaches coverage IoU 0.9764 to 0.9959. Flat colours are identical wherever
+  both draw, and Gouraud MAD is under 3. CI checks it on Linux.
+  Textures are next.
 - **C, a full renderer facility like glrend, comes after B.**
 
 Done when: the game runs on the new backend with `--driver vulkan`, and its

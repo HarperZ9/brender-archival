@@ -1,0 +1,82 @@
+{
+  "label": "softprim against vkprim (Vulkan on Mesa lavapipe), 17 October 2026",
+  "scenes": {
+    "sphere-flat": {
+      "coverage_iou": 0.9959,
+      "identical": 0.9959,
+      "mad": 0.657,
+      "max": 199,
+      "drawn_a": 31422,
+      "drawn_b": 31462,
+      "by_index": false
+    },
+    "sphere-lit": {
+      "coverage_iou": 0.9959,
+      "identical": 0.9644,
+      "mad": 0.526,
+      "max": 188,
+      "drawn_a": 31422,
+      "drawn_b": 31462,
+      "by_index": false
+    },
+    "sphere-smooth": {
+      "coverage_iou": 0.9959,
+      "identical": 0.5234,
+      "mad": 0.494,
+      "max": 187,
+      "drawn_a": 31422,
+      "drawn_b": 31462,
+      "by_index": false
+    },
+    "teapot-smooth": {
+      "coverage_iou": 0.9764,
+      "identical": 0.2748,
+      "mad": 2.813,
+      "max": 184,
+      "drawn_a": 8661,
+      "drawn_b": 8698,
+      "by_index": false
+    },
+    "torus-flat": {
+      "coverage_iou": 0.9935,
+      "identical": 0.9935,
+      "mad": 1.043,
+      "max": 199,
+      "drawn_a": 18111,
+      "drawn_b": 18120,
+      "by_index": false
+    },
+    "torus-smooth": {
+      "coverage_iou": 0.9935,
+      "identical": 0.3868,
+      "mad": 0.807,
+      "max": 172,
+      "drawn_a": 18111,
+      "drawn_b": 18120,
+      "by_index": false
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.5747,
+    "identical": 0.5747,
+    "mad": 67.759,
+    "max": 199,
+    "drawn_a": 18111,
+    "drawn_b": 12083,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true,
+  "bounds": {
+    "min_coverage_iou": 0.975,
+    "min_identical": 0.25,
+    "max_diff": 255,
+    "max_mad": 3.0
+  },
+  "within_bounds": true
+}
