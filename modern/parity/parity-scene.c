@@ -71,6 +71,8 @@ typedef struct scene {
                             maps and shade tables packed into that format */
     int         pal;     /* keep the 8-bit map and attach std.pal to it */
     int         white;   /* a white material: no colour to modulate the map by */
+    int         zs;      /* z-sorted (BrZsSceneRender, no depth buffer) instead of z-buffered */
+    int         opacity; /* material opacity, 0 meaning 255; under 255 the material blends */
 } scene;
 
 /* Untextured scenes, then unlit textured ones (RGB_888 maps, the period
@@ -164,6 +166,44 @@ static const scene scenes[] = {
     {"torus-textured-pal-lit-rgb565", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 0, NULL, 0, 0, 0, 565, 1, 0},
     {"sphere-textured-pal-dither-rgb565", "sph32.dat", 35, BR_MATF_DITHER, 0, "earth.pix", 0, NULL, 0, 0, 0, 565, 1, 1},
     {"sphere-smooth-dither-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_DITHER, 1, NULL, 0, NULL, 0, 0, 0, 565},
+    /* Z-sorted (BrZsSceneRender, no depth buffer): the general tables'
+     * z-sorted kernels, tt15_pi.asm, tt16_pi.asm and tt24_pi.asm (flat and
+     * Gouraud) and t_pia.asm under awtm.c (maps). "tip": an 8-bit map lit
+     * through a 15/16-bit shade table with BR_MATF_PERSPECTIVE, the general
+     * tables' TIP256 perspective mappers (t15_pizp.asm z-buffered,
+     * t15_pip.asm z-sorted), and with opacity 128 their blended TIPB256 forms.
+     * "mmxp": an 8-bit map with std.pal and BR_MATF_PERSPECTIVE, which the
+     * MMX table takes on its perspective rows (softrend subdivides). */
+    {"sphere-flat-zs-rgb555", "sph32.dat", 35, 0, 0, NULL, 0, NULL, 0, 0, 0, 555, 0, 0, 1},
+    {"sphere-smooth-zs-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 0, NULL, 0, 0, 0, 555, 0, 0, 1},
+    {"sphere-textured-zs-rgb555", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 555, 0, 0, 1},
+    {"sphere-textured-gold-zs-rgb555", "sph32.dat", 35, 0, 0, "gold8.pix", 0, NULL, 0, 0, 0, 555, 0, 0, 1},
+    {"sphere-textured-lit-zs-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 555, 0, 0, 1},
+    {"sphere-tip-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 555},
+    {"plane-tip-steep-rgb555", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, -60, 555},
+    {"sphere-tip-zs-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 555, 0, 0, 1},
+    {"plane-tip-steep-zs-rgb555", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, -60, 555, 0, 0, 1},
+    {"sphere-tip-blend-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 555, 0, 0, 0, 128},
+    {"sphere-tip-blend-zs-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 555, 0, 0, 1, 128},
+    {"sphere-mmxp-rgb555", "sph32.dat", 35, BR_MATF_PERSPECTIVE, 0, "earth.pix", 0, NULL, 0, 0, 0, 555, 1, 1},
+    {"plane-mmxp-steep-rgb555", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix", 0, NULL, 0, 0, -60, 555, 1, 1},
+    {"sphere-flat-zs-rgb565", "sph32.dat", 35, 0, 0, NULL, 0, NULL, 0, 0, 0, 565, 0, 0, 1},
+    {"sphere-smooth-zs-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 0, NULL, 0, 0, 0, 565, 0, 0, 1},
+    {"sphere-textured-zs-rgb565", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 565, 0, 0, 1},
+    {"sphere-textured-gold-zs-rgb565", "sph32.dat", 35, 0, 0, "gold8.pix", 0, NULL, 0, 0, 0, 565, 0, 0, 1},
+    {"sphere-textured-lit-zs-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 565, 0, 0, 1},
+    {"sphere-tip-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 565},
+    {"plane-tip-steep-rgb565", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, -60, 565},
+    {"sphere-tip-zs-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 565, 0, 0, 1},
+    {"plane-tip-steep-zs-rgb565", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, -60, 565, 0, 0, 1},
+    {"sphere-tip-blend-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 565, 0, 0, 0, 128},
+    {"sphere-tip-blend-zs-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 565, 0, 0, 1, 128},
+    {"sphere-mmxp-rgb565", "sph32.dat", 35, BR_MATF_PERSPECTIVE, 0, "earth.pix", 0, NULL, 0, 0, 0, 565, 1, 1},
+    {"plane-mmxp-steep-rgb565", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix", 0, NULL, 0, 0, -60, 565, 1, 1},
+    {"sphere-flat-zs", "sph32.dat", 35, 0, 0, NULL, 0, NULL, 0, 0, 0, 0, 0, 0, 1},
+    {"sphere-smooth-zs", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 0, NULL, 0, 0, 0, 0, 0, 0, 1},
+    {"sphere-textured-zs", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 0, 0, 0, 1},
+    {"sphere-textured-lit-zs", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 0, 0, 0, 1},
     {"control-torus-turned", "torus.dat", 85, 0, 0, NULL},
 };
 
@@ -526,6 +566,7 @@ int main(int argc, char **argv)
         material->kd = BrFloatToScalar(0.85f);
         material->ks = BrFloatToScalar(0.0f);
         material->flags = sc->flags;
+        if (sc->opacity) material->opacity = (br_uint_8)sc->opacity;
         material->index_base = (br_uint_8)sc->base;
         material->index_range = (br_uint_8)sc->range;
         if (sc->shade != NULL && (material->index_shade = load_shade(dat, sc->shade, palette, !sc->index8, sc->hicolor)) == NULL) {
@@ -557,7 +598,8 @@ int main(int argc, char **argv)
             br_pixelmap *target = sc->index8 ? colour8 : sc->hicolor == 555 ? colour555 : sc->hicolor == 565 ? colour565 : colour;
             BrPixelmapFill(target, 0);
             BrPixelmapFill(depth, DEPTH_CLEAR);
-            BrZbSceneRender(world, camera_actor, target, depth);
+            if (sc->zs) BrZsSceneRender(world, camera_actor, target);
+            else BrZbSceneRender(world, camera_actor, target, depth);
 #if !PARITY_PERIOD
             BrRendererFrameEnd();
 #endif
