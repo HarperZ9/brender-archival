@@ -300,7 +300,13 @@ earth, gold and the lit torus; period on the left).
 ## A 1998 defect: the 24-bit lit textured kernel
 
 BRender 1.3.2 cannot draw a lit, textured triangle into a 24-bit buffer
-correctly. The defect is in the 1998 source, not in the port:
+correctly. The defect is in the 1998 source, not in the port. BlazingRenderer
+found it first: their `drivers/softprim/README.md` (at the pinned commit
+`ed5e7a9`) records that pentprim read the 256 x 256 RGB_888 table at a
+four-byte stride while its matcher required three-byte entries, and that
+softprim implements the family with the read corrected. We found it again on
+16 October 2026 from the period side, by measurement, before reading their
+note; what this repository adds is the measurement below.
 
 - `prim_t24.c` declares the primitive "RGB 888, Z Buffered, Constant
   Intensity, Textured, Perspective Correct"
