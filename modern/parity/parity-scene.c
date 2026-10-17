@@ -10,8 +10,8 @@
  *           (built by modern/CMakeLists.txt as parity-scene)
  *
  * Everything that is not the rasteriser is the same: the model, the camera,
- * the model transform, the material, the light and the 320 x 240 RGB_888
- * buffer. The renderer setup differs only where the two versions' APIs
+ * the model transform, the material, the light and the 320 x 240 buffer
+ * (RGB_888, INDEX_8, RGB_555 or RGB_565 by scene). The renderer setup differs only where the two versions' APIs
  * differ, and each side copies the setup of its own ladder rung, which is
  * known to render.
  *
@@ -55,6 +55,8 @@ typedef struct scene {
     const char *shade;   /* shade table: "shade.tab" as is (8-bit), or expanded to RGB_888 */
     int         base, range; /* the material's palette ramp, for the untextured 8-bit scenes */
     int         tilt;    /* model turn about X, degrees; 0 means the usual 25 */
+    int         hicolor; /* 555 or 565: draw into an RGB_555 or RGB_565 buffer, with
+                            maps and shade tables packed into that format */
 } scene;
 
 /* Untextured scenes, then unlit textured ones (RGB_888 maps, the period
@@ -100,11 +102,62 @@ static const scene scenes[] = {
     {"plane-textured-steep-linear-index8", "plane", 20, 0, 0, "earth.pix", 1, NULL, 0, 0, -60},
     {"plane-textured-steep-persp-index8", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix", 1, NULL, 0, 0, -60},
     {"plane-textured-lit-steep-persp-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 1, "shade.tab", 0, 0, -60},
+    /* 15 and 16-bit: drawn into RGB_555 and RGB_565 buffers. Period kernels:
+     * untextured, tt15_piz.asm and tt16_piz.asm (TriangleRenderPIZ2 flat,
+     * PIZ2I Gouraud); a 256 x 256 map packed into the buffer's format,
+     * zb16p2ul.asm (TriangleRender_ZT_RGB565_D16_256, which both tables
+     * use); gold8.pix, 320 x 200 and so not a power of two, t_piza.asm's
+     * TrapezoidRenderPIZ2TA15; and the 8-bit map lit through shade.tab
+     * packed into the buffer's format, TrapezoidRenderPIZ2TIA_RGB_555. */
+    {"sphere-flat-rgb555", "sph32.dat", 35, 0, 0, NULL, 0, NULL, 0, 0, 0, 555},
+    {"sphere-lit-rgb555", "sph32.dat", 35, BR_MATF_LIGHT, 1, NULL, 0, NULL, 0, 0, 0, 555},
+    {"sphere-smooth-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 0, NULL, 0, 0, 0, 555},
+    {"torus-flat-rgb555", "torus.dat", 60, 0, 0, NULL, 0, NULL, 0, 0, 0, 555},
+    {"torus-smooth-rgb555", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 0, NULL, 0, 0, 0, 555},
+    {"sphere-textured-rgb555", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 555},
+    {"torus-textured-rgb555", "torus.dat", 60, 0, 0, "rosewood.pix", 0, NULL, 0, 0, 0, 555},
+    {"sphere-textured-gold-rgb555", "sph32.dat", 35, 0, 0, "gold8.pix", 0, NULL, 0, 0, 0, 555},
+    {"sphere-textured-lit-rgb555", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 555},
+    {"torus-textured-lit-rgb555", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 0, "shade.tab", 0, 0, 0, 555},
+    {"sphere-flat-rgb565", "sph32.dat", 35, 0, 0, NULL, 0, NULL, 0, 0, 0, 565},
+    {"sphere-lit-rgb565", "sph32.dat", 35, BR_MATF_LIGHT, 1, NULL, 0, NULL, 0, 0, 0, 565},
+    {"sphere-smooth-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 0, NULL, 0, 0, 0, 565},
+    {"torus-flat-rgb565", "torus.dat", 60, 0, 0, NULL, 0, NULL, 0, 0, 0, 565},
+    {"torus-smooth-rgb565", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, NULL, 0, NULL, 0, 0, 0, 565},
+    {"sphere-textured-rgb565", "sph32.dat", 35, 0, 0, "earth.pix", 0, NULL, 0, 0, 0, 565},
+    {"torus-textured-rgb565", "torus.dat", 60, 0, 0, "rosewood.pix", 0, NULL, 0, 0, 0, 565},
+    {"sphere-textured-gold-rgb565", "sph32.dat", 35, 0, 0, "gold8.pix", 0, NULL, 0, 0, 0, 565},
+    {"sphere-textured-lit-rgb565", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 0, "shade.tab", 0, 0, 0, 565},
+    {"torus-textured-lit-rgb565", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 0, "shade.tab", 0, 0, 0, 565},
     {"control-torus-turned", "torus.dat", 85, 0, 0, NULL},
 };
 
+/* A 15 or 16-bit pixel to 8 bits a channel, the same arithmetic on both
+ * sides: each field moves to the top of its byte and its top bits repeat
+ * below, so 0 stays 0 and a full field becomes 255. Gives R, G, B. */
+static void expand16(unsigned v, int is565, unsigned char rgb[3])
+{
+    unsigned r = is565 ? (v >> 11) & 31 : (v >> 10) & 31;
+    unsigned g = is565 ? (v >> 5) & 63 : (v >> 5) & 31;
+    unsigned b = v & 31;
+    rgb[0] = (unsigned char)(r << 3 | r >> 2);
+    rgb[1] = (unsigned char)(is565 ? g << 2 | g >> 4 : g << 3 | g >> 2);
+    rgb[2] = (unsigned char)(b << 3 | b >> 2);
+}
+
+/* A 24-bit colour (B, G, R bytes, as std.pal stores them) packed into a 15
+ * or 16-bit pixel by dropping the low bits of each channel. */
+static unsigned pack16(const unsigned char *bgr, int is565)
+{
+    if (is565) return (unsigned)(bgr[2] >> 3) << 11 | (unsigned)(bgr[1] >> 2) << 5 | (unsigned)(bgr[0] >> 3);
+    return (unsigned)(bgr[2] >> 3) << 10 | (unsigned)(bgr[1] >> 3) << 5 | (unsigned)(bgr[0] >> 3);
+}
+
+static int is16(const br_pixelmap *pm) { return pm->type == BR_PMT_RGB_555 || pm->type == BR_PMT_RGB_565; }
+
 /* An 8-bit buffer is written through the palette, so both sides' frames
- * compare in the same colours; the raw indices go to <scene>.pgm as well. */
+ * compare in the same colours; the raw indices go to <scene>.pgm as well.
+ * A 15 or 16-bit buffer goes through expand16. */
 static int dump_ppm(const br_pixelmap *pm, const br_pixelmap *pal, const char *path)
 {
     FILE *f = fopen(path, "wb");
@@ -119,7 +172,11 @@ static int dump_ppm(const br_pixelmap *pm, const br_pixelmap *pal, const char *p
         for (x = 0; x < (int)pm->width; x++) {
             const unsigned char *bgr = index8 ? (const unsigned char *)pal->pixels + (long)row[x] * pal->row_bytes : row + x * 3;
             unsigned char rgb[3];
-            rgb[0] = bgr[2]; rgb[1] = bgr[1]; rgb[2] = bgr[0];
+            if (is16(pm)) {
+                expand16((unsigned)row[x * 2] | (unsigned)row[x * 2 + 1] << 8, pm->type == BR_PMT_RGB_565, rgb);
+            } else {
+                rgb[0] = bgr[2]; rgb[1] = bgr[1]; rgb[2] = bgr[0];
+            }
             fwrite(rgb, 1, 3, f);
         }
     }
@@ -140,11 +197,13 @@ static int dump_ppm(const br_pixelmap *pm, const br_pixelmap *pal, const char *p
 static long count_lit(const br_pixelmap *pm)
 {
     long total = 0;
-    int x, y, bpp = pm->type == BR_PMT_INDEX_8 ? 1 : 3;
+    int x, y, bpp = pm->type == BR_PMT_INDEX_8 ? 1 : is16(pm) ? 2 : 3;
     for (y = 0; y < (int)pm->height; y++) {
         const unsigned char *row = (const unsigned char *)pm->pixels + (long)y * pm->row_bytes;
         for (x = 0; x < (int)pm->width; x++)
-            total += bpp == 1 ? row[x] != 0 : (row[x * 3] | row[x * 3 + 1] | row[x * 3 + 2]) != 0;
+            total += bpp == 1 ? row[x] != 0
+                   : bpp == 2 ? (row[x * 2] | row[x * 2 + 1]) != 0
+                              : (row[x * 3] | row[x * 3 + 1] | row[x * 3 + 2]) != 0;
     }
     return total;
 }
@@ -162,15 +221,41 @@ static br_pixelmap *load_texture8(const char *dat, const char *name)
     return tex;
 }
 
+/* shade.tab with each entry packed through std.pal into an RGB_555 or
+ * RGB_565 table of the same shape (two bytes an entry), for a 15 or 16-bit
+ * target. */
+static br_pixelmap *load_shade16(const br_pixelmap *tab, const br_pixelmap *pal, int hicolor)
+{
+    int x, y, is565 = hicolor == 565;
+    br_pixelmap *out = pal == NULL ? NULL
+        : BrPixelmapAllocate(is565 ? BR_PMT_RGB_565 : BR_PMT_RGB_555, tab->width, tab->height, NULL, BR_PMAF_NORMAL);
+    if (out == NULL) return NULL;
+    for (y = 0; y < (int)tab->height; y++) {
+        const unsigned char *src = (const unsigned char *)tab->pixels + (long)y * tab->row_bytes;
+        unsigned char *dst = (unsigned char *)out->pixels + (long)y * out->row_bytes;
+        for (x = 0; x < (int)tab->width; x++) {
+            unsigned v = pack16((const unsigned char *)pal->pixels + (long)src[x] * pal->row_bytes, is565);
+            dst[x * 2] = (unsigned char)(v & 0xff);
+            dst[x * 2 + 1] = (unsigned char)(v >> 8);
+        }
+    }
+    out->identifier = (char *)(is565 ? "shade-rgb565" : "shade-rgb555");
+    BrTableAdd(out);
+    BrTableUpdate(out, BR_TABU_ALL);
+    return out;
+}
+
 /* shade.tab as stored (8-bit), or each entry expanded through std.pal into
- * an RGB_888 table of the same shape, for a 24-bit target. */
-static br_pixelmap *load_shade(const char *dat, const char *name, const br_pixelmap *pal, int rgb)
+ * an RGB_888 table of the same shape, for a 24-bit target, or into a 15 or
+ * 16-bit one (hicolor). */
+static br_pixelmap *load_shade(const char *dat, const char *name, const br_pixelmap *pal, int rgb, int hicolor)
 {
     char path[1024];
     br_pixelmap *tab, *out;
     int x, y, stride4 = 0;
     snprintf(path, sizeof(path), "%s/%s", dat, name);
     if ((tab = BrPixelmapLoad(path)) == NULL || tab->type != BR_PMT_INDEX_8) return NULL;
+    if (hicolor) return load_shade16(tab, pal, hicolor);
     out = tab;
     if (rgb) {
         /* The 1998 kernel for this table (TrapezoidRenderPIZ2TIA_RGB_888)
@@ -204,9 +289,10 @@ static br_pixelmap *load_shade(const char *dat, const char *name, const br_pixel
     return out;
 }
 
-/* Load a period texture and expand it through std.pal into RGB_888, the
- * same bytes on both sides, then register it so the renderer stores it. */
-static br_pixelmap *load_texture(const char *dat, const char *name)
+/* Load a period texture and expand it through std.pal into RGB_888 (for
+ * hicolor 555 or 565, pack it into RGB_555 or RGB_565), the same bytes on
+ * both sides, then register it so the renderer stores it. */
+static br_pixelmap *load_texture(const char *dat, const char *name, int hicolor)
 {
     char path[1024];
     br_pixelmap *tex, *pal, *rgb;
@@ -216,14 +302,21 @@ static br_pixelmap *load_texture(const char *dat, const char *name)
     snprintf(path, sizeof(path), "%s/std.pal", dat);
     pal = tex->map != NULL ? tex->map : BrPixelmapLoad(path);
     if (tex->type != BR_PMT_INDEX_8 || pal == NULL) return NULL;
-    rgb = BrPixelmapAllocate(BR_PMT_RGB_888, tex->width, tex->height, NULL, BR_PMAF_NORMAL);
+    rgb = BrPixelmapAllocate(hicolor == 565 ? BR_PMT_RGB_565 : hicolor ? BR_PMT_RGB_555 : BR_PMT_RGB_888,
+                             tex->width, tex->height, NULL, BR_PMAF_NORMAL);
     if (rgb == NULL) return NULL;
     for (y = 0; y < (int)tex->height; y++) {
         const unsigned char *src = (const unsigned char *)tex->pixels + (long)y * tex->row_bytes;
         unsigned char *dst = (unsigned char *)rgb->pixels + (long)y * rgb->row_bytes;
         for (x = 0; x < (int)tex->width; x++) {
             const unsigned char *entry = (const unsigned char *)pal->pixels + (long)src[x] * pal->row_bytes;
-            dst[x * 3 + 0] = entry[0]; dst[x * 3 + 1] = entry[1]; dst[x * 3 + 2] = entry[2];
+            if (hicolor) {
+                unsigned v = pack16(entry, hicolor == 565);
+                dst[x * 2] = (unsigned char)(v & 0xff);
+                dst[x * 2 + 1] = (unsigned char)(v >> 8);
+            } else {
+                dst[x * 3 + 0] = entry[0]; dst[x * 3 + 1] = entry[1]; dst[x * 3 + 2] = entry[2];
+            }
         }
     }
     rgb->identifier = (char *)name;
@@ -295,7 +388,7 @@ static void place_model(br_actor *actor, const br_model *model, int angle, int t
 int main(int argc, char **argv)
 {
     const char *dat = argc > 1 ? argv[1] : ".", *out = argc > 2 ? argv[2] : ".";
-    br_pixelmap *colour, *depth, *colour8, *palette;
+    br_pixelmap *colour, *depth, *colour8, *colour555, *colour565, *palette;
     br_actor *world, *camera_actor, *light_actor;
     br_camera *camera;
     int i, failed = 0;
@@ -317,6 +410,8 @@ int main(int argc, char **argv)
     colour = BrPixelmapAllocate(BR_PMT_RGB_888, W, H, NULL, BR_PMAF_NORMAL);
     depth = BrPixelmapAllocate(BR_PMT_DEPTH_16, W, H, NULL, BR_PMAF_NORMAL);
     colour8 = BrPixelmapAllocate(BR_PMT_INDEX_8, W, H, NULL, BR_PMAF_NORMAL);
+    colour555 = BrPixelmapAllocate(BR_PMT_RGB_555, W, H, NULL, BR_PMAF_NORMAL);
+    colour565 = BrPixelmapAllocate(BR_PMT_RGB_565, W, H, NULL, BR_PMAF_NORMAL);
 #else
     /* the setup of the 1.4 renderer rung (ladder64/softrend-render-14.c) */
     {
@@ -328,13 +423,15 @@ int main(int argc, char **argv)
         colour = BrPixelmapMatchTyped(screen, BR_PMMATCH_OFFSCREEN, BR_PMT_RGB_888);
         depth = colour ? BrPixelmapMatch(colour, BR_PMMATCH_DEPTH_16) : NULL;
         colour8 = BrPixelmapMatchTyped(screen, BR_PMMATCH_OFFSCREEN, BR_PMT_INDEX_8);
+        colour555 = BrPixelmapMatchTyped(screen, BR_PMMATCH_OFFSCREEN, BR_PMT_RGB_555);
+        colour565 = BrPixelmapMatchTyped(screen, BR_PMMATCH_OFFSCREEN, BR_PMT_RGB_565);
         if (colour == NULL || depth == NULL) return 5;
         BrRendererBegin(colour, NULL, NULL, primitive_heap, sizeof(primitive_heap));
     }
 #endif
-    if (colour == NULL || depth == NULL || colour8 == NULL) return 5;
-    colour->origin_x = depth->origin_x = colour8->origin_x = W / 2;
-    colour->origin_y = depth->origin_y = colour8->origin_y = H / 2;
+    if (colour == NULL || depth == NULL || colour8 == NULL || colour555 == NULL || colour565 == NULL) return 5;
+    colour->origin_x = depth->origin_x = colour8->origin_x = colour555->origin_x = colour565->origin_x = W / 2;
+    colour->origin_y = depth->origin_y = colour8->origin_y = colour555->origin_y = colour565->origin_y = H / 2;
     {
         char path[1024];
         snprintf(path, sizeof(path), "%s/std.pal", dat);
@@ -380,14 +477,15 @@ int main(int argc, char **argv)
         material->flags = sc->flags;
         material->index_base = (br_uint_8)sc->base;
         material->index_range = (br_uint_8)sc->range;
-        if (sc->shade != NULL && (material->index_shade = load_shade(dat, sc->shade, palette, !sc->index8)) == NULL) {
+        if (sc->shade != NULL && (material->index_shade = load_shade(dat, sc->shade, palette, !sc->index8, sc->hicolor)) == NULL) {
             printf("{\"scene\":\"%s\",\"error\":\"shade table %s did not load\"}\n", sc->name, sc->shade);
             BrActorRemove(actor);
             failed++;
             continue;
         }
         if (sc->texture != NULL
-            && (material->colour_map = sc->index8 || sc->shade ? load_texture8(dat, sc->texture) : load_texture(dat, sc->texture)) == NULL) {
+            && (material->colour_map = sc->index8 || sc->shade ? load_texture8(dat, sc->texture)
+                                                               : load_texture(dat, sc->texture, sc->hicolor)) == NULL) {
             printf("{\"scene\":\"%s\",\"error\":\"texture %s did not load\"}\n", sc->name, sc->texture);
             BrActorRemove(actor);
             failed++;
@@ -403,7 +501,7 @@ int main(int argc, char **argv)
         BrRendererFrameBegin();
 #endif
         {
-            br_pixelmap *target = sc->index8 ? colour8 : colour;
+            br_pixelmap *target = sc->index8 ? colour8 : sc->hicolor == 555 ? colour555 : sc->hicolor == 565 ? colour565 : colour;
             BrPixelmapFill(target, 0);
             BrPixelmapFill(depth, DEPTH_CLEAR);
             BrZbSceneRender(world, camera_actor, target, depth);

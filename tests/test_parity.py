@@ -121,9 +121,9 @@ def test_ci_gates_the_modern_side_on_both_systems():
     assert ci.count("--require-identical") >= 2
     parity = ci[ci.index("\n  parity:"):]
     assert "needs: [brview, linux, brender-native]" in parity and "--bounds 1.0 0.999 1" in parity
-    assert "--skip textured,index8 --bounds 0.999 0.90 255 0.25" in parity
-    assert "--only textured --skip lit,index8 --bounds 0.999 0.95 255 1.2" in parity
-    assert "PARITY_SHADE4" in ci and "--only textured-lit --skip index8 --bounds 0.999 0.97 255 0.3" in parity
+    assert "--skip textured,index8,rgb555,rgb565 --bounds 0.999 0.90 255 0.25" in parity
+    assert "--only textured --skip lit,index8,rgb555,rgb565 --bounds 0.999 0.95 255 1.2" in parity
+    assert "PARITY_SHADE4" in ci and "--only textured-lit --skip index8,rgb555,rgb565 --bounds 0.999 0.97 255 0.3" in parity
     assert "--only index8 --skip textured --bounds 0.998 0.98 255 0.3" in parity
     assert "--only textured-index8,textured-lit-index8 --bounds 0.998 0.96 255 0.5" in parity
     native = ci[ci.index("\n  brender-native:"):ci.index("\n  ladder64:")]
@@ -131,30 +131,81 @@ def test_ci_gates_the_modern_side_on_both_systems():
     # perspective-correct 8-bit scenes: twice on the period side, then gated
     assert '--label "period perspective scenes, two runs" --only persp,steep --require-identical' in native
     assert "--only persp,steep --bounds 0.998 0.92 255 1.8" in parity
+    # 15/16-bit scenes: twice on the period side, untextured gated, textured reported
+    assert '--label "period 15/16-bit scenes, two runs" --only rgb555,rgb565 --require-identical' in native
+    assert "--only rgb555,rgb565 --skip textured --bounds 0.986 0.63 255 2.1" in parity
+    assert "--only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5\n" in parity
+
+
+def _gates():
+    """Every modern-against-period gate in the parity job: (label, keep, drop)."""
+    import re
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    parity = ci[ci.index("\n  parity:"):]
+    found = []
+    for label, args in re.findall(r'parity-linux parity-period[a-z0-9-]* --label "([^"]+)"([^\n]*)', parity):
+        words = args.split()
+        keep = words[words.index("--only") + 1].split(",") if "--only" in words else None
+        drop = words[words.index("--skip") + 1].split(",") if "--skip" in words else []
+        found.append((label, keep, drop))
+    return found
+
+
+def _scene_names():
+    import re
+    source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
+    return [n for n in re.findall(r'^\s*\{"([a-z0-9-]+)"', source, re.M) if not n.startswith("control-")]
+
+
+def _chosen(names, keep, drop):
+    return [n for n in names if (keep is None or any(k in n for k in keep)) and not any(d in n for d in drop)]
 
 
 def test_perspective_scenes_stay_out_of_the_older_class_gates():
     """The new scene names must not change what the existing --only/--skip
     gates select, and the perspective gate must select exactly them."""
-    import re
-    source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
-    names = [n for n in re.findall(r'^\s*\{"([a-z0-9-]+)"', source, re.M) if not n.startswith("control-")]
+    names = _scene_names()
     persp = [n for n in names if "persp" in n or "steep" in n]
-    assert len(names) == 27 and len(persp) == 7
+    assert len(names) == 47 and len(persp) == 7
     assert all(n.endswith("-index8") and "textured" in n for n in persp)
-    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-    parity = ci[ci.index("\n  parity:"):]
-    gates = re.findall(r'parity-linux parity-period[a-z0-9-]* --label "[^"]+"([^\n]*)', parity)
-    assert len(gates) == 7
-    for args in gates:
-        words = args.split()
-        keep = words[words.index("--only") + 1].split(",") if "--only" in words else None
-        drop = words[words.index("--skip") + 1].split(",") if "--skip" in words else []
-        chosen = [n for n in names if (keep is None or any(k in n for k in keep)) and not any(d in n for d in drop)]
+    gates = _gates()
+    assert len(gates) == 9
+    for label, keep, drop in gates:
+        chosen = _chosen(names, keep, drop)
         if keep == ["persp", "steep"]:
             assert sorted(chosen) == sorted(persp)
         else:
-            assert chosen and not set(chosen) & set(persp), args
+            assert chosen and not set(chosen) & set(persp), label
+
+
+# What each gate selected before the 15/16-bit scenes existed (the 27 names of
+# the perspective PR); the new names must leave every one of them unchanged.
+OLD_GATE_COUNTS = {
+    "modern against period, untextured": 6,
+    "modern against period, textured": 3,
+    "modern against period, 8-bit untextured": 5,
+    "modern against period, 8-bit textured": 4,
+    "modern against period, 8-bit perspective": 7,
+    "modern against period, 24-bit lit textured (1998 stride defect)": 2,
+    "modern against period, 24-bit lit textured, shade table at stride 4": 2,
+}
+
+
+def test_hicolor_scenes_leave_every_older_gate_as_it_was():
+    names = _scene_names()
+    hicolor = [n for n in names if n.endswith(("-rgb555", "-rgb565"))]
+    older = [n for n in names if n not in hicolor]
+    assert len(older) == 27 and len(hicolor) == 20
+    assert sorted(n[:-7] for n in hicolor if n.endswith("555")) == sorted(n[:-7] for n in hicolor if n.endswith("565"))
+    gates = {label: (keep, drop) for label, keep, drop in _gates()}
+    for label, count in OLD_GATE_COUNTS.items():
+        keep, drop = gates[label]
+        assert _chosen(names, keep, drop) == _chosen(older, keep, drop), label
+        assert len(_chosen(older, keep, drop)) == count, label
+    untextured = _chosen(names, *gates["modern against period, 15/16-bit untextured"])
+    textured = _chosen(names, *gates["modern against period, 15/16-bit textured (1.4 draws the MMX path)"])
+    assert sorted(untextured) == sorted(n for n in hicolor if "textured" not in n) and len(untextured) == 10
+    assert sorted(textured) == sorted(n for n in hicolor if "textured" in n) and len(textured) == 10
 
 
 def test_a_mean_difference_bound_can_fail_a_run(tmp_path):

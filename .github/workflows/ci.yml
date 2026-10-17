@@ -113,6 +113,9 @@ jobs:
           # The perspective-correct 8-bit scenes (fti8pizp.asm through the
           # engine-revival 0.7.0 port), on their own, so a regression names them.
           python modern/parity/parity_compare.py parity-period-a parity-period-b --label "period perspective scenes, two runs" --only persp,steep --require-identical
+          # The 15/16-bit scenes (tt15/tt16_piz.asm, zb16p2ul.asm and t_piza.asm's
+          # DBPP 2 instances through the engine-revival 0.8.0 ports), on their own.
+          python modern/parity/parity_compare.py parity-period-a parity-period-b --label "period 15/16-bit scenes, two runs" --only rgb555,rgb565 --require-identical
       # The 1998 kernel for 24-bit lit textured triangles (t_piza.asm,
       # TrapezoidRenderPIZ2TIA_RGB_888) reads its RGB_888 shade table at a
       # 4-byte stride. PARITY_SHADE4=1 lays the table out at that stride, on
@@ -489,9 +492,9 @@ jobs:
       # MAD <= 0.43. The 24-bit lit textured scenes are reported, not bounded:
       # the 1998 kernel reads its shade table at the wrong stride (README).
       - name: the 1998 and modern rasterisers draw the same untextured scenes within the recorded bounds
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, untextured" --skip textured,index8 --bounds 0.999 0.90 255 0.25
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, untextured" --skip textured,index8,rgb555,rgb565 --bounds 0.999 0.90 255 0.25
       - name: the 1998 and modern rasterisers draw the same textured scenes within the recorded bounds
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, textured" --only textured --skip lit,index8 --bounds 0.999 0.95 255 1.2
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, textured" --only textured --skip lit,index8,rgb555,rgb565 --bounds 0.999 0.95 255 1.2
       - name: the 1998 and modern rasterisers draw the same 8-bit untextured scenes within the recorded bounds
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit untextured" --only index8 --skip textured --bounds 0.998 0.98 255 0.3
       - name: the 1998 and modern rasterisers draw the same 8-bit textured scenes within the recorded bounds
@@ -506,7 +509,19 @@ jobs:
       - name: the 1998 and modern rasterisers draw the same perspective-correct 8-bit scenes within the recorded bounds
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit perspective" --only persp,steep --bounds 0.998 0.92 255 1.8
       - name: the 24-bit lit textured scenes, reported
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 24-bit lit textured (1998 stride defect)" --only textured-lit --skip index8
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 24-bit lit textured (1998 stride defect)" --only textured-lit --skip index8,rgb555,rgb565
+      # 15/16-bit (RGB_555, RGB_565; engine-revival 0.8.0). The two sides use
+      # different 1998 kernel families here: BRender 1.4 reproduces pentprim's
+      # MMX path, which replaces the whole 15/16-bit table when the CPU has MMX,
+      # and the period harness builds without MMX and uses the general tables
+      # (README). Untextured, measured 17 October 2026 (Windows modern): IoU >=
+      # 0.9869, >= 63.2% identical, MAD <= 2.081; bounded as calibrated. The
+      # textured scenes are reported, not bounded: 1.4's MMX path draws them
+      # untextured.
+      - name: the 1998 and modern rasterisers draw the same untextured 15/16-bit scenes within the recorded bounds
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 15/16-bit untextured" --only rgb555,rgb565 --skip textured --bounds 0.986 0.63 255 2.1
+      - name: the textured 15/16-bit scenes, reported
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 15/16-bit textured (1.4 draws the MMX path)" --only textured-rgb5,textured-gold-rgb5,textured-lit-rgb5
       - uses: actions/download-artifact@v4
         with:
           name: parity-period-shade4
@@ -515,4 +530,4 @@ jobs:
       # the same scenes match. Measured 16 October 2026: IoU >= 0.9998,
       # >= 97.9% identical, MAD <= 0.272.
       - name: the 24-bit lit textured scenes match once the shade table sits at the 1998 kernel's stride
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period-shade4 --label "modern against period, 24-bit lit textured, shade table at stride 4" --only textured-lit --skip index8 --bounds 0.999 0.97 255 0.3
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period-shade4 --label "modern against period, 24-bit lit textured, shade table at stride 4" --only textured-lit --skip index8,rgb555,rgb565 --bounds 0.999 0.97 255 0.3
