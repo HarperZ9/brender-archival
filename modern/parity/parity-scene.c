@@ -54,6 +54,7 @@ typedef struct scene {
     int         index8;  /* draw into an INDEX_8 buffer (the std.pal palette) */
     const char *shade;   /* shade table: "shade.tab" as is (8-bit), or expanded to RGB_888 */
     int         base, range; /* the material's palette ramp, for the untextured 8-bit scenes */
+    int         tilt;    /* model turn about X, degrees; 0 means the usual 25 */
 } scene;
 
 /* Untextured scenes, then unlit textured ones (RGB_888 maps, the period
@@ -85,6 +86,20 @@ static const scene scenes[] = {
     {"torus-textured-index8", "torus.dat", 60, 0, 0, "rosewood.pix", 1, NULL},
     {"sphere-textured-lit-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix", 1, "shade.tab"},
     {"torus-textured-lit-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "rosewood.pix", 1, "shade.tab"},
+    /* 8-bit, perspective correct (BR_MATF_PERSPECTIVE): period kernels
+     * TriangleRender_ZPT_I8_D16_256 and TriangleRender_ZPTI_I8_D16_256 in
+     * fti8pizp.asm, set up by pfpsetup.asm. A triangle whose depth changes
+     * little across it takes the setup's linear "cheat" path (the ZT and ZTI
+     * kernels above), so a plane of eight large triangles ("plane", built
+     * below), turned steeply about X so that it recedes, is where
+     * perspective shows. */
+    {"sphere-textured-persp-index8", "sph32.dat", 35, BR_MATF_PERSPECTIVE, 0, "earth.pix", 1, NULL},
+    {"torus-textured-persp-index8", "torus.dat", 60, BR_MATF_PERSPECTIVE, 0, "rosewood.pix", 1, NULL},
+    {"sphere-textured-lit-persp-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 1, "shade.tab"},
+    {"torus-textured-lit-persp-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "rosewood.pix", 1, "shade.tab"},
+    {"plane-textured-steep-linear-index8", "plane", 20, 0, 0, "earth.pix", 1, NULL, 0, 0, -60},
+    {"plane-textured-steep-persp-index8", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix", 1, NULL, 0, 0, -60},
+    {"plane-textured-lit-steep-persp-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 1, "shade.tab", 0, 0, -60},
     {"control-torus-turned", "torus.dat", 85, 0, 0, NULL},
 };
 
@@ -217,9 +232,40 @@ static br_pixelmap *load_texture(const char *dat, const char *name)
     return rgb;
 }
 
+/* "plane": a square in the XY plane facing the camera, two by two quads
+ * (eight triangles), its map coordinates running 0 to 2 so the map repeats
+ * once each way. Built here, the same on both sides. */
+static br_model *make_plane(void)
+{
+    const int n = 2;
+    int x, y, f = 0;
+    br_model *model = BrModelAllocate("plane", (n + 1) * (n + 1), 2 * n * n);
+    if (model == NULL) return NULL;
+    for (y = 0; y <= n; y++) {
+        for (x = 0; x <= n; x++) {
+            br_vertex *v = &model->vertices[y * (n + 1) + x];
+            v->p.v[0] = BrFloatToScalar(2.0f * x / n - 1.0f);
+            v->p.v[1] = BrFloatToScalar(2.0f * y / n - 1.0f);
+            v->p.v[2] = 0;
+            v->map.v[0] = BrFloatToScalar(2.0f * x / n);
+            v->map.v[1] = BrFloatToScalar(2.0f * y / n);
+        }
+    }
+    for (y = 0; y < n; y++) {
+        for (x = 0; x < n; x++) {
+            int a = y * (n + 1) + x, b = a + 1, c = a + n + 1, d = c + 1;
+            model->faces[f].vertices[0] = (br_uint_16)a; model->faces[f].vertices[1] = (br_uint_16)b;
+            model->faces[f].vertices[2] = (br_uint_16)d; f++;
+            model->faces[f].vertices[0] = (br_uint_16)a; model->faces[f].vertices[1] = (br_uint_16)d;
+            model->faces[f].vertices[2] = (br_uint_16)c; f++;
+        }
+    }
+    return model;
+}
+
 /* Fit the model in a unit sphere at the origin, then turn it: the same
  * matrix arithmetic on both sides, in the same order. */
-static void place_model(br_actor *actor, const br_model *model, int angle)
+static void place_model(br_actor *actor, const br_model *model, int angle, int tilt)
 {
     float c[3] = {0, 0, 0}, radius = 0, s;
     int k, nv = (int)model->nvertices;
@@ -242,7 +288,7 @@ static void place_model(br_actor *actor, const br_model *model, int angle)
     BrMatrix34Translate(&actor->t.t.mat, BrFloatToScalar(-c[0]), BrFloatToScalar(-c[1]), BrFloatToScalar(-c[2]));
     BrMatrix34Scale(&scale, BrFloatToScalar(s), BrFloatToScalar(s), BrFloatToScalar(s));
     BrMatrix34Post(&actor->t.t.mat, &scale);
-    BrMatrix34PostRotateX(&actor->t.t.mat, BR_ANGLE_DEG(25));
+    BrMatrix34PostRotateX(&actor->t.t.mat, BR_ANGLE_DEG(tilt ? tilt : 25));
     BrMatrix34PostRotateY(&actor->t.t.mat, BR_ANGLE_DEG(angle));
 }
 
@@ -318,13 +364,14 @@ int main(int argc, char **argv)
         br_actor *actor;
         long lit;
         snprintf(path, sizeof(path), "%s/%s", dat, sc->model);
-        if ((model = BrModelLoad(path)) == NULL || model->nvertices < 3) {
+        model = strcmp(sc->model, "plane") == 0 ? make_plane() : BrModelLoad(path);
+        if (model == NULL || model->nvertices < 3) {
             printf("{\"scene\":\"%s\",\"error\":\"model %s did not load\"}\n", sc->name, sc->model);
             failed++;
             continue;
         }
         actor = BrActorAdd(world, BrActorAllocate(BR_ACTOR_MODEL, NULL));
-        place_model(actor, model, sc->angle); /* before BrModelUpdate, which may drop the vertex array */
+        place_model(actor, model, sc->angle, sc->tilt); /* before BrModelUpdate, which may drop the vertex array */
         material = BrMaterialAllocate(sc->name);
         material->colour = BR_COLOUR_RGB(200, 170, 110);
         material->ka = BrFloatToScalar(0.15f);
