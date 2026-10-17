@@ -3,8 +3,8 @@
 The question is whether BRender 1.4, the modern 64-bit engine the downloads
 use, draws the same pixels as Argonaut's BRender 1.3.2 from 1998.
 
-**Answer on 16 October 2026, for the twenty scenes measured here: almost,
-with one 1998 defect.**
+**Answer on 16 and 17 October 2026, for the twenty-seven scenes measured
+here: almost, with one 1998 defect.**
 - **24-bit untextured:** silhouettes match to a coverage IoU of 0.9993 or
   better, 90.7% to 100% of pixels are identical, and the mean difference is
   under 0.2 levels.
@@ -14,6 +14,11 @@ with one 1998 defect.**
   99.9% of pixels carry the same palette index, and the mean difference is at
   most 0.43 levels. This covers unlit, flat, Gouraud, textured and lit
   textured scenes.
+- **8-bit, perspective-correct:** coverage IoU is 0.9983 or better, 92.6% to
+  97.9% of pixels carry the same palette index, and the mean difference is
+  at most 1.71 levels. The lowest is a steeply turned plane, which scores the
+  same without perspective, so that difference comes before the rasteriser
+  (see [Perspective-correct texturing](#perspective-correct-texturing)).
 - **24-bit lit textured:** the 1998 kernel reads its shade table at the wrong
   stride, so as shipped it draws garbage (see
   [A 1998 defect](#a-1998-defect-the-24-bit-lit-textured-kernel)). With the
@@ -24,8 +29,8 @@ The 1998 build gives the same bytes on every run.
 
 ## The instrument
 
-`parity-scene.c` draws twenty scenes and a control at 320 x 240, from the
-1998 sample models. Eleven draw into an RGB_888 buffer:
+`parity-scene.c` draws twenty-seven scenes and a control at 320 x 240, from
+the 1998 sample models and one plane it builds itself. Eleven draw into an RGB_888 buffer:
 
 - six untextured: a sphere, a torus and the teapot, unlit, lit flat and lit
   smooth (Gouraud);
@@ -37,7 +42,10 @@ The 1998 build gives the same bytes on every run.
 
 Nine draw into an INDEX_8 buffer through `std.pal`, BRender's 8-bit palette
 path: five untextured (each on its own palette ramp), two textured unlit and
-two textured lit through `shade.tab`. Each 8-bit scene writes the indices
+two textured lit through `shade.tab`. Seven more are 8-bit and textured
+with `BR_MATF_PERSPECTIVE`: the sphere and the torus, unlit and lit, and a
+plane of eight large triangles turned 60 degrees so it recedes, unlit and lit,
+beside the same plane without perspective. Each 8-bit scene writes the indices
 (`.pgm`) and the colours they map to (`.ppm`); the comparison counts a pixel
 identical when the index is the same.
 
@@ -47,7 +55,7 @@ Each side copies the renderer setup of its own ladder rung.
 
 | Side | Engine | Built by |
 |---|---|---|
-| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the harness from engine-revival 0.6.0 |
+| period | BRender 1.3.2: softrend + pentprim, 32-bit, from the public source | `period/CMakeLists.txt` over the harness from engine-revival 0.7.0 |
 | modern | BRender 1.4 (BlazingRenderer): softrend + softprim, 64-bit | `modern/CMakeLists.txt` (target `parity-scene`) |
 
 BRender's 1998 rasterisers are x86 assembly. The period build replaces the
@@ -59,9 +67,15 @@ ones these scenes use with engine-revival's line-by-line C ports:
   in `t_piza.asm` (0.5.0), under Argonaut's own C setup in `awtmz.c`;
 - `TriangleRender_Z_I8_D16` and `TriangleRender_ZTI_I8_D16_256` in `zb8.asm`,
   `TriangleRender_ZI_I8_D16` and `TriangleRender_ZT_I8_D16_256` in
-  `fti8_piz.asm`, and the float setup they call in `fpsetup.asm` (0.6.0). The ports keep the assembly's fixed-point setup, its
-edge and texture stepping, its truncating divides and its depth tests. So "period" means
-the 1998 algorithm, run through a C port, not the 1998 binary.
+  `fti8_piz.asm`, and the float setup they call in `fpsetup.asm` (0.6.0);
+- `TriangleRender_ZPT_I8_D16_256` and `TriangleRender_ZPTI_I8_D16_256` in
+  `fti8pizp.asm`, with the perspective setup in `pfpsetup.asm` (0.7.0).
+
+The ports keep the assembly's fixed-point setup, its edge and texture
+stepping, its truncating divides and its depth tests. So "period" means the
+1998 algorithm, run through a C port, not the 1998 binary. For the 0.7.0
+perspective kernels the port was also checked against the 1998 code itself
+(see below).
 
 `parity_compare.py` compares two runs scene by scene, over the pixels either
 side drew:
@@ -143,6 +157,64 @@ Evidence: `evidence/*.json`, `evidence/period-left-modern-right-2026-10-16.png`
 (textured) and `evidence/period-left-modern-right-index8-2026-10-16.png`
 (8-bit), period on the left and modern on the right.
 
+## Perspective-correct texturing
+
+Measured 17 October 2026, engine-revival 0.7.0 against BRender 1.4. The
+modern frames come from Linux; Windows gives the same bytes for these
+scenes, and the period frames from CI are the same bytes as a local Win32
+run. The control fails as required (coverage IoU 0.60).
+Recomputed from the artifacts of CI run 38988569106 (commit `487a262`).
+
+| Scene, modern against period | Coverage IoU | Identical | MAD | Max | Triangles, perspective / linear |
+|---|---|---|---|---|---|
+| sphere-textured-persp-index8 | 0.9993 | 0.9793 | 0.427 | 246 | 0 / 326 |
+| sphere-textured-lit-persp-index8 | 0.9993 | 0.9781 | 0.304 | 246 | 0 / 326 |
+| torus-textured-persp-index8 | 0.9986 | 0.9665 | 0.393 | 158 | 28 / 84 |
+| torus-textured-lit-persp-index8 | 0.9983 | 0.9634 | 0.386 | 158 | 28 / 84 |
+| plane-textured-steep-persp-index8 | 0.9988 | 0.9259 | 1.616 | 252 | 8 / 0 |
+| plane-textured-lit-steep-persp-index8 | 0.9988 | 0.9305 | 1.492 | 208 | 8 / 0 |
+| plane-textured-steep-linear-index8 (no perspective) | 0.9988 | 0.9267 | 1.713 | 252 | linear material |
+
+Before engine-revival 0.7.0 the two perspective kernels were stubs: the same
+scenes drew nothing on the period side (0 pixels, 440 calls to each stub).
+
+**Checked against the 1998 assembly.** `pfpsetup.asm` and `fti8pizp.asm`
+were assembled with MASM (ml 14.44), against a `drv.inc` generated from the
+harness's own structure offsets, and linked into the period build in place of
+the port. Every scene came out byte for byte as the port draws it. A
+differential test drew 62,000 random triangles both ways into separate
+buffers with no mismatch, covering both scan directions, all five scanline
+loops and the cheat path. Changing one instruction in the assembly (the v
+step) changed exactly the two unlit scenes with perspective triangles, so the
+check can fail. This was a local run; the reference build is not part of CI.
+
+**Where the triangles go.** The 1998 setup draws a triangle linearly (its
+"cheat") when w changes little across it: when the w range times the screen
+range is below four times the smallest w. All 326 sphere triangles take that
+path, on both sides, so the perspective sphere is the same bytes as the
+linear one. The torus has 28 perspective triangles of 112 and the plane all
+8, so those two exercise the perspective kernels.
+
+**The plane's lower score is not in the perspective kernels.** The same plane
+without perspective scores the same (IoU 0.9988, 92.7% identical, against
+92.6% with perspective). Dumping the vertices each side hands its rasteriser
+shows why: for the same triangles the screen x and y differ by up to 0.03
+pixels and the depth by up to 3 units in 65536; w, u and v agree. BRender
+1.4's screen points fit an exact projection of the scene (scale 230.52, which
+is 120 / tan 27.5 degrees) within 0.01 pixels. The 1998 build's points scatter
+around it, with scales between 230.48 and 230.71. So the 1998 geometry path,
+as built here, places vertices up to 0.03 pixels off; a texel boundary then
+lands one pixel away. Where in the period core or softrend that comes from is
+not located yet.
+
+Evidence: `evidence/modern-vs-period-persp-2026-10-17.json`,
+`evidence/modern-vs-period-2026-10-17.json` (all 27 scenes),
+`evidence/modern-windows-vs-linux-2026-10-17.json` (24 of 27 identical, the
+other three off by one level on at most 0.02% of pixels) and
+`evidence/period-left-modern-right-persp-2026-10-17.png` (the plane with and
+without perspective, the lit plane, and the torus unlit and lit; period on
+the left).
+
 ## A 1998 defect: the 24-bit lit textured kernel
 
 BRender 1.3.2 cannot draw a lit, textured triangle into a 24-bit buffer
@@ -204,8 +276,9 @@ repository's history at commit `cb238d7`.
 
 Every change:
 
-- runs the period scenes twice (Win32), and twice more with the shade table
-  at stride 4, and the modern scenes twice on Windows and on Linux, and
+- runs the period scenes twice (Win32), checks the perspective scenes on
+  their own as well, and runs them twice more with the shade table at stride
+  4, and the modern scenes twice on Windows and on Linux, and
   requires identical bytes each time;
 - compares modern Windows against modern Linux within coverage IoU 1.0, at
   least 99.9% identical pixels and at most 1 level;
@@ -220,6 +293,7 @@ Every change:
 | 8-bit untextured | 0.998 | 98% | 0.3 |
 | 8-bit textured, unlit and lit | 0.998 | 96% | 0.5 |
 | 24-bit lit textured, table at stride 4 | 0.999 | 97% | 0.3 |
+| 8-bit perspective-correct, with the linear plane | 0.998 | 92% | 1.8 |
 
 All bounds were set from the measurements above, so they are calibrated, not
 predicted.
@@ -276,6 +350,4 @@ Windows CI has no OpenGL, so this runs on Linux only.
 
 ## Not measured yet
 
-- Perspective-correct texturing: the materials here do not set
-  `BR_MATF_PERSPECTIVE`, so both sides run their linear texture kernels.
 - 15/16-bit targets: not ported.

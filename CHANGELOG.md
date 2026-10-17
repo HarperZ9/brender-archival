@@ -6,6 +6,14 @@
 - Found: the software rasteriser does not light a 24-bit textured material without a shade table (the lit and unlit stills are the same bytes), as in 1998; OpenGL lights it.
 - brview: `BRVIEW_SCENE`, `BRVIEW_TEXTURE` and `BRVIEW_UNLIT` set what a `BRVIEW_SHOT` still draws. The command line and the saved options move to `viewer/brview_run.c`.
 
+## Unreleased: perspective-correct 8-bit parity
+
+- Depends on engine-revival 0.7.0. Its line-by-line ports of `fti8pizp.asm` (`TriangleRender_ZPT_I8_D16_256` and `TriangleRender_ZPTI_I8_D16_256`) and of the `pfpsetup.asm` setup make the period build draw `BR_MATF_PERSPECTIVE` textures into 8-bit buffers. Before it, those kernels were stubs that drew nothing.
+- `modern/parity/`: six perspective scenes (the sphere with `earth.pix` and the torus with `rosewood.pix`, unlit and lit through `shade.tab`, and a plane of eight large triangles built in the scene program and turned 60 degrees so it recedes, unlit and lit) and the same plane without perspective. Measured 17 October 2026 against BRender 1.4: coverage IoU 0.9983 or better, 92.6% to 97.9% of pixels on the same palette index, MAD at most 1.71.
+- Found: the steep plane scores the same with and without perspective (92.6% and 92.7% identical), so its difference is not in the perspective kernels. The two softrend versions hand the rasteriser screen coordinates that differ by up to 0.03 pixels for the same triangles. Recorded; where in the period geometry it comes from is not yet located.
+- Found: the sphere's triangles all take the 1998 setup's linear "cheat" path (w changes too little across them), on both sides, so the perspective sphere draws the same bytes as the linear one. The torus has 28 perspective triangles of 112, the plane all 8.
+- CI: the perspective scenes run twice on the period side (identical bytes required, also as their own check) and are gated against BRender 1.4 within the measured bounds. The art card's harness file count was stale (31; the materializer writes 37).
+
 ## Unreleased: the period look
 
 - The Keeper's Hour: a Period look option (F2) draws the rooms in 256 colours through BRender's own 8-bit palette path, on the software renderer. The game builds its palette from its own materials: ramps for lit surfaces, the glows and skies as they are, and 128 colours cut from the pictures, which become 8-bit maps lit through a shade table. Saved with the other options; `KEEPERS_PERIOD=1` for one run.

@@ -96,6 +96,26 @@ def test_the_evidence_matches_the_readme():
     assert min(m["identical"] for m in shade4["scenes"].values()) == 0.9789
 
 
+def test_the_perspective_evidence_matches_the_readme():
+    persp = json.loads((EVIDENCE / "modern-vs-period-persp-2026-10-17.json").read_text(encoding="utf-8"))
+    scenes = persp["scenes"]
+    assert len(scenes) == 7 and persp["ok"] and persp["within_bounds"] and persp["control"]["fails_as_required"]
+    assert persp["bounds"] == {"min_coverage_iou": 0.998, "min_identical": 0.92, "max_diff": 255, "max_mad": 1.8}
+    assert min(m["coverage_iou"] for m in scenes.values()) == 0.9983
+    assert min(m["identical"] for m in scenes.values()) == 0.9259
+    assert max(m["mad"] for m in scenes.values()) == 1.713
+    assert all(m["by_index"] and m["drawn_b"] > 0 for m in scenes.values()), "every period scene draws, by index"
+    # The steep plane scores the same with and without perspective.
+    linear, curved = scenes["plane-textured-steep-linear-index8"], scenes["plane-textured-steep-persp-index8"]
+    assert linear["coverage_iou"] == curved["coverage_iou"] and abs(linear["identical"] - curved["identical"]) < 0.01
+    full = json.loads((EVIDENCE / "modern-vs-period-2026-10-17.json").read_text(encoding="utf-8"))
+    assert len(full["scenes"]) == 27 and full["control"]["fails_as_required"]
+    for name, m in scenes.items():
+        assert full["scenes"][name] == m, name
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "92.6% to\n  97.9%" in readme.replace("\r\n", "\n") and "## Perspective-correct texturing" in readme
+
+
 def test_ci_gates_the_modern_side_on_both_systems():
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     assert ci.count("--require-identical") >= 2
