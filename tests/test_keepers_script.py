@@ -43,8 +43,8 @@ def _talkers():
 
 
 def _starts():
-    # the night opens at "arrive", or at "resume" when a saved night is waiting
-    return {node for _, _, node in _talkers() if not node.startswith("@")} | {"arrive", "resume"}
+    # the night opens at "arrive"; a saved night is carried on from the title screen
+    return {node for _, _, node in _talkers() if not node.startswith("@")} | {"arrive"}
 
 
 def test_every_link_leads_to_a_node_or_end():

@@ -5,7 +5,7 @@ add_executable(keepers-hour WIN32
   src/kh_shapes.c src/kh_shapes.h src/kh_rooms.c src/kh_rooms.h
   src/kh_save.c src/kh_save.h src/kh_boot.c src/kh_boot.h src/kh_tex.c src/kh_tex.h
   src/kh_audio.c src/kh_audio.h src/kh_options.c src/kh_options.h src/kh_input.c src/kh_game.h
-  src/kh_capture.c src/kh_capture.h src/kh_period.c src/kh_period.h src/kh_period_cut.c src/kh_period_cut.h)
+  src/kh_capture.c src/kh_capture.h src/kh_text.c src/kh_text.h src/kh_title.c src/kh_title.h src/kh_steps.c src/kh_period.c src/kh_period.h src/kh_period_cut.c src/kh_period_cut.h)
 target_link_libraries(keepers-hour PRIVATE brdemo brdisplay)
 if(MSVC)
   target_compile_definitions(keepers-hour PRIVATE _CRT_SECURE_NO_WARNINGS)

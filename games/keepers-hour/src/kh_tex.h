@@ -21,9 +21,7 @@ br_colour kh_px(const br_pixelmap *target, int r, int g, int b);
  * BlazingRenderer ed5e7a91); the caller says when to undo that. */
 int kh_frame_write(br_pixelmap *frame, const char *path, int swap_rb);
 
-/* BrPixelmapText, or, on the software renderer, the same text written through
- * a memory strip (see kh_tex.c). Font: BrFontProp7x9. */
-void kh_text(br_pixelmap *pm, br_int_32 x, br_int_32 y, br_colour colour, const char *s);
-void kh_text_via_memory(int on);
+/* Text: see kh_text.h. */
+#include "kh_text.h"
 
 #endif

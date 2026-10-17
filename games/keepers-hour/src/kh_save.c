@@ -78,6 +78,22 @@ static const char *endings[][2] = {
     {"ending_town", "The light given away"},
 };
 
+static const char *keepsakes[][2] = {
+    {"memento_logbook", "You kept the logbook, eleven pages left."},
+    {"memento_kettle", "You kept the kettle."},
+    {"memento_photo", "You kept the photograph from your first day."},
+    {"memento_radio", "You kept the radio, still tuned to the Marigold."},
+    {"memento_nothing", "You kept nothing but the night."},
+};
+
+static const char *keepsake(const char *node_id)
+{
+    size_t i;
+    for (i = 0; i < sizeof(keepsakes) / sizeof(keepsakes[0]); i++)
+        if (strcmp(node_id, keepsakes[i][0]) == 0) return keepsakes[i][1];
+    return NULL;
+}
+
 const char *kh_ending_title(const char *node_id)
 {
     size_t i;
@@ -89,7 +105,7 @@ const char *kh_ending_title(const char *node_id)
 void kh_end_card(br_pixelmap *pm, const kh_talk *t, br_colour ink, br_colour accent, br_colour panel)
 {
     const char *title = kh_ending_title(t->last);
-    br_int_32 x = -180, y = -110, step = BrPixelmapTextHeight(pm, BrFontProp7x9) + 8;
+    br_int_32 x = kh_ui(-256), y = kh_ui(-176), step = kh_text_h(pm) + kh_ui(8);
     char row[128];
     int v;
     static const char *credits[] = {
@@ -99,13 +115,18 @@ void kh_end_card(br_pixelmap *pm, const kh_talk *t, br_colour ink, br_colour acc
         "Window, sound and gamepad by SDL3: Sam Lantinga and contributors (zlib).",
     };
     int c;
-    BrPixelmapRectangleFill(pm, x - 24, y - 24, 560, 360, panel);
+    BrPixelmapRectangleFill(pm, x - kh_ui(24), y - kh_ui(24), kh_ui(560), kh_ui(330), panel);
     kh_text(pm, x, y, accent, "Dawn. 06:12.");
     kh_text(pm, x, y += step * 2, ink, title ? title : "The night ends");
+    if (keepsake(t->kept))
+        kh_text(pm, x, y += step, ink, keepsake(t->kept));
     kh_text(pm, x, y += step * 2, accent, "The voices you listened to tonight:");
     for (v = 0; v < KH_VOICE_COUNT; v++) {
-        snprintf(row, sizeof(row), "%-7s heard %d of %d times", kh_voice_name((kh_voice)v), t->heard[v], t->asked[v]);
-        kh_text(pm, x + 12, y += step, ink, row);
+        if (t->asked[v] == 0)
+            snprintf(row, sizeof(row), "%-7s not asked tonight", kh_voice_name((kh_voice)v));
+        else
+            snprintf(row, sizeof(row), "%-7s heard %d of %d times", kh_voice_name((kh_voice)v), t->heard[v], t->asked[v]);
+        kh_text(pm, x + kh_ui(12), y += step, ink, row);
     }
     kh_text(pm, x, y += step * 2, accent, "R or Start: begin the night again   Esc: leave");
     for (c = 0, y += step; c < (int)(sizeof(credits) / sizeof(credits[0])); c++)

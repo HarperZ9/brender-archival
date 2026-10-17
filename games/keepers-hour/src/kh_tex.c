@@ -117,33 +117,3 @@ int kh_frame_write(br_pixelmap *frame, const char *path, int swap_rb)
     BrPixelmapFree(rgb);
     return 0;
 }
-
-static int text_via_memory;
-
-void kh_text_via_memory(int on) { text_via_memory = on; }
-
-void kh_text(br_pixelmap *pm, br_int_32 x, br_int_32 y, br_colour colour, const char *s)
-{
-    static br_pixelmap *strip;
-    br_int_32 w, h;
-    if (!text_via_memory) {
-        BrPixelmapText(pm, x, y, colour, BrFontProp7x9, s);
-        return;
-    }
-    /* Text drawn straight onto the software device's 24-bit buffer does not
-     * appear (BlazingRenderer ed5e7a91), so copy the strip under the text into
-     * memory, write the text there, and copy it back. */
-    w = BrPixelmapTextWidth(pm, BrFontProp7x9, s);
-    h = BrPixelmapTextHeight(pm, BrFontProp7x9);
-    if (w <= 0 || w > 2048 || h > 32)
-        return;
-    if (strip == NULL || strip->type != pm->type)
-        strip = BrPixelmapAllocate(pm->type, 2048, 32, NULL, BR_PMAF_NORMAL);
-    if (strip == NULL)
-        return;
-    BrPixelmapRectangleCopy(strip, 0, 0, pm, x, y, w, h);
-    if (pm->type == BR_PMT_RGB_888) /* text on a memory 24-bit map reads the colour with red and blue exchanged */
-        colour = ((colour & 0xFF) << 16) | (colour & 0xFF00) | ((colour >> 16) & 0xFF);
-    BrPixelmapText(strip, 0, 0, colour, BrFontProp7x9, s);
-    BrPixelmapRectangleCopy(pm, x, y, strip, 0, 0, w, h);
-}

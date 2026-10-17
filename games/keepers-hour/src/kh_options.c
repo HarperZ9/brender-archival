@@ -22,7 +22,8 @@ static const char *action_ids[KH_ACT_COUNT] = {"forward", "back", "left", "right
 #define ROW_FOV    3
 #define ROW_VSYNC  4
 #define ROW_PERIOD 5
-#define ROW_KEYS   6
+#define ROW_TEXT   6
+#define ROW_KEYS   7
 #define ROW_RESET  (ROW_KEYS + KH_ACT_COUNT)
 #define ROW_CLOSE  (ROW_RESET + 1)
 #define ROWS       (ROW_CLOSE + 1)
@@ -73,6 +74,7 @@ int kh_options_load(kh_options *o, const char *path)
         else if (strcmp(word, "fov") == 0 && v >= BRD_FOV_MIN && v <= BRD_FOV_MAX && v % BRD_FOV_STEP == 0) o->fov = v;
         else if (strcmp(word, "vsync") == 0 && (v == 0 || v == 1)) o->vsync = v;
         else if (strcmp(word, "period") == 0 && (v == 0 || v == 1)) o->period = v;
+        else if (strcmp(word, "text") == 0 && v >= KH_TEXT_AUTO && v <= KH_TEXT_MAX) o->text = v;
         for (a = 0; a < KH_ACT_COUNT; a++)
             if (strcmp(word, action_ids[a]) == 0 && v > 0 && v < SDL_SCANCODE_COUNT) o->keys[a] = (SDL_Scancode)v;
     }
@@ -86,8 +88,8 @@ int kh_options_save(const kh_options *o, const char *path)
     int a;
     if (path == NULL || (f = fopen(path, "w")) == NULL)
         return -1;
-    fprintf(f, "volume %d\nlook %d\npixel %d\nfov %d\nvsync %d\nperiod %d\n", o->volume, o->look, o->pixel, o->fov, o->vsync,
-            o->period);
+    fprintf(f, "volume %d\nlook %d\npixel %d\nfov %d\nvsync %d\nperiod %d\ntext %d\n", o->volume, o->look, o->pixel, o->fov,
+            o->vsync, o->period, o->text);
     for (a = 0; a < KH_ACT_COUNT; a++)
         fprintf(f, "%s %d\n", action_ids[a], (int)o->keys[a]);
     return fclose(f) == 0 ? 0 : -1;
@@ -111,6 +113,8 @@ static void change(kh_options *o, int delta)
         o->vsync = !o->vsync;
     } else if (o->row == ROW_PERIOD) {
         o->period = !o->period;
+    } else if (o->row == ROW_TEXT) {
+        o->text = (o->text + delta + KH_TEXT_MAX + 1) % (KH_TEXT_MAX + 1);
     }
 }
 
@@ -168,12 +172,12 @@ int kh_options_event(kh_options *o, const SDL_Event *e)
 
 void kh_options_draw(const kh_options *o, br_pixelmap *pm, br_colour ink, br_colour accent, br_colour panel)
 {
-    br_int_32 x = -210, y = -150, step = BrPixelmapTextHeight(pm, BrFontProp7x9) + 9;
+    br_int_32 x = kh_ui(-210), y = kh_ui(-150), step = kh_text_h(pm) + kh_ui(9);
     char row[128];
     int r;
     if (!o->open)
         return;
-    BrPixelmapRectangleFill(pm, x - 24, y - 24, 468, step * (ROWS + 4) + 24, panel);
+    BrPixelmapRectangleFill(pm, x - kh_ui(24), y - kh_ui(24), kh_ui(468), step * (ROWS + 4) + kh_ui(24), panel);
     kh_text(pm, x, y, accent, "Options   (F2 or Back to close)");
     y += step * 2;
     for (r = 0; r < ROWS; r++, y += step) {
@@ -185,6 +189,10 @@ void kh_options_draw(const kh_options *o, br_pixelmap *pm, br_colour ink, br_col
         else if (r == ROW_PERIOD)
             snprintf(row, sizeof(row), "Period look         < %s >%s", o->period ? "256 colours" : "off",
                      o->period && !kh_options_period_now ? "  from the next start" : "");
+        else if (r == ROW_TEXT && o->text == KH_TEXT_AUTO)
+            snprintf(row, sizeof(row), "Text size           < Auto >  now %d", kh_text_scale());
+        else if (r == ROW_TEXT)
+            snprintf(row, sizeof(row), "Text size           < %d >%s", o->text, o->text > kh_text_scale() ? "  (window too small)" : "");
         else if (r < ROW_RESET)
             snprintf(row, sizeof(row), "%-24s %s", action_names[r - ROW_KEYS],
                      o->capturing && o->row == r ? "press a key..." : SDL_GetScancodeName(o->keys[r - ROW_KEYS]));
@@ -215,8 +223,9 @@ int kh_options_check(void)
     kh_options_defaults(&o);
     /* the way a player sets them: F2; down to "Pixel size", up three; down to
      * "Field of view", up two steps; down to "Vsync", Enter turns it off; down to
-     * "Period look", Right turns it on; down to "Walk forward", Enter, then the
-     * new key; back up to "Volume", up one; F2 */
+     * "Period look", Right turns it on; down to "Text size", Right twice (Auto
+     * to 2); down to "Walk forward", Enter, then the new key; back up to
+     * "Volume", up one; F2 */
     send_key(&o, SDL_SCANCODE_F2);
     send_key(&o, SDL_SCANCODE_DOWN);
     send_key(&o, SDL_SCANCODE_DOWN);
@@ -229,6 +238,9 @@ int kh_options_check(void)
     send_key(&o, SDL_SCANCODE_DOWN);
     send_key(&o, SDL_SCANCODE_RETURN);
     send_key(&o, SDL_SCANCODE_DOWN);
+    send_key(&o, SDL_SCANCODE_RIGHT);
+    send_key(&o, SDL_SCANCODE_DOWN);
+    send_key(&o, SDL_SCANCODE_RIGHT);
     send_key(&o, SDL_SCANCODE_RIGHT);
     send_key(&o, SDL_SCANCODE_DOWN);
     send_key(&o, SDL_SCANCODE_RETURN);
@@ -239,11 +251,12 @@ int kh_options_check(void)
     send_key(&o, SDL_SCANCODE_UP);
     send_key(&o, SDL_SCANCODE_UP);
     send_key(&o, SDL_SCANCODE_UP);
+    send_key(&o, SDL_SCANCODE_UP);
     send_key(&o, SDL_SCANCODE_RIGHT);
     send_key(&o, SDL_SCANCODE_F2);
     ok = o.keys[KH_ACT_FORWARD] == SDL_SCANCODE_Q && o.volume == 7 && o.pixel == 4 && o.fov == 65 && o.vsync == 0 && o.period == 1
-         && !o.open && kh_options_load(&back, path) == 0 && back.keys[KH_ACT_FORWARD] == SDL_SCANCODE_Q && back.volume == 7
-         && back.pixel == 4 && back.fov == 65 && back.vsync == 0 && back.period == 1;
+         && o.text == 2 && !o.open && kh_options_load(&back, path) == 0 && back.keys[KH_ACT_FORWARD] == SDL_SCANCODE_Q && back.volume == 7
+         && back.pixel == 4 && back.fov == 65 && back.vsync == 0 && back.period == 1 && back.text == 2;
     remove(path);
     path_override = NULL;
     printf("keepers options: rebind, display and save %s\n", ok ? "ok" : "failed");

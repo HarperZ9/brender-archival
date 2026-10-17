@@ -139,6 +139,24 @@ The game stays small on purpose: one tower, one night, about 25 minutes.
   (1 to 15), seven 16-step ramps chosen by hue for the lit surfaces (16 to
   127), and 128 colours cut from the pictures' texels (128 to 255). Pictures
   become 8-bit maps lit through a 64-row shade table built from that palette.
+- **Toward 1.0 (0.6.0, 17 October 2026):** a play-through by script and
+  stills found five things to fix first, and all five are in:
+  - no title screen: the game opened on the letter. Now a title with the lamp
+    room turning behind it, and Begin, Carry on (when a night is saved),
+    Options and Quit, by keys, gamepad or mouse. The old "resume" node is gone.
+  - text too small to read above 720p (BRender's 7 x 9 font, one pixel per
+    pixel). Now a Text size option, Auto or 1 to 3, drawn at whole-number
+    scales so it stays sharp (`src/kh_text.c`); every panel scales with it.
+  - the dawn was only in the words. Now the sky greys once you open the
+    decision, and turns to dawn at an ending (`kh_world.dawn`); the period
+    palette carries three steps of it.
+  - the letter's second page promised one item to keep, and nothing paid it
+    off. Now the decision offers it (`memento` in `night.txt`), choices open
+    up for what you found in the night, and the dawn card names what you kept.
+  - the logbook offered "Marigold called." before you had heard the Marigold.
+    It now waits until you have, on the lamp or on the radio.
+  Not changed, on purpose: checks can be tried again (no fail state); the
+  camera stays the high diorama view.
 - **Renderer parity:** `tools/parity.py` draws a still of every room on
   OpenGL and on the software rasteriser and compares them. The first bounds,
   set before measuring, also passed a wrong-room comparison, so they could not

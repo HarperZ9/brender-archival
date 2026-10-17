@@ -43,6 +43,8 @@ int kh_talk_open(kh_talk *t, const char *node_id)
     t->choosing = n->nlines <= 1;
     t->visited[n - t->script->nodes] = 1;
     snprintf(t->last, sizeof(t->last), "%s", n->id);
+    if (strncmp(n->id, "memento_", 8) == 0)
+        snprintf(t->kept, sizeof(t->kept), "%s", n->id);
     line_sound(t);
     return 0;
 }
@@ -115,18 +117,18 @@ void kh_talk_choose(kh_talk *t, int visible_index)
     }
 }
 
-/* Draw text wrapped to width; returns the y below the last row. */
-static br_int_32 wrapped(br_pixelmap *pm, br_int_32 x, br_int_32 y, br_int_32 width, br_colour colour, const char *text)
+/* Text wrapped to width, drawn when draw is set; returns the y below the last row. */
+static br_int_32 wrapped(br_pixelmap *pm, br_int_32 x, br_int_32 y, br_int_32 width, br_colour colour, const char *text, int draw)
 {
     char row[256];
-    br_int_32 step = BrPixelmapTextHeight(pm, BrFontProp7x9) + 4;
+    br_int_32 step = kh_text_h(pm) + kh_ui(4);
     const char *p = text;
     while (*p) {
         size_t n = 0, last_space = 0;
         while (p[n] && n < sizeof(row) - 1) {
             memcpy(row, p, n + 1);
             row[n + 1] = '\0';
-            if (BrPixelmapTextWidth(pm, BrFontProp7x9, row) > width)
+            if (kh_text_w(pm, row) > width)
                 break;
             if (p[n] == ' ')
                 last_space = n;
@@ -136,7 +138,8 @@ static br_int_32 wrapped(br_pixelmap *pm, br_int_32 x, br_int_32 y, br_int_32 wi
             n = last_space;
         memcpy(row, p, n);
         row[n] = '\0';
-        kh_text(pm, x, y, colour, row);
+        if (draw)
+            kh_text(pm, x, y, colour, row);
         y += step;
         p += n;
         while (*p == ' ') p++;
@@ -144,32 +147,25 @@ static br_int_32 wrapped(br_pixelmap *pm, br_int_32 x, br_int_32 y, br_int_32 wi
     return y;
 }
 
-void kh_talk_draw(const kh_talk *t, br_pixelmap *pm, br_colour ink, br_colour accent, br_colour panel)
+/* The conversation's text from y down; returns the y below it. With draw 0
+ * it only measures, so the panel can be sized to fit. */
+static br_int_32 layout(const kh_talk *t, br_pixelmap *pm, br_int_32 x, br_int_32 y, br_int_32 width, br_colour ink, br_colour accent, int draw)
 {
-    br_int_32 left = -pm->origin_x, top = pm->height - pm->origin_y;
-    br_int_32 width = pm->width < 900 ? pm->width - 40 : 860, x = left + (pm->width - width) / 2;
-    br_int_32 height, y;
-    int i, rows;
     char label[KH_TEXT_LEN + 16];
-
-    if (t->node == NULL)
-        return;
-    /* size the panel to what it holds: about two rows a line, one a choice */
-    rows = (t->check[0] ? 2 : 0) + 2 * t->line + (t->choosing ? 2 * kh_talk_visible_count(t) : 1);
-    height = 24 + 13 * rows;
-    y = top - height - 16;
-    BrPixelmapRectangleFill(pm, x - 12, y - 12, width + 24, height + 8, panel);
+    int i;
     if (t->check[0])
-        y = wrapped(pm, x, y, width, accent, t->check) + 4;
+        y = wrapped(pm, x, y, width, accent, t->check, draw) + kh_ui(4);
     for (i = 0; i < t->line && i < t->node->nlines; i++) {
         const kh_line *l = &t->node->lines[i];
         snprintf(label, sizeof(label), "%s", l->speaker);
-        kh_text(pm, x, y, accent, label);
-        y = wrapped(pm, x + 72, y, width - 72, ink, l->text) + 2;
+        if (draw)
+            kh_text(pm, x, y, accent, label);
+        y = wrapped(pm, x + kh_ui(72), y, width - kh_ui(72), ink, l->text, draw) + kh_ui(2);
     }
     if (!t->choosing) {
-        kh_text(pm, x, y + 4, accent, "Space, E or A: continue");
-        return;
+        if (draw)
+            kh_text(pm, x, y + kh_ui(4), accent, "Space, E or A: continue");
+        return y + kh_ui(4) + kh_text_h(pm);
     }
     for (i = 0; i < kh_talk_visible_count(t); i++) {
         const kh_choice *c = &t->node->choices[kh_talk_visible(t, i)];
@@ -177,6 +173,21 @@ void kh_talk_draw(const kh_talk *t, br_pixelmap *pm, br_colour ink, br_colour ac
             snprintf(label, sizeof(label), "%c %d. [%s %d] %s", i == t->selected ? '>' : ' ', i + 1, kh_voice_name(c->voice), c->target, c->text);
         else
             snprintf(label, sizeof(label), "%c %d. %s", i == t->selected ? '>' : ' ', i + 1, c->text);
-        y = wrapped(pm, x, y + 2, width, i == t->selected ? accent : ink, label);
+        y = wrapped(pm, x, y + kh_ui(2), width, i == t->selected ? accent : ink, label, draw);
     }
+    return y;
+}
+
+void kh_talk_draw(const kh_talk *t, br_pixelmap *pm, br_colour ink, br_colour accent, br_colour panel)
+{
+    br_int_32 left = -pm->origin_x, top = pm->height - pm->origin_y;
+    br_int_32 width = pm->width < kh_ui(900) ? pm->width - kh_ui(40) : kh_ui(860), x = left + (pm->width - width) / 2;
+    br_int_32 height, y;
+
+    if (t->node == NULL)
+        return;
+    height = layout(t, pm, x, 0, width, ink, accent, 0);
+    y = top - height - kh_ui(24);
+    BrPixelmapRectangleFill(pm, x - kh_ui(12), y - kh_ui(12), width + kh_ui(24), height + kh_ui(20), panel);
+    layout(t, pm, x, y, width, ink, accent, 1);
 }

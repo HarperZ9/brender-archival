@@ -7,6 +7,8 @@
  *   KEEPERS_SHOT=f    draw one still of the room into f (PPM) and quit
  *   KEEPERS_RECORD=d  write numbered frames at a fixed step (see kh_capture.h)
  *   KEEPERS_ROOM=r    start in room r      KEEPERS_OPEN=n   start in node n
+ *                     (a,b,c opens each in turn and stays in the last)
+ *   KEEPERS_END=1     show the dawn card      KEEPERS_TITLE=1  show the title screen
  *   KEEPERS_PERIOD=1  the period look (256 colours) for this run, on the software renderer
  * SPDX-License-Identifier: MIT */
 #include <math.h>
@@ -25,6 +27,7 @@
 #include "kh_period.h"
 #include "kh_save.h"
 #include "kh_tex.h"
+#include "kh_title.h"
 
 kh_game G = {.keeper_z = 3.2f, .facing = 180.0f, .near_talker = -1};
 
@@ -143,29 +146,14 @@ static br_error game_init(br_demo *demo)
     period_sync(demo);
     enter(kh_room_find(room && kh_room_find(room) >= 0 ? room : "lamp"), -1);
     if (SDL_getenv("KEEPERS_OPEN"))
-        kh_talk_open(&G.talk, SDL_getenv("KEEPERS_OPEN"));
-    else
-        if (!kh_capture_active())
-            kh_talk_open(&G.talk, !G.smoke && kh_save_exists(kh_save_path()) ? "resume" : "arrive");
+        kh_game_open_list(SDL_getenv("KEEPERS_OPEN"));
+    else if (G.smoke)
+        kh_talk_open(&G.talk, "arrive");
+    else if (!kh_capture_active() || SDL_getenv("KEEPERS_TITLE"))
+        kh_title_open(kh_save_exists(kh_save_path()));
+    G.ended = SDL_getenv("KEEPERS_END") != NULL;
     place_camera(demo);
     return BRE_OK;
-}
-
-static void smoke_step(void)
-{
-    SDL_Event q = {.type = SDL_EVENT_QUIT};
-    if (G.smoke_room < kh_room_count) {
-        kh_game_go(kh_rooms[G.smoke_room++].id);
-    } else if (G.smoke_node < G.script.nnodes) {
-        G.problems += kh_talk_open(&G.talk, G.script.nodes[G.smoke_node++].id) != 0;
-    } else if (!G.smoke_ends) {
-        G.smoke_ends = 1;
-        G.problems += kh_end_check(&G.script);
-        G.problems += kh_audio_check();
-        G.problems += kh_options_check();
-    } else {
-        SDL_PushEvent(&q);
-    }
 }
 
 static void game_update(br_demo *demo, br_scalar dt_s)
@@ -177,7 +165,7 @@ static void game_update(br_demo *demo, br_scalar dt_s)
     } else {
         G.clock_s += dt;
     }
-    if (G.smoke) smoke_step();
+    if (G.smoke) kh_game_smoke_step();
     else if (!kh_capture_active()) kh_input_walk(dt);
     if (G.talk.go[0]) {
         char go[KH_ID_LEN];
@@ -185,6 +173,9 @@ static void game_update(br_demo *demo, br_scalar dt_s)
         G.talk.go[0] = '\0';
         kh_game_follow(go);
     }
+    if (kh_title_active())
+        G.cam_yaw += 6.0f * dt; /* the room turns slowly behind the title */
+    kh_game_dawn_step(dt);
     demo->clear_colour = kh_world_sky(&G.world, demo->colour_buffer);
     period_sync(demo);
     kh_world_turn_lamp(&G.world, G.clock_s);
@@ -197,35 +188,21 @@ static void game_update(br_demo *demo, br_scalar dt_s)
     place_camera(demo);
 }
 
-static void hud(br_pixelmap *pm, br_colour ink, br_colour accent)
-{
-    char text[128];
-    snprintf(text, sizeof(text), "The Keeper's Hour   %s", kh_rooms[G.world.current].title);
-    kh_text(pm, -pm->origin_x + 12, -pm->origin_y + 20, accent, text);
-    if (G.ended || kh_talk_open_p(&G.talk))
-        return;
-    if (G.near_talker >= 0) {
-        const kh_talker *t = kh_world_talker(&G.world, G.near_talker);
-        snprintf(text, sizeof(text), "%s, click or A: %s %s", SDL_GetScancodeName(G.opt.keys[KH_ACT_TALK]),
-                 t->node[0] == '@' ? "go through" : "talk to", t->name);
-        kh_text(pm, -BrPixelmapTextWidth(pm, BrFontProp7x9, text) / 2, pm->height - pm->origin_y - 40, ink, text);
-    } else {
-        kh_text(pm, -pm->origin_x + 12, pm->height - pm->origin_y - 24, ink,
-                       "Walk: WASD or left stick   Look: right drag or right stick   Options: F2   Quit: Esc");
-    }
-}
-
 static void game_render(br_demo *demo)
 {
     br_pixelmap *pm = demo->colour_buffer;
     br_colour ink = kh_px(pm, 236, 230, 216), accent = kh_px(pm, 232, 180, 92), panel = kh_px(pm, 14, 13, 18);
     kh_text_via_memory(!demo->hw_accel);
+    kh_text_frame(G.opt.text, pm);
     if (!period_shown || brd_display_render_period(demo, G.opt.pixel, kh_period_palette(), kh_world_sky_index(&G.world)) != 0)
         brd_display_render(demo, G.opt.pixel);
     if (kh_capture_active()) {
-        if (kh_capture_ui()) {
-            hud(pm, ink, accent);
-            kh_talk_draw(&G.talk, pm, ink, accent, panel);
+        if (kh_capture_ui() && kh_title_active()) {
+            kh_title_draw(pm, ink, accent, panel);
+        } else if (kh_capture_ui()) {
+            kh_hud_draw(pm, ink, accent);
+            if (G.ended) kh_end_card(pm, &G.talk, ink, accent, panel);
+            else kh_talk_draw(&G.talk, pm, ink, accent, panel);
         }
         if (kh_capture_frame(pm, demo->hw_accel, &G.problems)) {
             SDL_Event q = {.type = SDL_EVENT_QUIT};
@@ -233,7 +210,12 @@ static void game_render(br_demo *demo)
         }
         return;
     }
-    hud(pm, ink, accent);
+    if (kh_title_active()) {
+        kh_title_draw(pm, ink, accent, panel);
+        kh_options_draw(&G.opt, pm, ink, accent, panel);
+        return;
+    }
+    kh_hud_draw(pm, ink, accent);
     if (G.ended)
         kh_end_card(pm, &G.talk, ink, accent, panel);
     else

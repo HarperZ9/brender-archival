@@ -19,6 +19,7 @@
 #include "kh_period.h"
 #include "kh_period_cut.h"
 #include "kh_rooms.h"
+#include "kh_world.h"
 
 #define MAX_MATERIALS 96
 #define GLOW_FIRST    1
@@ -214,6 +215,9 @@ int kh_period_build(void)
         return 0;
     for (i = 0; i < kh_room_count; i++) /* the skies are drawn as they are, like the glows */
         kh_period_register(NULL, KH_PERIOD_GLOW, kh_rooms[i].sky[0], kh_rooms[i].sky[1], kh_rooms[i].sky[2]);
+    for (i = 1; i <= 3; i++) /* and three steps toward the dawn sky (kh_world.h) */
+        kh_period_register(NULL, KH_PERIOD_GLOW, 8 + (KH_DAWN_R - 8) * i / 3, 10 + (KH_DAWN_G - 10) * i / 3,
+                           20 + (KH_DAWN_B - 20) * i / 3);
     memset(P.pal, 0, sizeof(P.pal));
     build_glows();
     build_ramps();
