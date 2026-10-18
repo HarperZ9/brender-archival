@@ -23,6 +23,10 @@ rasteriser and BRender 1.4 draw the same pixels.
   has no TIP kernel, and the 1998 MMX table takes z-sorted triangles that 1.4
   sends elsewhere; both are reported (see
   [Z-sorted, TIP256 and the MMX perspective rows](#z-sorted-tip256-and-the-mmx-perspective-rows)).
+- **Every pixel left traces to the two versions' sine and cosine.** Built
+  with BRender 1.3.2's trig, BRender 1.4 draws all 85 scenes both versions
+  draw alike byte for byte as the 1998 rasteriser does (see
+  [Where the last pixels come from](#where-the-last-pixels-come-from)).
 - **24-bit lit textured:** the 1998 kernel reads its shade table at the wrong
   stride, so as shipped it draws garbage (see
   [A 1998 defect](#a-1998-defect-the-24-bit-lit-textured-kernel)). With the
@@ -101,7 +105,8 @@ is one on which BRender 1.4's own Windows and Linux builds also disagree, by
 a similar amount (7 scenes, 1 to 3 pixels each,
 `evidence/modern-windows-vs-linux-angle-2026-10-17.json`). That looks like
 the last-bit floating point variance between builds that BlazingRenderer's
-softprim README describes; it was not traced further.
+softprim README describes; it was not traced further. (Traced later the same
+day: see [Where the last pixels come from](#where-the-last-pixels-come-from).)
 
 The gates are now tight: byte-identical where the measurement is, and one
 level (one level of the format at 15/16 bits) on at most 0.1% of pixels
@@ -141,7 +146,11 @@ builds agree on those pixels, so the sentence above about every leftover
 scene does not hold for them. They were not traced. Two gates that required
 byte identity (8-bit textured and 8-bit perspective) now allow one differing
 pixel (`--max-differ 1`); every other `--require-identical` gate passes the
-exact count. Evidence: `evidence/*-exact-2026-10-17.json`.
+exact count. Evidence: `evidence/*-exact-2026-10-17.json`. One more: the
+sheet above took its difference mask from a grey conversion, which drops a
+one-level difference in a single channel, so it shows two pixels on the
+Gouraud sphere where there are five. Later sheets take the mask from every
+channel.
 
 ## Z-sorted, TIP256 and the MMX perspective rows
 
@@ -195,8 +204,8 @@ the port the plane is byte-identical. Subdivision changes nothing else: the
 
 Modern Windows and Linux draw all 30 new scenes the same but one (the 24-bit
 z-sorted Gouraud sphere, 2 pixels). None of the one-pixel residues above is
-one where 1.4's Windows and Linux builds differ from each other; they were
-not traced.
+one where 1.4's Windows and Linux builds differ from each other. They trace
+to the two versions' sine (next section).
 
 **BRender 1.4 has no TIP kernel.** Its softprim tables have no row for a lit
 perspective-correct 8-bit map in a 15/16-bit buffer. A z-buffered TIP
@@ -222,7 +231,9 @@ subdivide the same triangles (5,648 on the sphere); the last bits of the
 subdivided screen coordinates differ. The likely cause, inferred and not
 checked further, is that 1.4's C port of `subdiv.asm` projects midpoints
 with `PROJECT_VERTEX_WRITE_Q` (`drivers/softrend/subdiv.c:33-35`), a
-different float sequence from the 1998 assembly's.
+different float sequence from the 1998 assembly's. (Ruled out the same day:
+the cause is the two versions' sine; see
+[Where the last pixels come from](#where-the-last-pixels-come-from).)
 
 Evidence: `evidence/modern-vs-period-zs-2026-10-17.json` (general tables,
 26 scenes), `evidence/modern-vs-period-mmx-zs-2026-10-17.json` (MMX build, 26
@@ -233,6 +244,79 @@ rows, the plane before and after subdivision among them, with a ring around
 each differing pixel where there are few. I looked at it: the frames are what
 the numbers say, including the textured period TIP sphere beside 1.4's
 untextured one and the empty z-sorted TIP frame on the 1.4 side.
+
+## Where the last pixels come from
+
+Traced 17 October 2026. Every pixel left between the period and modern
+frames, the one-pixel residues of the sections above included, comes from
+the two versions' sine and cosine. Given the same trig, BRender 1.4 draws
+the 1998 rasteriser's frames byte for byte.
+
+**How it was found.** Dumping the vertices each side hands the MMX
+rasteriser showed the clip-space coordinates differing in the last bit on
+nearly every vertex, already before subdivision; the lit colours did too. A
+copy of the scene that printed the model and light matrices after each
+`BrMatrix34` step on both sides found the first difference in the first
+rotation, and in the light's. The angles were the same (the shared angle,
+above). The sines were not:
+
+| Angle | BRender 1.3.2 | BRender 1.4 (Windows) |
+|---|---|---|
+| sin 25 degrees | `3ed86027` | `3ed86028` |
+| sin -30 degrees | `befffc65` | `befffc60` |
+| sin -20 degrees | `beaf1e96` | `beaf1e94` |
+| cos -30 degrees | `3f5db4e2` | `3f5db4e3` |
+| sin 30 and 60 degrees, cos 25 and -20 | the same | the same |
+
+(float bits). The two versions compute them differently:
+
+- BRender 1.3.2's FLOAT build (`inc/angles.h:46,54`) keeps the angle as an
+  unsigned 16-bit count, so -30 degrees becomes 60075 counts, nearly a whole
+  turn. The radian, `count * (PI / 32768.0)`, is rounded to float, and at
+  5.76 a float's step is coarse; `sin()` then runs in double and is rounded
+  to float. That is why its sin -30 degrees is 5 units in the last place
+  from its own sin 30 degrees (`3efffc60`).
+- BRender 1.4 (`core/inc/angles.h:20,29,30`) keeps the angle as a float
+  fraction of a turn, `PI` is a float constant (`core/inc/scalar.h:202`), and
+  `sinf()` takes the float radian. For 25 degrees both radians are the same
+  float, and the two results still differ: the correctly rounded sine of that
+  float is `3ed86027` (1.3.2's), and the Windows `sinf()` returns the next
+  float up.
+
+**The decisive test.** `-DPARITY_PERIOD_SINE=ON` builds the modern scene
+against a copy of BRender 1.4 whose `BR_SIN` and `BR_COS` are 1.3.2's
+(`period-sine.cmake`; every other line is 1.4). With it, on Windows, all 85
+scenes both versions draw the same way are byte-identical to the period
+frames, across every class: 24 and 8-bit, lit textured (at the stride the
+1998 kernel reads), z-sorted, and 15/16-bit through the MMX table, TIP shapes
+and subdivided perspective rows included. The six left out are the z-sorted
+TIP scenes, which 1.4 refuses to draw. CI builds this variant on Windows and
+holds it to byte identity in five gates, and runs the first gate on 1.4 as
+published as a control, which must fail (it does: 19 of 23 identical).
+
+**A hypothesis this rules out.** The section above put the one pixel on the
+MMX perspective sphere down to 1.4's C port of `subdiv.asm` projecting
+midpoints with `PROJECT_VERTEX_WRITE_Q`. A period build that projects them
+that way draws the same bytes as before, and the pixel goes once the trig
+matches. The subdivision ports agree; the vertices they were given did not.
+
+**Windows against Linux.** BRender 1.4's own Windows and Linux builds differ
+on 8 scenes. With 1.3.2's trig in both (a local WSL build, Ubuntu 24.04, whose
+stock frames are the CI Linux frames byte for byte), they differ on 4: three
+24-bit Gouraud scenes (the sphere, its z-sorted twin and the torus) and the 24-bit lit torus, 1 pixel each, and the Linux
+build still differs from the period frames on those Gouraud scenes. So the
+trig accounts for half of 1.4's own Windows and Linux spread; the rest lies
+elsewhere in the Linux build and was not traced.
+
+What this does not show: that one version's sine is right. Neither is
+correctly rounded at every angle (1.3.2's wraps negative angles to a coarse
+radian, 1.4's `sinf()` misses by one unit at 25 degrees on Windows). It shows
+where the frames part, and that the rasterisers do not.
+
+Evidence: `evidence/modern-sine-vs-period-*-2026-10-17.json` (the five CI
+gates, CI run 39080164297), `evidence/modern-windows-vs-linux-sine-local-2026-10-17.json`
+and `evidence/modern-windows-vs-linux-stock-local-2026-10-17.json` (local
+WSL), and `evidence/last-pixels-sine-2026-10-17.png`.
 
 ## The instrument
 
@@ -762,8 +846,7 @@ Windows CI has no OpenGL, so this runs on Linux only.
 
 ## Not measured yet
 
-- The one-pixel residues (the 8-bit lit sphere, the 15/16-bit Gouraud and
-  lit spheres through the MMX table, the z-sorted Gouraud sphere, the TIP and
-  MMX perspective spheres) are not traced.
+- What still separates BRender 1.4's Linux build from its Windows build once
+  both have 1.3.2's trig (four 24-bit scenes, 1 pixel each) is not traced.
 - The 8-bit perspective kernels at other texture sizes (the `ZPT` rows for
   maps that are not 256 wide) have no scene.

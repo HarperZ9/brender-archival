@@ -521,3 +521,91 @@ def test_the_exact_recount_matches_the_correction():
     readme = (PARITY / "README.md").read_text(encoding="utf-8")
     assert "**Correction, 17 October 2026, later the same day.**" in readme
     assert "**50 of the 61 older scenes are byte-identical**" in readme
+
+
+# BRender 1.4 with BRender 1.3.2's sine and cosine (PARITY_PERIOD_SINE)
+# against the period builds: the gates and the scenes each takes.
+SINE_GATES = {
+    "modern with the 1998 sine against period, 24-bit and 8-bit": ("parity-period", 23),
+    "modern with the 1998 sine against period, 8-bit lit textured": ("parity-period", 5),
+    "modern with the 1998 sine against period, 24-bit lit textured, stride 4": ("parity-period-shade4", 3),
+    "modern with the 1998 sine against period, 15/16-bit z-sorted": ("parity-period", 10),
+    "modern with the 1998 sine against period (MMX), 15/16-bit": ("parity-period-mmx", 44),
+}
+
+
+def _sine_gates():
+    import re
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    parity = ci[ci.index("\n  parity:"):]
+    found = {}
+    for period, label, args in re.findall(r'run: python3 modern/parity/parity_compare.py parity-windows-sine (parity-period[a-z0-9-]*) --label "([^"]+)"([^\n]*)', parity):
+        words = args.split()
+        keep = words[words.index("--only") + 1].split(",") if "--only" in words else None
+        drop = words[words.index("--skip") + 1].split(",") if "--skip" in words else []
+        assert "--require-identical" in words, label
+        found[label] = (period, keep, drop)
+    return found
+
+
+def test_the_period_sine_gates_take_every_scene_both_versions_draw_alike_once():
+    """Byte for byte, each scene to one gate; left out are only the six
+    z-sorted TIP scenes, which BRender 1.4 refuses to draw."""
+    names = _scene_names()
+    gates = _sine_gates()
+    assert set(gates) == set(SINE_GATES)
+    chosen = []
+    for label, (period, count) in SINE_GATES.items():
+        got_period, keep, drop = gates[label]
+        picked = _chosen(names, keep, drop)
+        assert got_period == period and len(picked) == count, label
+        chosen += picked
+    assert len(chosen) == len(set(chosen)) == 85
+    assert sorted(set(names) - set(chosen)) == sorted(
+        f"{s}-zs-{f}" for s in ("plane-tip-steep", "sphere-tip", "sphere-tip-blend") for f in ("rgb555", "rgb565"))
+
+
+def test_ci_builds_brender_14_with_the_period_sine_and_keeps_a_control():
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    windows = ci[ci.index("\n  brview:"):ci.index("\n  linux:")]
+    assert "cmake -S modern -B build-sine -A x64 -DPARITY_PERIOD_SINE=ON" in windows
+    assert "--target parity-scene" in windows and "name: parity-windows-sine" in windows
+    parity = ci[ci.index("\n  parity:"):]
+    assert "name: parity-windows-sine" in parity
+    control = parity[parity.index("control, BRender 1.4 as published fails"):]
+    assert "if python3 modern/parity/parity_compare.py parity-windows parity-period" in control
+    assert "--skip rgb5,textured-lit --require-identical; then" in control and "exit 1" in control
+
+
+def test_the_period_sine_patch_matches_the_pinned_brender_14():
+    """The copy is patched only where 1.4 defines BR_SIN and BR_COS, and the
+    configure step stops if the pinned source no longer reads that way."""
+    cmake = (PARITY / "period-sine.cmake").read_text(encoding="utf-8")
+    assert '#define BR_SIN(a)           ((br_scalar)sinf(BrAngleToRadian(a)))' in cmake
+    assert '#define BR_COS(a)           ((br_scalar)cosf(BrAngleToRadian(a)))' in cmake
+    assert "& 0xffff) * (3.14159265358979323846 / 32768.0)" in cmake and "FATAL_ERROR" in cmake
+    top = (ROOT / "modern" / "CMakeLists.txt").read_text(encoding="utf-8")
+    assert 'option(PARITY_PERIOD_SINE' in top and "parity_period_sine(" in top
+    assert top.index("option(PARITY_PERIOD_SINE") < top.index("FetchContent_MakeAvailable(blazingrenderer)")
+
+
+def test_the_sine_trace_evidence_matches_the_readme():
+    """With BRender 1.3.2's sine, BRender 1.4 draws the period frames byte for
+    byte; as published it does not; Windows and Linux part on fewer scenes."""
+    names = {"": 23, "-lit8": 5, "-shade4": 3, "-zs": 10, "-mmx": 44}
+    total = 0
+    for suffix, count in names.items():
+        record = json.loads((EVIDENCE / f"modern-sine-vs-period{suffix}-2026-10-17.json").read_text(encoding="utf-8"))
+        assert record["ok"] and record["all_identical"] and record["control"]["fails_as_required"], suffix
+        assert len(record["scenes"]) == count and all(m["differ"] == 0 for m in record["scenes"].values()), suffix
+        total += count
+    assert total == 85
+    stock = json.loads((EVIDENCE / "modern-windows-vs-linux-stock-local-2026-10-17.json").read_text(encoding="utf-8"))
+    sine = json.loads((EVIDENCE / "modern-windows-vs-linux-sine-local-2026-10-17.json").read_text(encoding="utf-8"))
+    parted = lambda r: sorted(k for k, m in r["scenes"].items() if m["differ"])
+    assert len(parted(stock)) == 8 and len(parted(sine)) == 4
+    assert parted(sine) == ["sphere-smooth", "sphere-smooth-zs", "torus-smooth", "torus-textured-lit"]
+    assert all(sine["scenes"][k]["differ"] == 1 for k in parted(sine))
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## Where the last pixels come from" in readme and "sin 25 degrees | `3ed86027` | `3ed86028`" in readme
+    assert "(Ruled out the same day:" in readme
