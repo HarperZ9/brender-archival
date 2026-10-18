@@ -159,6 +159,29 @@ static const scene scenes[] = {
     {"plane-textured-lit-steep-persp-map64-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@64", 1, "shade.tab", 0, 0, -60},
     {"plane-textured-lit-steep-persp-map128-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@128", 1, "shade.tab", 0, 0, -60},
     {"plane-textured-lit-steep-persp-map1024-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@1024", 1, "shade.tab", 0, 0, -60},
+    /* Flat lit 8-bit textures (engine-revival 0.12.0): zb8p2fla.asm's linear
+     * ZT_I8_D16_<n>_FLAT (8 to 1024) and fti8pizp.asm's perspective
+     * ZPTI_I8_D16_<n>_FLAT (32 to 256; the perspective lit 1024 kernel reads
+     * past the shade table, as the smooth one does). Flat lighting is
+     * BR_MATF_LIGHT
+     * without BR_MATF_SMOOTH: the shade row is fixed for the face. The sphere
+     * reaches the linear kernels; the torus and the steep plane reach the
+     * perspective loops. */
+    {"sphere-textured-fshade-map8-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, "earth.pix@8", 1, "shade.tab"},
+    {"sphere-textured-fshade-map16-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, "earth.pix@16", 1, "shade.tab"},
+    {"sphere-textured-fshade-map32-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, "earth.pix@32", 1, "shade.tab"},
+    {"sphere-textured-fshade-map64-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, "earth.pix@64", 1, "shade.tab"},
+    {"sphere-textured-fshade-map128-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, "earth.pix@128", 1, "shade.tab"},
+    {"sphere-textured-fshade-map256-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, "earth.pix", 1, "shade.tab"},
+    {"sphere-textured-fshade-map1024-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1, "earth.pix@1024", 1, "shade.tab"},
+    {"torus-textured-fshade-persp-map32-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "rosewood.pix@32", 1, "shade.tab"},
+    {"torus-textured-fshade-persp-map64-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "rosewood.pix@64", 1, "shade.tab"},
+    {"torus-textured-fshade-persp-map128-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "rosewood.pix@128", 1, "shade.tab"},
+    {"torus-textured-fshade-persp-map256-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "rosewood.pix", 1, "shade.tab"},
+    {"plane-textured-fshade-steep-persp-map32-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "earth.pix@32", 1, "shade.tab", 0, 0, -60},
+    {"plane-textured-fshade-steep-persp-map64-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "earth.pix@64", 1, "shade.tab", 0, 0, -60},
+    {"plane-textured-fshade-steep-persp-map128-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "earth.pix@128", 1, "shade.tab", 0, 0, -60},
+    {"plane-textured-fshade-steep-persp-map256-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_PERSPECTIVE, 1, "earth.pix", 1, "shade.tab", 0, 0, -60},
     /* 15 and 16-bit: drawn into RGB_555 and RGB_565 buffers. Period kernels:
      * untextured, tt15_piz.asm and tt16_piz.asm (TriangleRenderPIZ2 flat,
      * PIZ2I Gouraud); a 256 x 256 map packed into the buffer's format,

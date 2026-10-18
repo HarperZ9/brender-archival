@@ -670,9 +670,15 @@ jobs:
       # October 2026. Unlit, byte for byte; lit, the lit sphere's one pixel
       # that the two versions' sine accounts for (README).
       - name: the 1998 and modern rasterisers draw the same unlit 8-bit scenes on maps not 256 wide
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit maps not 256 wide, unlit" --only map --skip lit --require-identical
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit maps not 256 wide, unlit" --only map --skip lit,fshade --require-identical
       - name: the 1998 and modern rasterisers draw the same lit 8-bit scenes on maps not 256 wide, to one pixel
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit maps not 256 wide, lit" --only lit-map,lit-persp-map,lit-steep-persp-map --max-differ 1
+      # Flat lit 8-bit textures (engine-revival 0.12.0: zb8p2fla.asm's linear
+      # ZT_*_FLAT and fti8pizp.asm's perspective ZPTI_*_FLAT), on maps 8 to
+      # 1024 wide. Flat lighting has no Gouraud interpolation, so unlike the
+      # smooth scenes these are byte-identical to BRender 1.4 with no residue.
+      - name: the 1998 and modern rasterisers draw the same flat lit 8-bit scenes
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit flat lit textures" --only fshade --require-identical
       # BRender 1.4 with BRender 1.3.2's sine and cosine (Windows) against the
       # period builds: byte for byte, every scene both versions draw the same
       # way. Left out, and gated above: the 24-bit lit textured scenes as
