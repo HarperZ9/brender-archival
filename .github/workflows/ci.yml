@@ -514,8 +514,10 @@ jobs:
           cmake -S modern -B build-sine-sort -G Ninja -DCMAKE_BUILD_TYPE=Release -DPARITY_PERIOD_SINE=ON -DPARITY_STABLE_SORT=ON
           cmake --build build-sine-sort --parallel 4 --target parity-scene
           mkdir -p parity-linux-sine parity-linux-sine-sort
-          ./build-sine/parity-scene build/_deps/brender132-src/dat parity-linux-sine > /dev/null
-          ./build-sine-sort/parity-scene build/_deps/brender132-src/dat parity-linux-sine-sort > /dev/null
+          for v in sine sine-sort; do
+            sdl=$(dirname "$(find "build-$v" -name 'libSDL3.so.0' | head -1)")
+            LD_LIBRARY_PATH="$sdl" "./build-$v/parity-scene" build/_deps/brender132-src/dat "parity-linux-$v" > /dev/null
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: parity-linux-sine
