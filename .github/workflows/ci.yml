@@ -594,7 +594,7 @@ jobs:
       # exactly, the lit sphere differs in one pixel by one index here and in
       # the 8-bit textured gate (17 October 2026; README).
       - name: the 1998 and modern rasterisers draw the same perspective-correct 8-bit scenes within the recorded bounds
-        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit perspective" --only persp,steep --skip rgb5 --max-differ 1
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit perspective" --only persp,steep --skip rgb5,map --max-differ 1
       - name: the 24-bit lit textured scenes, reported
         run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 24-bit lit textured (1998 stride defect)" --only textured-lit --skip index8,rgb555,rgb565,zs
       # 15/16-bit (RGB_555, RGB_565; engine-revival 0.8.0). The two sides use
@@ -664,6 +664,15 @@ jobs:
         run: python3 modern/parity/parity_compare.py parity-linux parity-period-mmx --label "modern against period (MMX), perspective rows, subdivided" --only mmxp --bounds 1.0 0.999 80 0.01
       - name: the z-sorted 15/16-bit scenes on the MMX build, reported (the 1998 MMX table takes them; 1.4 does not)
         run: python3 modern/parity/parity_compare.py parity-linux parity-period-mmx --label "modern against period (MMX), z-sorted (1998 MMX table takes them)" --only zs-rgb5
+      # 8-bit textures on maps that are not 256 wide (engine-revival 0.11.0:
+      # zb8p2unl.asm, zb8p2lit.asm and fti8pizp.asm's 32, 64, 128 and 1024
+      # instances), on earth.pix and rosewood.pix resampled, measured 17
+      # October 2026. Unlit, byte for byte; lit, the lit sphere's one pixel
+      # that the two versions' sine accounts for (README).
+      - name: the 1998 and modern rasterisers draw the same unlit 8-bit scenes on maps not 256 wide
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit maps not 256 wide, unlit" --only map --skip lit --require-identical
+      - name: the 1998 and modern rasterisers draw the same lit 8-bit scenes on maps not 256 wide, to one pixel
+        run: python3 modern/parity/parity_compare.py parity-linux parity-period --label "modern against period, 8-bit maps not 256 wide, lit" --only lit-map,lit-persp-map,lit-steep-persp-map --max-differ 1
       # BRender 1.4 with BRender 1.3.2's sine and cosine (Windows) against the
       # period builds: byte for byte, every scene both versions draw the same
       # way. Left out, and gated above: the 24-bit lit textured scenes as
@@ -678,7 +687,7 @@ jobs:
       - name: with the 1998 trig, BRender 1.4 draws the 24-bit and 8-bit scenes as the 1998 rasteriser does
         run: python3 modern/parity/parity_compare.py parity-windows-sine parity-period --label "modern with the 1998 sine against period, 24-bit and 8-bit" --skip rgb5,textured-lit --require-identical
       - name: with the 1998 trig, BRender 1.4 draws the 8-bit lit textured scenes as the 1998 rasteriser does
-        run: python3 modern/parity/parity_compare.py parity-windows-sine parity-period --label "modern with the 1998 sine against period, 8-bit lit textured" --only textured-lit-index8,lit-persp,lit-steep --require-identical
+        run: python3 modern/parity/parity_compare.py parity-windows-sine parity-period --label "modern with the 1998 sine against period, 8-bit lit textured" --only textured-lit-index8,lit-persp,lit-steep,lit-map --require-identical
       - name: with the 1998 trig, BRender 1.4 draws the 24-bit lit textured scenes as the 1998 rasteriser does at stride 4
         run: python3 modern/parity/parity_compare.py parity-windows-sine parity-period-shade4 --label "modern with the 1998 sine against period, 24-bit lit textured, stride 4" --only textured-lit --skip index8,rgb5 --require-identical
       - name: with the 1998 trig, BRender 1.4 draws the z-sorted 15/16-bit scenes as the 1998 rasteriser does

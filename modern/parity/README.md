@@ -3,7 +3,7 @@
 The question is whether BRender 1.4, the modern 64-bit engine the downloads
 use, draws the same pixels as Argonaut's BRender 1.3.2 from 1998.
 
-**Answer on 17 October 2026, for the ninety-one scenes measured here: yes,
+**Answer on 17 October 2026, for the 124 scenes measured here: yes,
 to a few pixels, with one 1998 defect.** Given the same angles, the 1998
 rasteriser and BRender 1.4 draw the same pixels.
 
@@ -24,9 +24,12 @@ rasteriser and BRender 1.4 draw the same pixels.
   sends elsewhere; both are reported (see
   [Z-sorted, TIP256 and the MMX perspective rows](#z-sorted-tip256-and-the-mmx-perspective-rows)).
 - **Every pixel left traces to the two versions' sine and cosine.** Built
-  with BRender 1.3.2's trig, BRender 1.4 draws all 85 scenes both versions
+  with BRender 1.3.2's trig, BRender 1.4 draws all 118 scenes both versions
   draw alike byte for byte as the 1998 rasteriser does (see
   [Where the last pixels come from](#where-the-last-pixels-come-from)).
+- **8-bit maps 8 to 1024 wide** (engine-revival 0.11.0): the 33 scenes are
+  byte-identical to 1.4 but for the lit sphere's one pixel (see
+  [8-bit maps that are not 256 wide](#8-bit-maps-that-are-not-256-wide)).
 - **24-bit lit textured:** the 1998 kernel reads its shade table at the wrong
   stride, so as shipped it draws garbage (see
   [A 1998 defect](#a-1998-defect-the-24-bit-lit-textured-kernel)). With the
@@ -318,9 +321,66 @@ gates, CI run 39080164297), `evidence/modern-windows-vs-linux-sine-local-2026-10
 and `evidence/modern-windows-vs-linux-stock-local-2026-10-17.json` (local
 WSL), and `evidence/last-pixels-sine-2026-10-17.png`.
 
+## 8-bit maps that are not 256 wide
+
+Measured 17 October 2026, engine-revival 0.11.0 against BRender 1.4. The
+frames come from CI run 39083083692; the CI period frames are the same bytes as
+local Win32 runs.
+
+pentprim has 8-bit kernels for each square power-of-two map: linear ones
+for 8, 16, 32, 64, 128, 256 and 1024 texels a side, and perspective-correct
+ones for 32 to 1024. Until now only the 256 kernels were ported, and the
+period data has no 8-bit map of the other sizes but 128. engine-revival
+0.11.0 ports `zb8p2unl.asm` and `zb8p2lit.asm` (the linear kernels but 256)
+and `fti8pizp.asm`'s 32, 64, 128 and 1024 instances. `parity-scene.c`
+resamples `earth.pix` and `rosewood.pix` to each size (`earth.pix@64`:
+nearest texel, integer steps, the same code on both sides) and draws 33
+scenes, 124 in all:
+
+| Scenes | Sizes | 1998 kernels |
+|---|---|---|
+| `sphere-textured-map<n>-index8`, unlit and lit | 8 to 1024 (lit to 128) | `zb8p2unl.asm`, `zb8p2lit.asm` |
+| `sphere-textured-persp-map<n>-index8`, unlit and lit | 32 to 1024 (lit to 128) | `fti8pizp.asm`, every triangle through its cheat case into the linear kernel |
+| `torus-textured-persp-map<n>-index8`, unlit and lit | 32 to 1024 (lit to 128) | `fti8pizp.asm`: 28 triangles in the perspective loops, 84 linear |
+| `plane-textured-steep-persp-map<n>-index8`, unlit and lit | 32 to 1024 | `fti8pizp.asm`: all 8 triangles in the perspective loops |
+
+A count in a local build showed that the spheres' triangles are all flat
+enough in w for the perspective kernel to hand them to the linear one, so
+the torus and the steep plane were added to reach the perspective loops.
+
+**Checked against the 1998 assembly.** `fpsetup.asm`, `pfpsetup.asm`,
+`fti8pizp.asm`, `zb8p2unl.asm` and `zb8p2lit.asm`, assembled with MASM and
+linked in place of the ports, draw all 124 scenes byte for byte as the ports
+do. A differential test of 100,000 random triangles over the twenty kernels
+finds no difference, and one-instruction changes to the assembly fail in
+exactly the kernels they touch. Local runs; the reference build is not part
+of CI.
+
+| Against BRender 1.4 (Linux, CI) | Scenes | Byte-identical | Rest |
+|---|---|---|---|
+| unlit | 18 | 18 | |
+| lit | 15 | 7 | the lit sphere's one pixel, by one index, in each of the 8 sphere scenes |
+| with BRender 1.3.2's sine (Windows, CI) | 33 | 33 | |
+
+The one pixel is the residue of the section above: the lit sphere at 256 has
+it too, and with the same trig it goes.
+
+**Kept as found, not measured.** `zb8p2lit.asm` looks the shade table up
+with the whole of eax, whose low two bytes it has replaced with the
+intensity row and the texel. Up to 128 texels a side the texel address fits
+in those two bytes. On a 1024 wide map a texel at v of 64 or more leaves bits
+above them, and the 1998 code reads past the table. That is inferred from
+the code, so no scene reaches it: the lit 1024 scene is the plane, all of
+whose triangles stay in the perspective loops, which look the table up
+correctly.
+
+Evidence: `evidence/modern-vs-period-maps-2026-10-17.json` (Linux),
+`evidence/modern-sine-vs-period-maps-2026-10-17.json` (Windows, 1998 sine)
+and `evidence/period-left-modern-right-maps-2026-10-17.png`.
+
 ## The instrument
 
-`parity-scene.c` draws ninety-one scenes and a control at 320 x 240, from
+`parity-scene.c` draws 124 scenes and a control at 320 x 240, from
 the 1998 sample models and one plane it builds itself. Eleven draw into an RGB_888 buffer:
 
 - six untextured: a sphere, a torus and the teapot, unlit, lit flat and lit
@@ -339,7 +399,8 @@ plane of eight large triangles turned 60 degrees so it recedes, unlit and lit,
 beside the same plane without perspective. Thirty-four more draw into
 RGB_555 and RGB_565 buffers (the two 15/16-bit sections below), and thirty
 more are z-sorted, TIP256 or MMX perspective scenes (the z-sorted section
-above). Each 8-bit
+above), and thirty-three draw 8-bit maps 8 to 1024 wide (the section on
+maps not 256 wide). Each 8-bit
 scene writes the indices
 (`.pgm`) and the colours they map to (`.ppm`); the comparison counts a pixel
 identical when the index is the same.
@@ -777,6 +838,9 @@ Every change:
 | 24-bit z-sorted lit textured, table at stride 4 | 1.0 | byte-identical | |
 | TIP shapes, through the MMX table | 1.0 | 99.9%, max 9 | 0.01 |
 | MMX perspective rows, subdivided | 1.0 | 99.9%, max 80 | 0.01 |
+| 8-bit maps not 256 wide, unlit | 1.0 | byte-identical | |
+| 8-bit maps not 256 wide, lit | 1.0 | at most 1 pixel differs | |
+| BRender 1.4 with 1.3.2's sine, 118 scenes in five gates | 1.0 | byte-identical | |
 
 The z-sorted and TIP rows were set on 17 October 2026, after the shared
 angle; the older rows above them are as first set, and the angle section
@@ -848,5 +912,5 @@ Windows CI has no OpenGL, so this runs on Linux only.
 
 - What still separates BRender 1.4's Linux build from its Windows build once
   both have 1.3.2's trig (four 24-bit scenes, 1 pixel each) is not traced.
-- The 8-bit perspective kernels at other texture sizes (the `ZPT` rows for
-  maps that are not 256 wide) have no scene.
+- The `_FLAT` 8-bit kernels (flat-lit, constant intensity) for maps not 256
+  wide have no scene; they stay stubs.

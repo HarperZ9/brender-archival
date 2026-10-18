@@ -1,0 +1,352 @@
+{
+  "label": "modern (Linux) against period, 8-bit maps 8 to 1024 wide (CI run 39083083692)",
+  "scenes": {
+    "plane-textured-lit-steep-persp-map1024-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-lit-steep-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-lit-steep-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-lit-steep-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-steep-persp-map1024-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-steep-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-steep-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-steep-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "sphere-textured-lit-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 10,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-map16-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 3,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 3,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 3,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-map8-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 10,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 10,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 3,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-lit-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 1,
+      "mad": 0.0,
+      "max": 3,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-map1024-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-map16-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-map8-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-persp-map1024-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "torus-textured-lit-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17698,
+      "drawn_b": 17698,
+      "by_index": true
+    },
+    "torus-textured-lit-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17678,
+      "drawn_b": 17678,
+      "by_index": true
+    },
+    "torus-textured-lit-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17643,
+      "drawn_b": 17643,
+      "by_index": true
+    },
+    "torus-textured-persp-map1024-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17961,
+      "drawn_b": 17961,
+      "by_index": true
+    },
+    "torus-textured-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17961,
+      "drawn_b": 17961,
+      "by_index": true
+    },
+    "torus-textured-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17961,
+      "drawn_b": 17961,
+      "by_index": true
+    },
+    "torus-textured-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17961,
+      "drawn_b": 17961,
+      "by_index": true
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6023,
+    "identical": 0.6023,
+    "differ": 7422,
+    "mad": 63.368,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11959,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": false,
+  "ok": true
+}
