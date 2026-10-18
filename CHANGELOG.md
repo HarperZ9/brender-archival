@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: 8-bit maps that are not 256 wide
+
+- Depends on engine-revival 0.11.0, which ports `zb8p2unl.asm`, `zb8p2lit.asm` and `fti8pizp.asm`'s 32, 64, 128 and 1024 instances, checked byte for byte against the assembled 1998 code on all 124 scenes and 100,000 random triangles.
+- `modern/parity/`: `parity-scene.c` resamples `earth.pix` and `rosewood.pix` to 8, 16, 32, 64, 128 and 1024 texels a side and draws 33 new scenes, 124 in all: linear and perspective, unlit and lit. The spheres reach only the linear kernels (every triangle takes the perspective kernel's cheat case), so the torus and the steep plane were added to reach the perspective loops.
+- Measured on CI run 39083083692 against BRender 1.4: the 18 unlit scenes are byte-identical, and the 15 lit ones too but for the lit sphere's one pixel. With BRender 1.3.2's sine, all 33 are byte-identical. Two new CI gates, each checked against a control that fails; the older 8-bit perspective gate keeps its seven scenes, and the 1998-sine gates now take 118 scenes.
+- Kept as found, inferred from the code and not measured: `zb8p2lit.asm` reads past the shade table on a 1024 wide map for v of 64 or more. No scene reaches it.
+
 ## Unreleased: where the last pixels come from
 
 - Traced: every pixel left between the period and modern frames comes from the two versions' sine and cosine. BRender 1.3.2's FLOAT build wraps a negative angle to an unsigned 16-bit count, rounds the radian to float and takes `sin()` in double; BRender 1.4 uses a float `PI` and `sinf()`. Their sines of 25, -20 and -30 degrees differ in the last bit, and that tips a pixel now and then.

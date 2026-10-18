@@ -195,8 +195,14 @@ a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
   draws all 85 scenes both versions draw alike byte for byte as the period
   build does; CI holds that variant to byte identity.
 
-Still open: the 8-bit perspective kernels for maps that are not 256 wide
-have no scene.
+- **8-bit maps that are not 256 wide** (17 October 2026): engine-revival
+  0.11.0 ports the linear and perspective kernels for 8 to 1024 texels a
+  side; 33 scenes match 1.4 but for the lit sphere's one pixel, and match
+  1.4 with 1.3.2's trig byte for byte.
+
+Still open: the flat-lit `_FLAT` 8-bit kernels for maps not 256 wide have no
+scene, and what separates 1.4's Linux build from its Windows build once both
+have 1.3.2's trig is not traced.
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the

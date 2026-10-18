@@ -636,3 +636,19 @@ def test_the_map_size_scenes_have_gates_of_their_own():
     source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
     assert "static br_pixelmap *resample8(br_pixelmap *src, int n)" in source
     assert "out->row_bytes != n" in source and '"earth.pix@1024"' in source and '"rosewood.pix@64"' in source
+
+
+def test_the_map_size_evidence_matches_the_readme():
+    """Linux: the 18 unlit scenes byte-identical, the 15 lit ones too but for
+    the lit sphere's one pixel in its eight scenes; with BRender 1.3.2's sine,
+    all 33 byte-identical."""
+    linux = json.loads((EVIDENCE / "modern-vs-period-maps-2026-10-17.json").read_text(encoding="utf-8"))
+    sine = json.loads((EVIDENCE / "modern-sine-vs-period-maps-2026-10-17.json").read_text(encoding="utf-8"))
+    assert linux["ok"] and linux["control"]["fails_as_required"] and len(linux["scenes"]) == 33
+    parted = {k: m["differ"] for k, m in linux["scenes"].items() if m["differ"]}
+    assert len(parted) == 8 and set(parted.values()) == {1}
+    assert all(k.startswith("sphere-textured-lit-") for k in parted)
+    assert sine["ok"] and sine["all_identical"] and len(sine["scenes"]) == 33
+    assert all(m["differ"] == 0 for m in sine["scenes"].values())
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## 8-bit maps that are not 256 wide" in readme and "| lit | 15 | 7 |" in readme
