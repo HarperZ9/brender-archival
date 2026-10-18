@@ -183,12 +183,12 @@ def test_the_transcript_reports_twenty_one_passed_and_none_failed():
     assert "21/21 Test #21" in text
 
 
-def test_the_materializer_generates_fifty_files():
+def test_the_materializer_generates_fifty_one_files():
     from engine_revival.brender_harness import OUTPUT_FILES
 
-    assert CARD["harness files"]["value"] == "50 generated"
-    assert len(OUTPUT_FILES) == 50
-    assert len(set(OUTPUT_FILES)) == 50
+    assert CARD["harness files"]["value"] == "51 generated"
+    assert len(OUTPUT_FILES) == 51
+    assert len(set(OUTPUT_FILES)) == 51
     assert "CMakeLists.txt" in OUTPUT_FILES
 
 

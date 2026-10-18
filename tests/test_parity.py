@@ -131,7 +131,7 @@ def test_ci_gates_the_modern_side_on_both_systems():
     assert "parity-period-a parity-period-b" in native and "--require-identical" in native
     # perspective-correct 8-bit scenes: twice on the period side, then gated
     assert '--label "period perspective scenes, two runs" --only persp,steep --require-identical' in native
-    assert "--only persp,steep --skip rgb5 --max-differ 1" in parity
+    assert "--only persp,steep --skip rgb5,map --max-differ 1" in parity
     # 15/16-bit scenes: twice on the period side, untextured gated, textured reported
     assert '--label "period 15/16-bit scenes, two runs" --only rgb555,rgb565 --require-identical' in native
     assert "--only rgb555,rgb565 --skip textured,dither,zs,tip,mmxp --bounds 0.986 0.63 255 2.1" in parity
@@ -166,11 +166,11 @@ def test_perspective_scenes_stay_out_of_the_older_class_gates():
     """The new scene names must not change what the existing --only/--skip
     gates select, and the perspective gate must select exactly them."""
     names = _scene_names()
-    persp = [n for n in names if ("persp" in n or "steep" in n) and n.endswith("-index8")]
-    assert len(names) == 91 and len(persp) == 7
+    persp = [n for n in names if ("persp" in n or "steep" in n) and n.endswith("-index8") and "-map" not in n]
+    assert len(names) == 124 and len(persp) == 7
     assert all("textured" in n for n in persp)
     gates = _gates()
-    assert len(gates) == 21
+    assert len(gates) == 23
     for label, keep, drop in gates:
         chosen = _chosen(names, keep, drop)
         if keep == ["persp", "steep"]:
@@ -196,7 +196,7 @@ def test_hicolor_scenes_leave_every_older_gate_as_it_was():
     names = _scene_names()
     later = ("-pal", "dither", "-zs", "-tip", "-mmxp")
     hicolor = [n for n in names if n.endswith(("-rgb555", "-rgb565")) and not any(t in n for t in later)]
-    older = [n for n in names if not n.endswith(("-rgb555", "-rgb565")) and "-zs" not in n]
+    older = [n for n in names if not n.endswith(("-rgb555", "-rgb565")) and "-zs" not in n and "-map" not in n]
     assert len(older) == 27 and len(hicolor) == 20
     assert sorted(n[:-7] for n in hicolor if n.endswith("555")) == sorted(n[:-7] for n in hicolor if n.endswith("565"))
     gates = {label: (keep, drop) for label, keep, drop in _gates()}
@@ -448,7 +448,7 @@ def test_ci_gates_the_zsorted_tip_and_mmx_perspective_scenes():
     assert "--only mmxp --bounds 1.0 0.999 80 0.01" in parity
     # the older gates keep exactly what they had
     assert "--skip textured,dither,zs,tip,mmxp --bounds 0.986 0.63 255 2.1" in parity
-    assert "--only persp,steep --skip rgb5 --max-differ 1" in parity
+    assert "--only persp,steep --skip rgb5,map --max-differ 1" in parity
     source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
     assert "BrZsSceneRender(" in source and "material->opacity" in source
 
@@ -526,8 +526,8 @@ def test_the_exact_recount_matches_the_correction():
 # BRender 1.4 with BRender 1.3.2's sine and cosine (PARITY_PERIOD_SINE)
 # against the period builds: the gates and the scenes each takes.
 SINE_GATES = {
-    "modern with the 1998 sine against period, 24-bit and 8-bit": ("parity-period", 23),
-    "modern with the 1998 sine against period, 8-bit lit textured": ("parity-period", 5),
+    "modern with the 1998 sine against period, 24-bit and 8-bit": ("parity-period", 41),
+    "modern with the 1998 sine against period, 8-bit lit textured": ("parity-period", 20),
     "modern with the 1998 sine against period, 24-bit lit textured, stride 4": ("parity-period-shade4", 3),
     "modern with the 1998 sine against period, 15/16-bit z-sorted": ("parity-period", 10),
     "modern with the 1998 sine against period (MMX), 15/16-bit": ("parity-period-mmx", 44),
@@ -549,8 +549,9 @@ def _sine_gates():
 
 
 def test_the_period_sine_gates_take_every_scene_both_versions_draw_alike_once():
-    """Byte for byte, each scene to one gate; left out are only the six
-    z-sorted TIP scenes, which BRender 1.4 refuses to draw."""
+    """Byte for byte, each scene to one gate (the map-size scenes too); left
+    out are only the six z-sorted TIP scenes, which BRender 1.4 refuses to
+    draw."""
     names = _scene_names()
     gates = _sine_gates()
     assert set(gates) == set(SINE_GATES)
@@ -560,7 +561,7 @@ def test_the_period_sine_gates_take_every_scene_both_versions_draw_alike_once():
         picked = _chosen(names, keep, drop)
         assert got_period == period and len(picked) == count, label
         chosen += picked
-    assert len(chosen) == len(set(chosen)) == 85
+    assert len(chosen) == len(set(chosen)) == 118
     assert sorted(set(names) - set(chosen)) == sorted(
         f"{s}-zs-{f}" for s in ("plane-tip-steep", "sphere-tip", "sphere-tip-blend") for f in ("rgb555", "rgb565"))
 
@@ -609,3 +610,29 @@ def test_the_sine_trace_evidence_matches_the_readme():
     readme = (PARITY / "README.md").read_text(encoding="utf-8")
     assert "## Where the last pixels come from" in readme and "sin 25 degrees | `3ed86027` | `3ed86028`" in readme
     assert "(Ruled out the same day:" in readme
+
+
+def test_the_map_size_scenes_have_gates_of_their_own():
+    """33 scenes on maps 8 to 1024 wide: each size the 1998 tables have a
+    kernel for, unlit and lit, linear and perspective; no older gate but the
+    all-scene ones takes them, and the two new gates share them out."""
+    names = _scene_names()
+    maps = [n for n in names if "-map" in n]
+    assert len(maps) == 33 and all(n.endswith("-index8") for n in maps)
+    sizes = {int(n.split("-map")[1].split("-")[0]) for n in maps}
+    assert sizes == {8, 16, 32, 64, 128, 1024}
+    assert not [n for n in maps if "lit" in n and "map1024" in n and not n.startswith("plane-")]
+    gates = {label: (keep, drop) for label, keep, drop in _gates()}
+    unlit = _chosen(names, *gates["modern against period, 8-bit maps not 256 wide, unlit"])
+    lit = _chosen(names, *gates["modern against period, 8-bit maps not 256 wide, lit"])
+    assert len(unlit) == 18 and len(lit) == 15 and sorted(unlit + lit) == sorted(maps)
+    for label, (keep, drop) in gates.items():
+        if "maps not 256 wide" not in label:
+            assert not set(_chosen(names, keep, drop)) & set(maps), label
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert "--only map --skip lit --require-identical" in ci
+    assert "--only lit-map,lit-persp-map,lit-steep-persp-map --max-differ 1" in ci
+    assert "--only persp,steep --skip rgb5,map --max-differ 1" in ci
+    source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
+    assert "static br_pixelmap *resample8(br_pixelmap *src, int n)" in source
+    assert "out->row_bytes != n" in source and '"earth.pix@1024"' in source and '"rosewood.pix@64"' in source

@@ -118,6 +118,47 @@ static const scene scenes[] = {
     {"plane-textured-steep-linear-index8", "plane", 20, 0, 0, "earth.pix", 1, NULL, 0, 0, -60},
     {"plane-textured-steep-persp-index8", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix", 1, NULL, 0, 0, -60},
     {"plane-textured-lit-steep-persp-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix", 1, "shade.tab", 0, 0, -60},
+    /* 8-bit maps that are not 256 wide (engine-revival 0.11.0): zb8p2unl.asm
+     * and zb8p2lit.asm (TriangleRender_ZT(I)_I8_D16_8 to _1024) and
+     * fti8pizp.asm's 32, 64, 128 and 1024 instances (ZPT(I)), on earth.pix
+     * and rosewood.pix resampled. The spheres' triangles are flat enough in
+     * w that the perspective kernels hand them all to the linear ones; the
+     * torus and the steep plane reach the perspective loops. No lit 1024
+     * scene that reaches the linear lit kernel: it reads past the shade
+     * table for v of 64 or more (README). */
+    {"sphere-textured-map8-index8", "sph32.dat", 35, 0, 0, "earth.pix@8", 1, NULL},
+    {"sphere-textured-map16-index8", "sph32.dat", 35, 0, 0, "earth.pix@16", 1, NULL},
+    {"sphere-textured-map32-index8", "sph32.dat", 35, 0, 0, "earth.pix@32", 1, NULL},
+    {"sphere-textured-map64-index8", "sph32.dat", 35, 0, 0, "earth.pix@64", 1, NULL},
+    {"sphere-textured-map128-index8", "sph32.dat", 35, 0, 0, "earth.pix@128", 1, NULL},
+    {"sphere-textured-map1024-index8", "sph32.dat", 35, 0, 0, "earth.pix@1024", 1, NULL},
+    {"sphere-textured-lit-map8-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix@8", 1, "shade.tab"},
+    {"sphere-textured-lit-map16-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix@16", 1, "shade.tab"},
+    {"sphere-textured-lit-map32-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix@32", 1, "shade.tab"},
+    {"sphere-textured-lit-map64-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix@64", 1, "shade.tab"},
+    {"sphere-textured-lit-map128-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH, 1, "earth.pix@128", 1, "shade.tab"},
+    {"sphere-textured-persp-map32-index8", "sph32.dat", 35, BR_MATF_PERSPECTIVE, 0, "earth.pix@32", 1, NULL},
+    {"sphere-textured-persp-map64-index8", "sph32.dat", 35, BR_MATF_PERSPECTIVE, 0, "earth.pix@64", 1, NULL},
+    {"sphere-textured-persp-map128-index8", "sph32.dat", 35, BR_MATF_PERSPECTIVE, 0, "earth.pix@128", 1, NULL},
+    {"sphere-textured-persp-map1024-index8", "sph32.dat", 35, BR_MATF_PERSPECTIVE, 0, "earth.pix@1024", 1, NULL},
+    {"sphere-textured-lit-persp-map32-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@32", 1, "shade.tab"},
+    {"sphere-textured-lit-persp-map64-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@64", 1, "shade.tab"},
+    {"sphere-textured-lit-persp-map128-index8", "sph32.dat", 35, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@128", 1, "shade.tab"},
+    {"plane-textured-steep-persp-map32-index8", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix@32", 1, NULL, 0, 0, -60},
+    {"plane-textured-steep-persp-map64-index8", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix@64", 1, NULL, 0, 0, -60},
+    {"plane-textured-steep-persp-map128-index8", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix@128", 1, NULL, 0, 0, -60},
+    {"plane-textured-steep-persp-map1024-index8", "plane", 20, BR_MATF_PERSPECTIVE, 0, "earth.pix@1024", 1, NULL, 0, 0, -60},
+    {"torus-textured-persp-map32-index8", "torus.dat", 60, BR_MATF_PERSPECTIVE, 0, "rosewood.pix@32", 1, NULL},
+    {"torus-textured-persp-map64-index8", "torus.dat", 60, BR_MATF_PERSPECTIVE, 0, "rosewood.pix@64", 1, NULL},
+    {"torus-textured-persp-map128-index8", "torus.dat", 60, BR_MATF_PERSPECTIVE, 0, "rosewood.pix@128", 1, NULL},
+    {"torus-textured-persp-map1024-index8", "torus.dat", 60, BR_MATF_PERSPECTIVE, 0, "rosewood.pix@1024", 1, NULL},
+    {"torus-textured-lit-persp-map32-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "rosewood.pix@32", 1, "shade.tab"},
+    {"torus-textured-lit-persp-map64-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "rosewood.pix@64", 1, "shade.tab"},
+    {"torus-textured-lit-persp-map128-index8", "torus.dat", 60, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "rosewood.pix@128", 1, "shade.tab"},
+    {"plane-textured-lit-steep-persp-map32-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@32", 1, "shade.tab", 0, 0, -60},
+    {"plane-textured-lit-steep-persp-map64-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@64", 1, "shade.tab", 0, 0, -60},
+    {"plane-textured-lit-steep-persp-map128-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@128", 1, "shade.tab", 0, 0, -60},
+    {"plane-textured-lit-steep-persp-map1024-index8", "plane", 20, BR_MATF_LIGHT | BR_MATF_SMOOTH | BR_MATF_PERSPECTIVE, 1, "earth.pix@1024", 1, "shade.tab", 0, 0, -60},
     /* 15 and 16-bit: drawn into RGB_555 and RGB_565 buffers. Period kernels:
      * untextured, tt15_piz.asm and tt16_piz.asm (TriangleRenderPIZ2 flat,
      * PIZ2I Gouraud); a 256 x 256 map packed into the buffer's format,
@@ -284,12 +325,32 @@ static long count_lit(const br_pixelmap *pm)
 }
 
 /* The 8-bit map as stored, registered under its own name. */
+/* "earth.pix@64": the map resampled to 64 x 64 (nearest texel, integer
+ * steps, the same on both sides), so the kernels for the power of two maps
+ * that are not 256 wide have something to draw. The period data has no 8-bit
+ * map of those sizes but 128. */
+static br_pixelmap *resample8(br_pixelmap *src, int n)
+{
+    int x, y;
+    br_pixelmap *out = BrPixelmapAllocate(BR_PMT_INDEX_8, n, n, NULL, BR_PMAF_NORMAL);
+    if (out == NULL || out->row_bytes != n) return NULL; /* the kernels read the map without a row skip */
+    for (y = 0; y < n; y++) {
+        const unsigned char *row = (const unsigned char *)src->pixels + (long)(y * (int)src->height / n) * src->row_bytes;
+        unsigned char *dst = (unsigned char *)out->pixels + (long)y * out->row_bytes;
+        for (x = 0; x < n; x++) dst[x] = row[x * (int)src->width / n];
+    }
+    return out;
+}
+
 static br_pixelmap *load_texture8(const char *dat, const char *name)
 {
-    char path[1024];
+    char path[1024], file[256];
+    const char *at = strchr(name, '@');
     br_pixelmap *tex;
-    snprintf(path, sizeof(path), "%s/%s", dat, name);
+    snprintf(file, sizeof(file), "%.*s", at ? (int)(at - name) : (int)strlen(name), name);
+    snprintf(path, sizeof(path), "%s/%s", dat, file);
     if ((tex = BrPixelmapLoad(path)) == NULL || tex->type != BR_PMT_INDEX_8) return NULL;
+    if (at != NULL && (tex = resample8(tex, atoi(at + 1))) == NULL) return NULL;
     tex->identifier = (char *)name;
     BrMapAdd(tex);
     BrMapUpdate(tex, BR_MAPU_ALL);
