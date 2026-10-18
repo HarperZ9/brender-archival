@@ -365,18 +365,31 @@ of CI.
 The one pixel is the residue of the section above: the lit sphere at 256 has
 it too, and with the same trig it goes.
 
-**Kept as found, not measured.** `zb8p2lit.asm` looks the shade table up
-with the whole of eax, whose low two bytes it has replaced with the
-intensity row and the texel. Up to 128 texels a side the texel address fits
-in those two bytes. On a 1024 wide map a texel at v of 64 or more leaves bits
-above them, and the 1998 code reads past the table. That is inferred from
-the code, so no scene reaches it: the lit 1024 scene is the plane, all of
-whose triangles stay in the perspective loops, which look the table up
-correctly.
+**A 1998 defect, measured.** `zb8p2lit.asm` looks the shade table up with
+the whole of eax, whose low two bytes it has replaced with the intensity
+row and the texel. Up to 128 texels a side the texel address fits in those
+two bytes. On a 1024 wide map a texel at v of 64 or more leaves bits above
+them, and the 1998 code reads past the table.
+
+Measured 17 October 2026 (local, not CI). A constructed scene draws the lit
+sphere on a 1024-wide map, built so every triangle takes the perspective
+kernel's cheat case into this linear kernel and v reaches 64 and above. The
+16 KB shade table (256 x 64) sits at the base of a reserved region, and a
+vectored exception handler commits and records each page the 1998 kernel
+reads past the table, then resumes. The kernel reads up to **table+991287**,
+about 975 KB past the end of a 16 KB table, the same offset on every run.
+With the table in the ordinary heap and no handler, the 1998 kernel faults:
+the read lands in unmapped memory. engine-revival's C port completes, because
+it skips a read whose offset is past its table bound; instrumented to record
+the offset it computes without reading, it reaches 994361, the same
+magnitude. So the overread is real and large, and unreachable by any shipped
+scene: the lit 1024 scene that ships is the plane, whose triangles stay in
+the perspective loops, which address the table correctly.
 
 Evidence: `evidence/modern-vs-period-maps-2026-10-17.json` (Linux),
-`evidence/modern-sine-vs-period-maps-2026-10-17.json` (Windows, 1998 sine)
-and `evidence/period-left-modern-right-maps-2026-10-17.png`.
+`evidence/modern-sine-vs-period-maps-2026-10-17.json` (Windows, 1998 sine),
+`evidence/period-left-modern-right-maps-2026-10-17.png` and
+`evidence/shade-overread-1024-2026-10-17.json` (the overread measurement).
 
 ## The instrument
 
