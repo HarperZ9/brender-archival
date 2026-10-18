@@ -1,0 +1,13 @@
+{
+  "what": "The 1998 zb8p2lit.asm lit-texture kernel for a 1024-wide 8-bit map (TriangleRender_ZTI_I8_D16_1024) reads past the shade table.",
+  "kernel": "zb8p2lit.asm DRAW_ZTI_I8_D16_POW2, pow2 = 10",
+  "how": "A constructed scene, sphere-textured-lit-map1024-index8 (the lit sphere on earth.pix resampled to 1024 x 1024, 8-bit), drawn by the period build whose kernels are the 1998 assembly assembled with MASM (local only, not CI). The 256 x 64 shade table (shade.tab, 16384 bytes) is placed at the base of a reserved region; a vectored exception handler commits and records each page the kernel reads past 16384, then resumes, so the frame finishes and the highest offset read is known.",
+  "shade_table_bytes": 16384,
+  "max_read_offset_bytes": 991287,
+  "max_read_past_table_bytes": 974903,
+  "deterministic": "table+991287 on every run; relative to the table base, so unchanged by ASLR.",
+  "normal_run": "With the shade table in the ordinary heap and no instrumentation, the 1998 kernel faults (access violation): the read lands in unmapped memory. The engine-revival C port completes, because it skips a read whose offset is past its table bound.",
+  "cross_check": "engine-revival's C port, instrumented to record the shade offset it computes for the same scene without reading, reaches 994361, the same magnitude (0xF2xxx); the small difference is the order in which each side early-outs on a transparent texel.",
+  "reachability": "No brender-archival parity scene reaches this. The lit 1024 scene that ships is the plane, whose triangles stay in the perspective loops (fti8pizp.asm), which address the table correctly. The sphere above was built so every triangle takes the perspective kernel's cheat case into this linear kernel, with v reaching 64 and above.",
+  "run": "local, 17 October 2026; not part of CI"
+}

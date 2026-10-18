@@ -652,3 +652,16 @@ def test_the_map_size_evidence_matches_the_readme():
     assert all(m["differ"] == 0 for m in sine["scenes"].values())
     readme = (PARITY / "README.md").read_text(encoding="utf-8")
     assert "## 8-bit maps that are not 256 wide" in readme and "| lit | 15 | 7 |" in readme
+
+
+def test_the_shade_overread_measurement_matches_the_readme():
+    """The 1998 1024-wide lit kernel reads far past a 16 KB shade table; the
+    README reports the measured offset and marks it a defect."""
+    rec = json.loads((EVIDENCE / "shade-overread-1024-2026-10-17.json").read_text(encoding="utf-8"))
+    assert rec["shade_table_bytes"] == 16384
+    assert rec["max_read_offset_bytes"] == 991287
+    assert rec["max_read_past_table_bytes"] == 991287 - 16384
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "**A 1998 defect, measured.**" in readme and "table+991287" in readme
+    maps = readme.split("## 8-bit maps that are not 256 wide")[1].split("## ")[0]
+    assert "not measured" not in maps
