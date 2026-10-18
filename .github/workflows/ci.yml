@@ -314,6 +314,26 @@ jobs:
         with:
           name: parity-windows-sine
           path: parity-windows-sine
+      # The same with a stable BrQsort as well (PARITY_STABLE_SORT,
+      # modern/parity/stable-sort.cmake): 1.4's BrQsort calls the C library's
+      # qsort, whose order for equal keys differs between MSVC and glibc and
+      # decides the order vertex normals are summed in.
+      - name: build the parity scene against BRender 1.4 with BRender 1.3.2's sine and a stable sort
+        run: |
+          cmake -S modern -B build-sine-sort -A x64 -DPARITY_PERIOD_SINE=ON -DPARITY_STABLE_SORT=ON
+          cmake --build build-sine-sort --config Release --parallel --target parity-scene
+      - name: the parity scenes on BRender 1.4 with BRender 1.3.2's sine and a stable sort
+        shell: pwsh
+        env:
+          SDL_VIDEODRIVER: offscreen
+        run: |
+          New-Item -ItemType Directory -Force parity-windows-sine-sort | Out-Null
+          & build-sine-sort/Release/parity-scene.exe build/_deps/brender132-src/dat parity-windows-sine-sort | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "parity-scene exited $LASTEXITCODE" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-windows-sine-sort
+          path: parity-windows-sine-sort
       - name: the frame recorder is deterministic and the lamp moves
         shell: pwsh
         env:
@@ -484,6 +504,26 @@ jobs:
         with:
           name: parity-linux
           path: parity-linux-a
+      # BRender 1.4 with BRender 1.3.2's sine, with and without a stable
+      # BrQsort, for the Windows against Linux gate in the parity job.
+      - name: the parity scenes on BRender 1.4 with BRender 1.3.2's sine, with and without a stable sort
+        run: |
+          set -euo pipefail
+          cmake -S modern -B build-sine -G Ninja -DCMAKE_BUILD_TYPE=Release -DPARITY_PERIOD_SINE=ON
+          cmake --build build-sine --parallel 4 --target parity-scene
+          cmake -S modern -B build-sine-sort -G Ninja -DCMAKE_BUILD_TYPE=Release -DPARITY_PERIOD_SINE=ON -DPARITY_STABLE_SORT=ON
+          cmake --build build-sine-sort --parallel 4 --target parity-scene
+          mkdir -p parity-linux-sine parity-linux-sine-sort
+          ./build-sine/parity-scene build/_deps/brender132-src/dat parity-linux-sine > /dev/null
+          ./build-sine-sort/parity-scene build/_deps/brender132-src/dat parity-linux-sine-sort > /dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-linux-sine
+          path: parity-linux-sine
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parity-linux-sine-sort
+          path: parity-linux-sine-sort
       - name: the packaged copies run in place
         shell: bash
         run: |
@@ -703,5 +743,34 @@ jobs:
       - name: control, BRender 1.4 as published fails the first of those gates
         run: |
           if python3 modern/parity/parity_compare.py parity-windows parity-period --label "control: modern as published against period, 24-bit and 8-bit" --skip rgb5,textured-lit --require-identical; then
+            echo "the gate passed on frames it must reject"; exit 1
+          fi
+      # Windows against Linux, both on BRender 1.4 with BRender 1.3.2's sine
+      # and a stable BrQsort: every frame the same bytes, 8-bit frames
+      # included. The control is the same pair with each runtime's qsort,
+      # which parts on four 24-bit scenes and must fail.
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-windows-sine-sort
+          path: parity-windows-sine-sort
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-linux-sine
+          path: parity-linux-sine
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-linux-sine-sort
+          path: parity-linux-sine-sort
+      - name: with the 1998 trig and a stable sort, BRender 1.4 draws every scene the same on Windows and Linux
+        run: |
+          set -euo pipefail
+          diff -r parity-windows-sine-sort parity-linux-sine-sort
+          python3 modern/parity/parity_compare.py parity-windows-sine-sort parity-linux-sine-sort --label "windows against linux, 1998 sine and a stable sort" --require-identical
+      - name: control, each runtime's qsort fails that gate
+        run: |
+          if diff -rq parity-windows-sine parity-linux-sine; then
+            echo "the frames match without the stable sort: the control does not fail"; exit 1
+          fi
+          if python3 modern/parity/parity_compare.py parity-windows-sine parity-linux-sine --label "control: windows against linux, 1998 sine, runtime qsort" --require-identical; then
             echo "the gate passed on frames it must reject"; exit 1
           fi

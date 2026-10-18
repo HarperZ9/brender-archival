@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: Windows against Linux, the C library's qsort
+
+- Traced (local builds, MSVC x64 and WSL gcc 13.3.0): with BRender 1.3.2's sine in both, BRender 1.4's Windows and Linux builds still part on four 24-bit scenes, 1 pixel each. The geometry is identical; the first difference is a vertex normal. `core/v1db/prepmesh.c` sums face normals in the order `BrQsort` leaves shared vertices, and 1.4's `BrQsort` calls the C library's `qsort`, whose order for equal keys differs between the MSVC and glibc runtimes.
+- Experiment: with one stable merge sort in `BrQsort` in both builds, and nothing else changed, all 174 frames are byte-identical across Windows and Linux. With each runtime's `qsort`, the Windows frames of the three Gouraud scenes are the period frames byte for byte; the period build is also an MSVC build that calls `qsort`.
+- `-DPARITY_STABLE_SORT=ON` (with `-DPARITY_PERIOD_SINE=ON`) gives the patched copy of BRender 1.4 a stable `BrQsort` (`modern/parity/stable-sort.cmake`, `modern/parity/brqsort-stable.c`). CI builds it on Windows and Linux and gates the two byte for byte, with a control that runs the gate on each runtime's `qsort` and must fail.
+- `modern/parity/`: README section, trace record, two local comparisons and an evidence sheet.
+
 ## Unreleased: flat lit 8-bit textures
 
 - Depends on engine-revival 0.12.0, which ports the flat lit 8-bit kernels: zb8p2fla.asm's linear `TriangleRender_ZT_I8_D16_<n>_FLAT` (8 to 1024) and fti8pizp.asm's perspective `ZPTI_I8_D16_<n>_FLAT` (32 to 1024), checked byte for byte against the assembled 1998 code.

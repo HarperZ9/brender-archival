@@ -1,0 +1,95 @@
+{
+  "label": "Where BRender 1.4's Windows and Linux builds part once both use BRender 1.3.2's sine (local trace, 17 October 2026)",
+  "builds": {
+    "windows": "MSVC x64 Release, /fp:precise default, BrQsort = MSVC CRT qsort",
+    "linux": "WSL Ubuntu 24.04, gcc 13.3.0 -O3 -DNDEBUG (no -march, no FMA), BrQsort = glibc qsort"
+  },
+  "scene_traced": "sphere-smooth (24-bit Gouraud); the lighting call counter runs across the scene list",
+  "chain": [
+    {
+      "step": "screen geometry (x, y, z, w, sx, sy, sz, u, v)",
+      "windows_vs_linux": "identical"
+    },
+    {
+      "step": "light direction (model space)",
+      "windows": [
+        "bf605893",
+        "3edba2f5",
+        "3e605086"
+      ],
+      "linux": [
+        "bf605893",
+        "3edba2f5",
+        "3e605086"
+      ]
+    },
+    {
+      "step": "vertex normal at lighting call 328",
+      "windows": [
+        "bf7b1480",
+        "ba23ebdc",
+        "3e47ca4c"
+      ],
+      "linux": [
+        "bf7b1482",
+        "ba23eb9c",
+        "3e47ca4d"
+      ]
+    },
+    {
+      "step": "n . l at call 328",
+      "windows": "3f66e839",
+      "linux": "3f66e83b"
+    },
+    {
+      "step": "accumulated diffuse red at call 328",
+      "windows": "3f69e786",
+      "linux": "3f69e788"
+    },
+    {
+      "step": "vertex red before scaling (comp[C_R]) at call 328",
+      "windows": "43364f67",
+      "linux": "43364f68"
+    }
+  ],
+  "first_lighting_divergence_call": 328,
+  "cause": "core/v1db/prepmesh.c sums the face normals of each shared vertex in the order BrQsort leaves them; BRender 1.4's BrQsort (core/fw/brqsort.c) calls the C library qsort, which orders equal keys differently in the MSVC and glibc runtimes, so the float sums round differently in the last bit",
+  "experiment": {
+    "change": "BrQsort replaced by one stable merge sort in both builds, nothing else changed",
+    "files_compared": 174,
+    "differing_with_platform_qsort": [
+      "sphere-smooth",
+      "sphere-smooth-zs",
+      "torus-smooth",
+      "torus-textured-lit"
+    ],
+    "differing_with_stable_sort": [],
+    "windows_frames_changed": [
+      "sphere-smooth",
+      "sphere-smooth-zs",
+      "torus-smooth",
+      "torus-textured-lit"
+    ],
+    "linux_frames_changed": []
+  },
+  "period_match": "with the platform qsort, the Windows frames of the three Gouraud scenes are byte for byte the period 1.3.2 frames (CI run of #56, parity-period); the period lit textured torus is drawn by a different kernel and is not comparable",
+  "sha256": {
+    "win2/sphere-smooth.ppm": "c05dbd870986ef87ed2f593e2ea1ca65e871cf3deb5802715483286b34ddbf89",
+    "win2/sphere-smooth-zs.ppm": "c05dbd870986ef87ed2f593e2ea1ca65e871cf3deb5802715483286b34ddbf89",
+    "win2/torus-smooth.ppm": "88b73b7dd1e86ed352eb1c8627cb56765ec261856fbd5e6d8f4831203b779863",
+    "win2/torus-textured-lit.ppm": "561c688a39158c31baf340c935e3be4d0243c59ea8f6e87eaf41d28184906e7d",
+    "lin2/sphere-smooth.ppm": "1321c9ec21169c58fbb5ee96174982f78607797c9c2d2195787e4b2cb5974dd9",
+    "lin2/sphere-smooth-zs.ppm": "1321c9ec21169c58fbb5ee96174982f78607797c9c2d2195787e4b2cb5974dd9",
+    "lin2/torus-smooth.ppm": "a8da1e059e8140a483c98672af02f7713733ace6ccec835a10ff0854965455cd",
+    "lin2/torus-textured-lit.ppm": "6729fe271ee430e8f3a9fa24acfc4b57e87564e7ee5ac83076d8c3e0c473d0b1",
+    "win3/sphere-smooth.ppm": "1321c9ec21169c58fbb5ee96174982f78607797c9c2d2195787e4b2cb5974dd9",
+    "win3/sphere-smooth-zs.ppm": "1321c9ec21169c58fbb5ee96174982f78607797c9c2d2195787e4b2cb5974dd9",
+    "win3/torus-smooth.ppm": "a8da1e059e8140a483c98672af02f7713733ace6ccec835a10ff0854965455cd",
+    "win3/torus-textured-lit.ppm": "6729fe271ee430e8f3a9fa24acfc4b57e87564e7ee5ac83076d8c3e0c473d0b1",
+    "lin3/sphere-smooth.ppm": "1321c9ec21169c58fbb5ee96174982f78607797c9c2d2195787e4b2cb5974dd9",
+    "lin3/sphere-smooth-zs.ppm": "1321c9ec21169c58fbb5ee96174982f78607797c9c2d2195787e4b2cb5974dd9",
+    "lin3/torus-smooth.ppm": "a8da1e059e8140a483c98672af02f7713733ace6ccec835a10ff0854965455cd",
+    "lin3/torus-textured-lit.ppm": "6729fe271ee430e8f3a9fa24acfc4b57e87564e7ee5ac83076d8c3e0c473d0b1"
+  },
+  "does_not_prove": "that either tie order is right; BRender 1.3.2 itself calls qsort on MSVC and its own quicksort elsewhere, so the period builds also depend on the runtime. The 1998 binaries' runtime qsort was not measured."
+}

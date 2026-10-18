@@ -308,8 +308,8 @@ on 8 scenes. With 1.3.2's trig in both (a local WSL build, Ubuntu 24.04, whose
 stock frames are the CI Linux frames byte for byte), they differ on 4: three
 24-bit Gouraud scenes (the sphere, its z-sorted twin and the torus) and the 24-bit lit torus, 1 pixel each, and the Linux
 build still differs from the period frames on those Gouraud scenes. So the
-trig accounts for half of 1.4's own Windows and Linux spread; the rest lies
-elsewhere in the Linux build and was not traced.
+trig accounts for half of 1.4's own Windows and Linux spread. The other half
+is the sort order of shared vertices (next).
 
 What this does not show: that one version's sine is right. Neither is
 correctly rounded at every angle (1.3.2's wraps negative angles to a coarse
@@ -320,6 +320,57 @@ Evidence: `evidence/modern-sine-vs-period-*-2026-10-17.json` (the five CI
 gates, CI run 39080164297), `evidence/modern-windows-vs-linux-sine-local-2026-10-17.json`
 and `evidence/modern-windows-vs-linux-stock-local-2026-10-17.json` (local
 WSL), and `evidence/last-pixels-sine-2026-10-17.png`.
+
+**The other half: the C library's qsort.** Traced 17 October 2026, local
+builds only (MSVC x64 on Windows; gcc 13.3.0 `-O3 -DNDEBUG` on WSL Ubuntu
+24.04, no `-march`, so no fused multiply-add). With 1.3.2's sine in both,
+the screen geometry of all four scenes is identical; the lit colours are
+not. Dumping the lighting step by step puts the first difference in the
+vertex normal itself, not in the arithmetic that uses it:
+
+| At lighting call 328 | Windows | Linux |
+| --- | --- | --- |
+| light direction | `bf605893 3edba2f5 3e605086` | `bf605893 3edba2f5 3e605086` |
+| vertex normal | `bf7b1480 ba23ebdc 3e47ca4c` | `bf7b1482 ba23eb9c 3e47ca4d` |
+| n . l | `3f66e839` | `3f66e83b` |
+| accumulated diffuse red | `3f69e786` | `3f69e788` |
+| vertex red before scaling | `43364f67` | `43364f68` |
+
+`core/v1db/prepmesh.c` builds each vertex normal by adding up the normals of
+the faces that share the vertex, in the order `BrQsort` leaves the shared
+vertices. BRender 1.4's `BrQsort` calls the C library's `qsort`, and
+the MSVC and glibc runtimes put equal keys in different orders. Float
+addition is not associative, so the sums part in the last bit, and now and
+then a pixel tips. Replacing `BrQsort` with one stable merge sort in both
+builds, and changing nothing else, makes all 174 frames byte-identical
+across Windows and Linux (124 colour, 49 8-bit, one control). The Windows
+frames of the four scenes change and the Linux frames do not: here glibc's
+`qsort` gives the same sums as a stable sort.
+
+With the runtime's `qsort`, the Windows frames of the three Gouraud scenes
+are the period frames byte for byte. That fits: BRender 1.3.2 also calls
+`qsort` when built with MSVC (other compilers get a support DLL or its own
+quicksort), and the period build here is an MSVC build.
+
+What this does not show: that either tie order is right, or what order the
+1998 binaries' runtime gave. It shows that the last Windows and Linux
+difference is a property of the C runtime, not of either compiler's float
+arithmetic and not of the rasterisers.
+
+`-DPARITY_STABLE_SORT=ON` (with `-DPARITY_PERIOD_SINE=ON`) builds the
+parity scene against a copy of 1.4 whose `BrQsort` is that stable sort
+(`modern/parity/stable-sort.cmake`, `modern/parity/brqsort-stable.c`). CI
+builds it on Windows and Linux and requires every frame to match byte for
+byte; the control is the same pair with each runtime's `qsort`, which must
+fail.
+
+Evidence (local): `evidence/windows-linux-qsort-trace-2026-10-17.json`
+(the chain above, frame hashes and the experiment),
+`evidence/modern-windows-vs-linux-sine-allscenes-local-2026-10-17.json` (120
+of 124 colour scenes identical with each runtime's `qsort`),
+`evidence/modern-windows-vs-linux-stable-sort-local-2026-10-17.json` (124 of
+124 with the stable sort) and `evidence/windows-linux-qsort-2026-10-17.png`
+(the four scenes, each differing pixel ringed, with a 12x inset).
 
 ## 8-bit maps that are not 256 wide
 
@@ -959,7 +1010,5 @@ Windows CI has no OpenGL, so this runs on Linux only.
 
 ## Not measured yet
 
-- What still separates BRender 1.4's Linux build from its Windows build once
-  both have 1.3.2's trig (four 24-bit scenes, 1 pixel each) is not traced.
 - The perspective lit 1024 kernel reads past the shade table, so there is no
   lit perspective scene at 1024, smooth or flat.

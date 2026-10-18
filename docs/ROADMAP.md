@@ -204,9 +204,13 @@ a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
   the flat lit kernels (zb8p2fla.asm linear, fti8pizp.asm perspective); 15
   scenes are byte-identical to BRender 1.4.
 
-Still open: what separates 1.4's Linux build from its Windows build once both
-have 1.3.2's trig is not traced; and the perspective lit 1024 kernel's
-overread has no scene.
+- **Windows against Linux** (17 October 2026, local): with 1.3.2's trig,
+  the last four scenes where 1.4's Windows and Linux builds part trace to
+  `BrQsort` calling the C library's `qsort`, whose tie order differs between
+  MSVC and glibc and changes the order vertex normals are summed in. With one
+  stable sort in both builds, all 174 frames are byte-identical.
+
+Still open: the perspective lit 1024 kernel's overread has no scene.
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the
