@@ -726,6 +726,10 @@ def test_the_windows_linux_remainder_traces_to_the_runtime_qsort():
     assert all(runtime["scenes"][k]["differ"] == 1 for k in four)
     assert stable["ok"] and stable["all_identical"] and stable["control"]["fails_as_required"]
     assert set(stable["scenes"]) == set(runtime["scenes"])
+    gate = json.loads((EVIDENCE / "modern-windows-vs-linux-sine-sort-2026-10-17.json").read_text(encoding="utf-8"))
+    control = json.loads((EVIDENCE / "modern-windows-vs-linux-sine-runtime-qsort-2026-10-17.json").read_text(encoding="utf-8"))
+    assert gate["ok"] and gate["all_identical"] and len(gate["scenes"]) == 139
+    assert not control["all_identical"] and sorted(k for k, m in control["scenes"].items() if m["differ"]) == four
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     parity = ci[ci.index("\n  parity:"):]
     assert "diff -r parity-windows-sine-sort parity-linux-sine-sort" in parity

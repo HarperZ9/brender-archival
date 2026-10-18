@@ -362,9 +362,15 @@ parity scene against a copy of 1.4 whose `BrQsort` is that stable sort
 (`modern/parity/stable-sort.cmake`, `modern/parity/brqsort-stable.c`). CI
 builds it on Windows and Linux and requires every frame to match byte for
 byte; the control is the same pair with each runtime's `qsort`, which must
-fail.
+fail. On CI run 39092100260 all 204 frames (139 colour scenes, 64 8-bit
+frames, one control) are the same bytes with the stable sort; with each
+runtime's `qsort` the same four scenes part, 1 pixel each, and the control
+fails as required. Only the Windows frames change between the two, and the
+CI Windows frames with the stable sort are the local ones byte for byte.
 
-Evidence (local): `evidence/windows-linux-qsort-trace-2026-10-17.json`
+Evidence: `evidence/modern-windows-vs-linux-sine-sort-2026-10-17.json` and
+`evidence/modern-windows-vs-linux-sine-runtime-qsort-2026-10-17.json` (CI run
+39092100260); local: `evidence/windows-linux-qsort-trace-2026-10-17.json`
 (the chain above, frame hashes and the experiment),
 `evidence/modern-windows-vs-linux-sine-allscenes-local-2026-10-17.json` (120
 of 124 colour scenes identical with each runtime's `qsort`),
