@@ -587,3 +587,25 @@ def test_the_period_sine_patch_matches_the_pinned_brender_14():
     top = (ROOT / "modern" / "CMakeLists.txt").read_text(encoding="utf-8")
     assert 'option(PARITY_PERIOD_SINE' in top and "parity_period_sine(" in top
     assert top.index("option(PARITY_PERIOD_SINE") < top.index("FetchContent_MakeAvailable(blazingrenderer)")
+
+
+def test_the_sine_trace_evidence_matches_the_readme():
+    """With BRender 1.3.2's sine, BRender 1.4 draws the period frames byte for
+    byte; as published it does not; Windows and Linux part on fewer scenes."""
+    names = {"": 23, "-lit8": 5, "-shade4": 3, "-zs": 10, "-mmx": 44}
+    total = 0
+    for suffix, count in names.items():
+        record = json.loads((EVIDENCE / f"modern-sine-vs-period{suffix}-2026-10-17.json").read_text(encoding="utf-8"))
+        assert record["ok"] and record["all_identical"] and record["control"]["fails_as_required"], suffix
+        assert len(record["scenes"]) == count and all(m["differ"] == 0 for m in record["scenes"].values()), suffix
+        total += count
+    assert total == 85
+    stock = json.loads((EVIDENCE / "modern-windows-vs-linux-stock-local-2026-10-17.json").read_text(encoding="utf-8"))
+    sine = json.loads((EVIDENCE / "modern-windows-vs-linux-sine-local-2026-10-17.json").read_text(encoding="utf-8"))
+    parted = lambda r: sorted(k for k, m in r["scenes"].items() if m["differ"])
+    assert len(parted(stock)) == 8 and len(parted(sine)) == 4
+    assert parted(sine) == ["sphere-smooth", "sphere-smooth-zs", "torus-smooth", "torus-textured-lit"]
+    assert all(sine["scenes"][k]["differ"] == 1 for k in parted(sine))
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## Where the last pixels come from" in readme and "sin 25 degrees | `3ed86027` | `3ed86028`" in readme
+    assert "(Ruled out the same day:" in readme

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: where the last pixels come from
+
+- Traced: every pixel left between the period and modern frames comes from the two versions' sine and cosine. BRender 1.3.2's FLOAT build wraps a negative angle to an unsigned 16-bit count, rounds the radian to float and takes `sin()` in double; BRender 1.4 uses a float `PI` and `sinf()`. Their sines of 25, -20 and -30 degrees differ in the last bit, and that tips a pixel now and then.
+- `-DPARITY_PERIOD_SINE=ON` builds the modern scene against a copy of BRender 1.4 with 1.3.2's `BR_SIN` and `BR_COS` (`modern/parity/period-sine.cmake`). With it, all 85 scenes both versions draw alike are byte-identical to the period frames. CI builds it on Windows and gates it in five byte-identity gates, with a control that runs the first gate on 1.4 as published and must fail.
+- Ruled out: the earlier guess that the one pixel on the MMX perspective sphere came from 1.4's `subdiv.c` projection. A period build with that projection draws the same bytes.
+- With the same trig, BRender 1.4's Windows and Linux builds differ on 4 scenes instead of 8 (a local WSL build); the rest is not traced.
+
 ## Unreleased: z-sorted, TIP256 and the MMX perspective rows
 
 - Depends on engine-revival 0.10.0. It ports the z-sorted 15/16/24-bit kernels (`tt15_pi.asm`, `tt16_pi.asm`, `tt24_pi.asm`, `t_pia.asm`), the TIP256 perspective-correct lit texture scanlines (`t15_pizp.asm`, `t15_pip.asm`) and softrend's `subdiv.asm`, each checked byte for byte against the assembled 1998 code on all 91 scenes and 96,000 random triangles.

@@ -190,8 +190,13 @@ a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
   z-sorted TIP; the 1998 MMX table takes z-sorted triangles (BlazingRenderer's
   fix in 1.4). Both are reported.
 
-Still open: the one-pixel residues are not traced, and the 8-bit
-perspective kernels for maps that are not 256 wide have no scene.
+- **Where the last pixels come from** (17 October 2026): the residues trace
+  to the two versions' sine and cosine. Built with 1.3.2's trig, BRender 1.4
+  draws all 85 scenes both versions draw alike byte for byte as the period
+  build does; CI holds that variant to byte identity.
+
+Still open: the 8-bit perspective kernels for maps that are not 256 wide
+have no scene.
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the
