@@ -1,0 +1,172 @@
+{
+  "label": "modern (Linux) against period, 8-bit flat lit textures (CI run 39088144334)",
+  "scenes": {
+    "plane-textured-fshade-steep-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-fshade-steep-persp-map256-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-fshade-steep-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "plane-textured-fshade-steep-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 9107,
+      "drawn_b": 9107,
+      "by_index": true
+    },
+    "sphere-textured-fshade-map1024-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-fshade-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-fshade-map16-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-fshade-map256-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-fshade-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-fshade-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "sphere-textured-fshade-map8-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 29599,
+      "drawn_b": 29599,
+      "by_index": true
+    },
+    "torus-textured-fshade-persp-map128-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17564,
+      "drawn_b": 17564,
+      "by_index": true
+    },
+    "torus-textured-fshade-persp-map256-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17610,
+      "drawn_b": 17610,
+      "by_index": true
+    },
+    "torus-textured-fshade-persp-map32-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17647,
+      "drawn_b": 17647,
+      "by_index": true
+    },
+    "torus-textured-fshade-persp-map64-index8": {
+      "coverage_iou": 1.0,
+      "identical": 1.0,
+      "differ": 0,
+      "mad": 0.0,
+      "max": 0,
+      "drawn_a": 17519,
+      "drawn_b": 17519,
+      "by_index": true
+    }
+  },
+  "control": {
+    "pair": [
+      "torus-flat",
+      "control-torus-turned"
+    ],
+    "coverage_iou": 0.6023,
+    "identical": 0.6023,
+    "differ": 7422,
+    "mad": 63.368,
+    "max": 199,
+    "drawn_a": 17943,
+    "drawn_b": 11959,
+    "by_index": false,
+    "fails_as_required": true
+  },
+  "all_identical": true,
+  "ok": true
+}

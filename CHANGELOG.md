@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased: flat lit 8-bit textures
+
+- Depends on engine-revival 0.12.0, which ports the flat lit 8-bit kernels: zb8p2fla.asm's linear `TriangleRender_ZT_I8_D16_<n>_FLAT` (8 to 1024) and fti8pizp.asm's perspective `ZPTI_I8_D16_<n>_FLAT` (32 to 1024), checked byte for byte against the assembled 1998 code.
+- `modern/parity/`: 15 flat lit scenes (`BR_MATF_LIGHT` without `BR_MATF_SMOOTH`) on maps 8 to 1024 wide, 139 in all. The sphere reaches the linear kernels, the torus and the steep plane the perspective ones (32 to 256; the perspective lit 1024 kernel reads past the table).
+- Measured on CI run 39088144334: all 15 are byte-identical to BRender 1.4. Flat lighting has no Gouraud interpolation, so the one-pixel sine residue of the smooth scenes does not arise. One require-identical gate takes them, and it fails on the 0.11.0 frames where the flat kernels were stubs; the unlit-maps gate skips them.
+
 ## Unreleased: 8-bit maps that are not 256 wide
 
 - Depends on engine-revival 0.11.0, which ports `zb8p2unl.asm`, `zb8p2lit.asm` and `fti8pizp.asm`'s 32, 64, 128 and 1024 instances, checked byte for byte against the assembled 1998 code on all 124 scenes and 100,000 random triangles.

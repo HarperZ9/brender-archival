@@ -24,5 +24,5 @@ def test_engine_revival_is_a_pinned_dependency_not_a_vendored_copy():
     requirements = [Requirement(value) for value in pyproject["project"]["dependencies"]]
     engine = [r for r in requirements if r.name == "engine-revival"]
     assert len(engine) == 1
-    assert engine[0].url.endswith("@v0.11.0"), "pin engine-revival to a release tag"
+    assert engine[0].url.endswith("@v0.12.0"), "pin engine-revival to a release tag"
     assert not (PROJECT_ROOT / "src" / "engine_revival").exists()

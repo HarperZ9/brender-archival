@@ -167,10 +167,10 @@ def test_perspective_scenes_stay_out_of_the_older_class_gates():
     gates select, and the perspective gate must select exactly them."""
     names = _scene_names()
     persp = [n for n in names if ("persp" in n or "steep" in n) and n.endswith("-index8") and "-map" not in n]
-    assert len(names) == 124 and len(persp) == 7
+    assert len(names) == 139 and len(persp) == 7
     assert all("textured" in n for n in persp)
     gates = _gates()
-    assert len(gates) == 23
+    assert len(gates) == 24
     for label, keep, drop in gates:
         chosen = _chosen(names, keep, drop)
         if keep == ["persp", "steep"]:
@@ -526,7 +526,7 @@ def test_the_exact_recount_matches_the_correction():
 # BRender 1.4 with BRender 1.3.2's sine and cosine (PARITY_PERIOD_SINE)
 # against the period builds: the gates and the scenes each takes.
 SINE_GATES = {
-    "modern with the 1998 sine against period, 24-bit and 8-bit": ("parity-period", 41),
+    "modern with the 1998 sine against period, 24-bit and 8-bit": ("parity-period", 56),
     "modern with the 1998 sine against period, 8-bit lit textured": ("parity-period", 20),
     "modern with the 1998 sine against period, 24-bit lit textured, stride 4": ("parity-period-shade4", 3),
     "modern with the 1998 sine against period, 15/16-bit z-sorted": ("parity-period", 10),
@@ -561,7 +561,7 @@ def test_the_period_sine_gates_take_every_scene_both_versions_draw_alike_once():
         picked = _chosen(names, keep, drop)
         assert got_period == period and len(picked) == count, label
         chosen += picked
-    assert len(chosen) == len(set(chosen)) == 118
+    assert len(chosen) == len(set(chosen)) == 133
     assert sorted(set(names) - set(chosen)) == sorted(
         f"{s}-zs-{f}" for s in ("plane-tip-steep", "sphere-tip", "sphere-tip-blend") for f in ("rgb555", "rgb565"))
 
@@ -617,7 +617,7 @@ def test_the_map_size_scenes_have_gates_of_their_own():
     kernel for, unlit and lit, linear and perspective; no older gate but the
     all-scene ones takes them, and the two new gates share them out."""
     names = _scene_names()
-    maps = [n for n in names if "-map" in n]
+    maps = [n for n in names if "-map" in n and "fshade" not in n]
     assert len(maps) == 33 and all(n.endswith("-index8") for n in maps)
     sizes = {int(n.split("-map")[1].split("-")[0]) for n in maps}
     assert sizes == {8, 16, 32, 64, 128, 1024}
@@ -627,10 +627,10 @@ def test_the_map_size_scenes_have_gates_of_their_own():
     lit = _chosen(names, *gates["modern against period, 8-bit maps not 256 wide, lit"])
     assert len(unlit) == 18 and len(lit) == 15 and sorted(unlit + lit) == sorted(maps)
     for label, (keep, drop) in gates.items():
-        if "maps not 256 wide" not in label:
+        if "maps not 256 wide" not in label and "flat lit" not in label:
             assert not set(_chosen(names, keep, drop)) & set(maps), label
     ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-    assert "--only map --skip lit --require-identical" in ci
+    assert "--only map --skip lit,fshade --require-identical" in ci
     assert "--only lit-map,lit-persp-map,lit-steep-persp-map --max-differ 1" in ci
     assert "--only persp,steep --skip rgb5,map --max-differ 1" in ci
     source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
@@ -665,3 +665,42 @@ def test_the_shade_overread_measurement_matches_the_readme():
     assert "**A 1998 defect, measured.**" in readme and "table+991287" in readme
     maps = readme.split("## 8-bit maps that are not 256 wide")[1].split("## ")[0]
     assert "not measured" not in maps
+
+
+def test_the_flat_lit_scenes_have_a_gate_of_their_own():
+    """15 flat lit scenes (engine-revival 0.12.0): the sphere on the linear
+    kernels, the torus and the steep plane on the perspective ones, maps 8 to
+    1024 wide. They are byte-identical to BRender 1.4 (no Gouraud residue), so
+    one require-identical gate takes them; no other map gate does."""
+    names = _scene_names()
+    fshade = [n for n in names if "fshade" in n]
+    assert len(fshade) == 15 and all(n.endswith("-index8") for n in fshade)
+    sizes = {int(n.split("-map")[1].split("-")[0]) for n in fshade}
+    assert sizes == {8, 16, 32, 64, 128, 256, 1024}
+    linear = [n for n in fshade if "persp" not in n]
+    persp = [n for n in fshade if "persp" in n]
+    assert len(linear) == 7 and len(persp) == 8  # sphere 7 sizes; torus + plane 4 each
+    gates = {label: (keep, drop) for label, keep, drop in _gates()}
+    flat = _chosen(names, *gates["modern against period, 8-bit flat lit textures"])
+    assert sorted(flat) == sorted(fshade)
+    for label, (keep, drop) in gates.items():
+        if "flat lit" not in label:
+            assert not set(_chosen(names, keep, drop)) & set(fshade), label
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    assert '--only fshade --require-identical' in ci
+    assert "--only map --skip lit,fshade --require-identical" in ci
+    source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
+    # flat lighting is BR_MATF_LIGHT without BR_MATF_SMOOTH
+    assert '"sphere-textured-fshade-map1024-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1,' in source
+
+
+def test_the_flat_lit_evidence_matches_the_readme():
+    """All 15 flat lit scenes byte-identical to BRender 1.4, directly and with
+    the 1998 sine."""
+    direct = json.loads((EVIDENCE / "modern-vs-period-flat-2026-10-17.json").read_text(encoding="utf-8"))
+    sine = json.loads((EVIDENCE / "modern-sine-vs-period-flat-2026-10-17.json").read_text(encoding="utf-8"))
+    for rec in (direct, sine):
+        assert rec["ok"] and rec["all_identical"] and rec["control"]["fails_as_required"]
+        assert len(rec["scenes"]) == 15 and all(m["differ"] == 0 for m in rec["scenes"].values())
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## Flat lit 8-bit textures" in readme and "| flat lit, linear and perspective | 15 | 15 |" in readme
