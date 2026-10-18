@@ -704,3 +704,43 @@ def test_the_flat_lit_evidence_matches_the_readme():
         assert len(rec["scenes"]) == 15 and all(m["differ"] == 0 for m in rec["scenes"].values())
     readme = (PARITY / "README.md").read_text(encoding="utf-8")
     assert "## Flat lit 8-bit textures" in readme and "| flat lit, linear and perspective | 15 | 15 |" in readme
+
+
+def test_the_windows_linux_remainder_traces_to_the_runtime_qsort():
+    """With the 1998 sine, 1.4's Windows and Linux builds part on four 24-bit
+    scenes; the first difference is a vertex normal, and with one stable
+    BrQsort on both every frame is the same. CI gates the stable pair and
+    requires the runtime-qsort pair to fail."""
+    trace = json.loads((EVIDENCE / "windows-linux-qsort-trace-2026-10-17.json").read_text(encoding="utf-8"))
+    four = ["sphere-smooth", "sphere-smooth-zs", "torus-smooth", "torus-textured-lit"]
+    assert trace["experiment"]["differing_with_platform_qsort"] == four
+    assert trace["experiment"]["differing_with_stable_sort"] == []
+    assert trace["experiment"]["linux_frames_changed"] == []
+    steps = {s["step"]: s for s in trace["chain"]}
+    assert steps["light direction (model space)"]["windows"] == steps["light direction (model space)"]["linux"]
+    normal = steps["vertex normal at lighting call 328"]
+    assert normal["windows"] != normal["linux"]
+    runtime = json.loads((EVIDENCE / "modern-windows-vs-linux-sine-allscenes-local-2026-10-17.json").read_text(encoding="utf-8"))
+    stable = json.loads((EVIDENCE / "modern-windows-vs-linux-stable-sort-local-2026-10-17.json").read_text(encoding="utf-8"))
+    assert sorted(k for k, m in runtime["scenes"].items() if m["differ"]) == four
+    assert all(runtime["scenes"][k]["differ"] == 1 for k in four)
+    assert stable["ok"] and stable["all_identical"] and stable["control"]["fails_as_required"]
+    assert set(stable["scenes"]) == set(runtime["scenes"])
+    gate = json.loads((EVIDENCE / "modern-windows-vs-linux-sine-sort-2026-10-17.json").read_text(encoding="utf-8"))
+    control = json.loads((EVIDENCE / "modern-windows-vs-linux-sine-runtime-qsort-2026-10-17.json").read_text(encoding="utf-8"))
+    assert gate["ok"] and gate["all_identical"] and len(gate["scenes"]) == 139
+    assert not control["all_identical"] and sorted(k for k, m in control["scenes"].items() if m["differ"]) == four
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    parity = ci[ci.index("\n  parity:"):]
+    assert "diff -r parity-windows-sine-sort parity-linux-sine-sort" in parity
+    assert 'parity_compare.py parity-windows-sine-sort parity-linux-sine-sort --label "windows against linux, 1998 sine and a stable sort" --require-identical' in parity
+    assert "if diff -rq parity-windows-sine parity-linux-sine; then" in parity
+    assert ci.count("-DPARITY_STABLE_SORT=ON") == 2
+    cmake = (ROOT / "modern" / "CMakeLists.txt").read_text(encoding="utf-8")
+    assert "parity_stable_sort(" in cmake and "PARITY_STABLE_SORT needs PARITY_PERIOD_SINE" in cmake
+    source = (PARITY / "brqsort-stable.c").read_text(encoding="utf-8")
+    assert "qsort(" not in source.replace("BrQsort(", "")
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "**The other half: the C library's qsort.**" in readme
+    assert "| vertex normal | `bf7b1480 ba23ebdc 3e47ca4c` | `bf7b1482 ba23eb9c 3e47ca4d` |" in readme
+    assert "What still separates BRender 1.4's Linux build" not in readme
