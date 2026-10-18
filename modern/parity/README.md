@@ -391,9 +391,44 @@ Evidence: `evidence/modern-vs-period-maps-2026-10-17.json` (Linux),
 `evidence/period-left-modern-right-maps-2026-10-17.png` and
 `evidence/shade-overread-1024-2026-10-17.json` (the overread measurement).
 
+## Flat lit 8-bit textures
+
+Measured 17 October 2026, engine-revival 0.12.0 against BRender 1.4. The
+frames come from CI run 39088144334; the CI period frames are the same bytes as
+local Win32 runs.
+
+Flat lighting is `BR_MATF_LIGHT` without `BR_MATF_SMOOTH`: one intensity for
+the whole face, not interpolated across it. pentprim has its own kernels for
+it, which engine-revival 0.12.0 ports: the linear `zb8p2fla.asm`
+(`TriangleRender_ZT_I8_D16_<n>_FLAT`, 8 to 1024 wide) and the perspective
+`fti8pizp.asm` instances (`ZPTI_I8_D16_<n>_FLAT`, 32 to 1024). The flat setup
+fixes the shade row from one vertex's intensity, and the linear kernel masks
+the texel to a byte before the lookup, so it stays in that row and does not
+read past the table the way the smooth 1024 kernel does.
+
+`parity-scene.c` draws 15 flat lit scenes on `earth.pix` and `rosewood.pix`
+resampled to each size: the sphere on the linear kernels (every triangle
+takes the cheat path, 7 sizes), and the torus and the steep plane on the
+perspective ones (32 to 256; the perspective lit 1024 kernel reads past the
+table, as the smooth one does, so it has no scene).
+
+| Against BRender 1.4 (Linux, CI) | Scenes | Byte-identical |
+|---|---|---|
+| flat lit, linear and perspective | 15 | 15 |
+
+Every one is byte-identical. Flat lighting has no Gouraud interpolation, so
+the one-pixel sine residue of the smooth scenes does not arise: these match
+BRender 1.4 directly, not only with the 1998 sine. The gate is
+`--only fshade --require-identical`, and it fails on the 0.11.0 frames, where
+the flat kernels were stubs that drew nothing.
+
+Evidence: `evidence/modern-vs-period-flat-2026-10-17.json`,
+`evidence/modern-sine-vs-period-flat-2026-10-17.json` and
+`evidence/period-left-modern-right-flat-2026-10-17.png`.
+
 ## The instrument
 
-`parity-scene.c` draws 124 scenes and a control at 320 x 240, from
+`parity-scene.c` draws 139 scenes and a control at 320 x 240, from
 the 1998 sample models and one plane it builds itself. Eleven draw into an RGB_888 buffer:
 
 - six untextured: a sphere, a torus and the teapot, unlit, lit flat and lit
@@ -412,8 +447,9 @@ plane of eight large triangles turned 60 degrees so it recedes, unlit and lit,
 beside the same plane without perspective. Thirty-four more draw into
 RGB_555 and RGB_565 buffers (the two 15/16-bit sections below), and thirty
 more are z-sorted, TIP256 or MMX perspective scenes (the z-sorted section
-above), and thirty-three draw 8-bit maps 8 to 1024 wide (the section on
-maps not 256 wide). Each 8-bit
+above), thirty-three draw 8-bit maps 8 to 1024 wide (the section on maps not
+256 wide), and fifteen are flat lit 8-bit textures (the flat lit section).
+Each 8-bit
 scene writes the indices
 (`.pgm`) and the colours they map to (`.ppm`); the comparison counts a pixel
 identical when the index is the same.
@@ -925,5 +961,5 @@ Windows CI has no OpenGL, so this runs on Linux only.
 
 - What still separates BRender 1.4's Linux build from its Windows build once
   both have 1.3.2's trig (four 24-bit scenes, 1 pixel each) is not traced.
-- The `_FLAT` 8-bit kernels (flat-lit, constant intensity) for maps not 256
-  wide have no scene; they stay stubs.
+- The perspective lit 1024 kernel reads past the shade table, so there is no
+  lit perspective scene at 1024, smooth or flat.

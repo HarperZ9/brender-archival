@@ -692,3 +692,15 @@ def test_the_flat_lit_scenes_have_a_gate_of_their_own():
     source = (PARITY / "parity-scene.c").read_text(encoding="utf-8")
     # flat lighting is BR_MATF_LIGHT without BR_MATF_SMOOTH
     assert '"sphere-textured-fshade-map1024-index8", "sph32.dat", 35, BR_MATF_LIGHT, 1,' in source
+
+
+def test_the_flat_lit_evidence_matches_the_readme():
+    """All 15 flat lit scenes byte-identical to BRender 1.4, directly and with
+    the 1998 sine."""
+    direct = json.loads((EVIDENCE / "modern-vs-period-flat-2026-10-17.json").read_text(encoding="utf-8"))
+    sine = json.loads((EVIDENCE / "modern-sine-vs-period-flat-2026-10-17.json").read_text(encoding="utf-8"))
+    for rec in (direct, sine):
+        assert rec["ok"] and rec["all_identical"] and rec["control"]["fails_as_required"]
+        assert len(rec["scenes"]) == 15 and all(m["differ"] == 0 for m in rec["scenes"].values())
+    readme = (PARITY / "README.md").read_text(encoding="utf-8")
+    assert "## Flat lit 8-bit textures" in readme and "| flat lit, linear and perspective | 15 | 15 |" in readme
