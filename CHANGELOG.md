@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased: 1024-wide lit paths left unexercised on purpose
+
+- `modern/parity/README.md` names the two 1024-wide lit paths with no scene and why: the linear lit kernel reached through the perspective cheat case (overread measured) and the flat lit perspective kernel (the 1998 code faulted; overread inferred). They move out of "Not measured yet"; the decision is not to measure where an out-of-bounds read lands.
+
 ## Unreleased: Windows against Linux, the C library's qsort
 
 - Traced (local builds, MSVC x64 and WSL gcc 13.3.0): with BRender 1.3.2's sine in both, BRender 1.4's Windows and Linux builds still part on four 24-bit scenes, 1 pixel each. The geometry is identical; the first difference is a vertex normal. `core/v1db/prepmesh.c` sums face normals in the order `BrQsort` leaves shared vertices, and 1.4's `BrQsort` calls the C library's `qsort`, whose order for equal keys differs between the MSVC and glibc runtimes.

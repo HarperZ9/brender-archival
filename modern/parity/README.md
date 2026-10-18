@@ -1014,7 +1014,21 @@ and lit, teapot lit, torus textured, logo unlit; OpenGL left).
 
 Windows CI has no OpenGL, so this runs on Linux only.
 
-## Not measured yet
+## Left unexercised on purpose
 
-- The perspective lit 1024 kernel reads past the shade table, so there is no
-  lit perspective scene at 1024, smooth or flat.
+Two 1024-wide lit paths have no scene, by decision, because the 1998 code
+reads outside its shade table there and a scene would measure only where the
+read lands:
+
+- Lit 1024 triangles that the perspective kernel hands to the linear lit
+  kernel (`zb8p2lit.asm`): the overread is measured (table+991287, see
+  [8-bit maps that are not 256 wide](#8-bit-maps-that-are-not-256-wide)).
+  This rules out a smooth lit 1024 sphere or torus. The lit 1024 plane stays
+  in the perspective loops and ships.
+- The flat lit perspective kernel at 1024 (`fti8pizp.asm`,
+  `ZPTI_I8_D16_1024_FLAT`): the 1998 code faulted on the flat torus and plane
+  in the local run. That it reads past the table is inferred from the smooth
+  case and was not traced.
+
+The ports of both kernels exist in engine-revival; these paths are left
+without a parity scene, not without code.

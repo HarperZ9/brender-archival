@@ -210,7 +210,10 @@ a shade table, as in 1998. CI gates it on Linux (`modern/parity/README.md`).
   MSVC and glibc and changes the order vertex normals are summed in. With one
   stable sort in both builds, all 174 frames are byte-identical.
 
-Still open: the perspective lit 1024 kernel's overread has no scene.
+Left unexercised on purpose: the two 1024-wide lit paths where the 1998 code
+reads outside its shade table (the linear lit kernel reached through the
+perspective cheat case, measured; the flat lit perspective kernel, which
+faulted). See modern/parity/README.md, "Left unexercised on purpose".
 
 Done when: a parity record (JSON) for each pair is committed and CI
 recomputes it. Met for RGB_888 untextured, textured and lit textured (the
