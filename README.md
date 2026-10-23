@@ -5,49 +5,94 @@
 
 # brender-archival
 
-Rebuild BRender from pinned source with a build ladder anyone can rerun.
+Run Argonaut's 1990s BRender 3D engine on a modern 64-bit PC, and rebuild the
+original 1998 source with a build anyone can rerun.
 
 [![version: 0.3.0](https://img.shields.io/badge/version-0.3.0-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/brender-archival/releases/latest)
 [![CI](https://github.com/HarperZ9/brender-archival/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/brender-archival/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/brender-archival/blob/main/LICENSE)
 ![python 3.11+](https://img.shields.io/badge/python-3.11%2B-e6e1d6?style=flat-square&labelColor=1a1712)
 
-Reviving Argonaut's BRender, and every other lost rendering and game engine,
-one at a time. This is the public revival archive: reproducible harnesses,
-verified build ladders, bounded release evidence, and public-safe metadata. It
-vendors no proprietary source, no game assets, and no restricted material.
+BRender is the real-time 3D engine Argonaut Software sold in the 1990s, best
+known from games such as Carmageddon and Croc. Its source was published under
+the MIT licence. This repository gives you three things built on it:
 
-BRender is the current flagship release lane. The rest of the roster remains in
-progress.
+- **brview**, a model viewer for 64-bit Windows and Linux that opens the
+  engine's 1998 sample models, with mouse, keyboard and gamepad controls and
+  an optional 256-colour period look.
+- **The Keeper's Hour**, a short original game on the same engine: the last
+  night of a lighthouse, told through conversation, with three endings.
+- **A rebuild of the original v1.3.2 source.** A generator writes a CMake
+  project around an unmodified checkout of the public source, and a ladder of
+  21 small test programs builds and runs it, from vector maths up to the
+  period software rasteriser drawing a sphere.
 
-## Run BRender on a modern PC
+It is for people who want to see or study a 1990s software renderer running
+today, for preservation and retro-graphics work, and for developers who want
+a starting point on the maintained BRender fork. No proprietary source, game
+assets or restricted material are stored here.
 
-**brview** opens the 1998 sample models in a window on 64-bit Windows and
-64-bit Linux, with mouse, keyboard and gamepad controls. Download the Windows
-zip or the Linux tarball from
-[releases](https://github.com/HarperZ9/brender-archival/releases), unpack it and
-run `brview.exe` or `./brview`. It is built on BRender 1.4 from
-[BlazingRenderer/BRender](https://github.com/BlazingRenderer/BRender), the maintained
-modern fork (MIT), and the same 21-step ladder passes against it 64-bit. How it
-is built, what is pinned and how to build it yourself:
-[modern/README.md](modern/README.md).
+## Run it
 
-**The Keeper's Hour** is a short original game on the same engine, with Windows and Linux downloads on the releases page:
-the last night of a lighthouse, told through conversation, with three endings. The
-source is in [games/keepers-hour](games/keepers-hour/README.md); code MIT, words
-and art CC BY 4.0.
+Download `brview-<version>-windows-x64.zip` or `brview-<version>-linux-x64.tar.gz`
+from [releases](https://github.com/HarperZ9/brender-archival/releases), check
+it against the `.sha256` file beside it, unpack it and run `brview.exe`
+(Windows) or `./brview` (Linux). Nothing to install. Tab cycles the models,
+mouse drag orbits, and `8` turns the 256-colour look on and off.
 
-What comes next, in order, with the check for each step:
-[docs/ROADMAP.md](docs/ROADMAP.md).
+```text
+brview.exe                    cycle through the bundled models
+brview.exe my.dat my.pix      open your own model and texture
+brview.exe --force-software   draw with BRender's software rasteriser
+```
 
-## BRender: rebuilt and rendering
+To save one frame and quit, set `BRVIEW_SHOT=frame.ppm`; `BRVIEW_SCENE=n`
+picks the model. The Keeper's Hour downloads (`keepers-hour-<version>-windows-x64.zip`,
+a Linux tarball and an AppImage) are on the same releases page; it takes about
+25 minutes to play. Its source is in [games/keepers-hour](games/keepers-hour/README.md);
+code MIT, words and art CC BY 4.0.
+
+Both are built on BRender 1.4 from
+[BlazingRenderer/BRender](https://github.com/BlazingRenderer/BRender), the
+maintained modern fork (MIT), which replaces the x86 assembly with portable C
+and adds SDL and OpenGL drivers. The same 21-program ladder passes against it
+as a 64-bit build. How it is built and pinned: [modern/README.md](modern/README.md).
+What comes next, in order: [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Limits
+
+- The viewer and game need OpenGL 3.3, or the software renderer with
+  `--force-software`. On Linux they need glibc 2.38 or newer (Ubuntu 24.04,
+  Debian 13, Fedora 39 or later).
+- The rebuild of the original v1.3.2 source is verified as a 32-bit
+  Visual Studio Debug build only. Several of the original assembly routines
+  are replaced by C stand-ins, and textured rendering through the original
+  period pipeline still draws black (see the next section).
+- The repository also holds research records on 22 other engines and
+  graphics libraries, as JSON metadata and links to public sources. No build
+  exists here yet for any of them.
+
+## How it compares
+
+- **[BlazingRenderer/BRender](https://github.com/BlazingRenderer/BRender)** is
+  the maintained engine itself. This repository does not fork it; it pins one
+  commit, builds the viewer and game on it, and checks the result against the
+  1998 code.
+- **Foone Turing's [BRender-v1.3.2](https://github.com/foone/BRender-v1.3.2)**
+  and the other published snapshots hold the original source as released.
+  This repository adds the build around that source and the tests that run it.
+- **Emulators and DOSBox** run the original games as shipped binaries. This
+  repository runs the engine as source code on current systems, so you can
+  read it, change it and build new work on it.
+
+## The 1998 source, rebuilt
 
 From the public BRender v1.3.2 source snapshot (MIT, provenance via Foone
 Turing, release authorized by former Argonaut CEO Jez San), pinned at commit
 `d88d0ed41122664b9781015b517db64353e16f19`, the materializer generates an
 out-of-tree CMake harness that references the source checkout in place.
 
-The verified 2026-08-27 boundary is Visual Studio Win32 Debug:
+Verified on 2026-08-27 as a Visual Studio Win32 Debug build:
 
 - 21/21 native CTest targets pass.
 - The period-pipeline rung compiles softrend and pentprim from the upstream tree
@@ -60,10 +105,11 @@ The verified 2026-08-27 boundary is Visual Studio Win32 Debug:
   protection, material-resolve third-edge initialization, INDEX_8 palette
   lookup, and removal of stale investigation diagnostics.
 
-The experimental textured TIA path executes, but black output remains blocked by
-a measured vertex-layout/state mismatch. This repository does not claim
-completed textured rendering, x64 readiness, production readiness, endorsement,
-or vendored upstream source/assets.
+The experimental textured path through the original pipeline runs but draws
+black, because of a measured vertex-layout and state mismatch. For this 1.3.2
+rebuild there is no claim of completed textured rendering, a 64-bit build or
+production use, and no endorsement by the original authors. The 64-bit build
+is the BRender 1.4 one described above.
 
 ![Eight stages taking pinned upstream source to a running ladder: pin, materialize, compat, configure, build, ladder, capture, package. One upstream commit of the public BRender v1.3.2 source is named in the record. The materializer writes forty files out of tree, none of them copied from upstream: the CMake project, the compatibility C ports that stand in for the period assembly kernels, and the smoke programs. CMake configures a Visual Studio Win32 target against the named source directory, and the FLOAT core is built from eight upstream directories under nine compile definitions. Twenty-one targets then run under CTest, twenty from the generated project plus the period-pipeline rung that binds softrend and pentprim into one process. Frames and transcripts are captured, and the packager hashes everything it stages. The transcript recorded on the twenty-seventh of August 2026 reports twenty-one of twenty-one passed with none failed. Three outcomes: the ladder renders a nonblack orbit, some assembly kernels remain linkage stubs, and a completed textured period render is not claimed.](docs/art/ladder-lane.svg)
 
@@ -80,7 +126,7 @@ or vendored upstream source/assets.
 | UV-textured models | loaded model UV coordinates drive texture sampling |
 | Multi-part assembly | `BrModelLoadMany` composites the 12-part coupe |
 | Gouraud shading | per-vertex normals and smooth gradients |
-| Plotter lane | hidden-line-removed SVG polylines, pen-plotter ready |
+| Plotter output | hidden-line-removed SVG polylines, pen-plotter ready |
 | Asset audit | loaded model geometry, face indices, degenerate faces, and material attachment |
 | Pixelmap audit | `BrPixelmapLoad` probes period `.pix` and `.pal` files |
 | Material audit | `BrMaterialLoad` identifiers, flags, index_base, and colour-map attachment |
@@ -122,18 +168,18 @@ models. They are public release output, not vendored upstream assets.
 | ![uv globe](gallery/07-uv-textured-globe.png) | ![multipart coupe](gallery/08-multipart-coupe.png) |
 | ![gouraud sphere](gallery/09-gouraud-sphere.png) | ![teapot plotter](gallery/10-teapot-plotter.png) |
 
-The plotter lane also emits ready-to-plot SVG:
+The plotter rung also writes ready-to-plot SVG:
 [gallery/10-teapot-plotter.svg](gallery/10-teapot-plotter.svg).
 
 See [docs/BRENDER-ARCHIVAL.md](docs/BRENDER-ARCHIVAL.md) for the full packet:
-provenance, reproduction, current capability, and bounded limitations.
+provenance, reproduction, current capability and known limits.
 
 ## Package a release
 
 ```powershell
 python scripts/package_brender_release.py `
-  --source-root C:\path\to\BRender-v1.3.2 `
-  --output-root C:\path\to\release-stage
+  --source-root <BRender-v1.3.2 checkout> `
+  --output-root <release stage directory>
 ```
 
 The packager stages the materialized harness, README, CTest transcripts, current
@@ -148,9 +194,9 @@ package, pinned in `pyproject.toml`; installing this repository installs it.
 ```powershell
 python -m pip install -e ".[test]"
 engine-revival materialize-brender-harness `
-  --source-root C:\path\to\BRender-v1.3.2 `
-  --output-root C:\path\to\brender-portable-core-harness
-cmake -S <harness> -B <build> -A Win32 "-DBRENDER_SOURCE_DIR=C:\path\to\BRender-v1.3.2"
+  --source-root <BRender-v1.3.2 checkout> `
+  --output-root <harness directory>
+cmake -S <harness> -B <build> -A Win32 "-DBRENDER_SOURCE_DIR=<BRender-v1.3.2 checkout>"
 cmake --build <build> --config Debug
 ctest --test-dir <build> -C Debug --output-on-failure
 ```
@@ -163,7 +209,7 @@ the period asset library.
 ![Eight stages taking a lead from an empty directory to a published page: seed, record, schema, validate, rights, audit, index, publish. The seed command lays out one directory per record kind, twelve of them, covering targets, artifacts, sources, tasks, milestones, accessions, reproductions, snapshots, readiness, builds, harnesses and attempts. Each finding becomes one JSON file. Twelve schemas name the fields a record of that kind must carry, and the validate command reports any record that omits one. Every artifact carries a redistribution status and an access level, and the audit command refuses the combination of restricted material with a publishable level. The index command renders the twenty-three engine targets as one table, and the report command writes the generated pages out of the corpus. Three hundred and forty-two records sit on disk across the twelve kinds, and the audit returns no messages against them on this checkout. Three outcomes: a public record whose page regenerates from it, a reference held as metadata only, or a holding that is not held at all.](docs/art/archive-lane.svg)
 
 ```powershell
-python -m pip install -e ".[test]"
+python -m pip install -e ".[test,media]"
 engine-revival seed
 engine-revival validate
 engine-revival audit-public
