@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "brender-archival"
 version = "0.3.0"
-description = "Run Argonaut's 1990s BRender engine on a modern PC and rebuild its 1998 source with a reproducible build, plus research records on other historical engines."
+description = "Run Argonaut's 1990s BRender engine on a modern PC and rebuild its 1998 source with a build anyone can rerun, plus research records on other historical engines."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
